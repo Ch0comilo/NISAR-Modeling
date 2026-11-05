@@ -1,0 +1,232 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "analysis",
+    "scope",
+    "status",
+    "policy",
+    "observations",
+    "reference_evidence",
+    "signature_summary",
+    "matched_controls",
+    "proxy_comparison",
+    "objects",
+    "artifacts",
+    "insights",
+    "limitations",
+    "flood_depth_m",
+    "flood_probability",
+    "causal_attribution"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "analysis": {
+      "const": "flood_characterization"
+    },
+    "scope": {
+      "const": "retrospective_observed_surface_signatures"
+    },
+    "status": {
+      "enum": [
+        "no_data",
+        "partial",
+        "complete"
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "policy_id",
+        "calibrated_flood_classifier"
+      ],
+      "properties": {
+        "policy_id": {
+          "const": "flood_evidence_pilot_v1"
+        },
+        "calibrated_flood_classifier": {
+          "const": false
+        }
+      }
+    },
+    "observations": {
+      "type": "object"
+    },
+    "reference_evidence": {
+      "type": "object",
+      "required": [
+        "status"
+      ]
+    },
+    "signature_summary": {
+      "type": "object"
+    },
+    "matched_controls": {
+      "type": "object"
+    },
+    "proxy_comparison": {
+      "type": "object"
+    },
+    "objects": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": [
+          "object_id",
+          "analysis_cells",
+          "trajectory_change_db",
+          "first_change_interval"
+        ]
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "href",
+          "role",
+          "media_type",
+          "sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "units": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "observation",
+          "interpretation_limit",
+          "evidence_artifacts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "observation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interpretation_limit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "flood_depth_m": {
+      "type": "null"
+    },
+    "flood_probability": {
+      "type": "null"
+    },
+    "causal_attribution": {
+      "type": "null"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date",
+        "source_url",
+        "description"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "no_data"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  ]
+}

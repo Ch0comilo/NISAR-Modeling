@@ -1,0 +1,67 @@
+{
+  "assessment": "Share with noted caveats",
+  "pilot_role": "three inspected development cases, not a held-out global benchmark",
+  "cases": [
+    {
+      "case_id": "chokwe",
+      "status": "partial",
+      "dates": 5,
+      "reference_fraction": 0.22796630859375,
+      "new_open_water_cells": 440,
+      "fixed_target": "2026-01-17",
+      "paired_contrast_db": -4.344274632788766
+    },
+    {
+      "case_id": "qadirabad",
+      "status": "complete",
+      "dates": 8,
+      "reference_fraction": 1.0,
+      "new_open_water_cells": 516,
+      "fixed_target": "2026-07-26",
+      "paired_contrast_db": -4.93432441231499
+    },
+    {
+      "case_id": "richmond",
+      "status": "partial",
+      "dates": 8,
+      "reference_fraction": 0.13226046051002724,
+      "new_open_water_cells": 0,
+      "fixed_target": "2026-08-16",
+      "paired_contrast_db": null
+    }
+  ],
+  "insar_windows": [
+    {
+      "case_id": "kumamoto",
+      "common_phase_pixels": 0,
+      "common_correction_input_pixels": 0
+    },
+    {
+      "case_id": "kumamoto_wide",
+      "common_phase_pixels": 1614,
+      "common_correction_input_pixels": 3
+    }
+  ],
+  "verified_artifacts": 33,
+  "frozen_transformer_unchanged": true,
+  "checks": [
+    "measured power and independently recomputed dB changes",
+    "common support and explicit denominators",
+    "proxy confusion counts including stable water",
+    "matched-positive-only contrasts",
+    "nominal grid-mask areas and object timing",
+    "native coordinates/COGs and artifact SHA-256",
+    "optical before/after eligibility and date offsets",
+    "filled/finite/positive-uncertainty correction gates",
+    "null depth, probability, attribution and displacement"
+  ],
+  "required_caveats": [
+    "Independent optical-product agreement is not surveyed ground-truth accuracy.",
+    "Cloud gaps, 1-7 day offsets and three inspected scenes prevent global validation.",
+    "Chokwe uses beta products and only one assessment date; Richmond observation misses the reported event interval.",
+    "Baseline medians and optical snapshot comparisons have different temporal support; last-baseline sensitivity is provided without threshold optimization.",
+    "Spatial bootstrap intervals omit sensor/reference error and causal identification; controls are observational.",
+    "No validated pixel-level vegetation, urban flood, under-canopy water or inundation-depth labels exist.",
+    "InSAR corrections and independent stable reference remain unresolved."
+  ]
+}

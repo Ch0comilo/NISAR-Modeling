@@ -14,6 +14,8 @@ fixtures.extend((ROOT/'products/global_v2/cubes').glob('*.npz'));fixtures.append
 for case in ['kumamoto','kumamoto_wide']:
     fixtures.extend((ROOT/'products/insar_stacks'/case/'cache').glob('pair_*.npz'))
     fixtures.extend((ROOT/'products/insar_stacks'/case/'cache').glob('pair_*.json'))
+for case in ['chokwe','qadirabad','richmond']:
+    fixtures.extend(ROOT/'products/flood_pilot/cases'/case/name for name in ['cube.npz','reference_pair.npz','reference_pair.json','admission.json'])
 paths.extend(fixtures)
 paths.extend(p for p in (ROOT/'scripts').glob('*.py') if p.name!='live_catalog_smoke.py')
 for name in ['products/insar/kumamoto_pair.npz','products/insar/kumamoto_pair.json','products/verification.json','products/global_surface_atlas.png','products/transformer_validation.png','products/runs/kumamoto-earthquake/interferometry.png','products/runs/forest_river/learned_evolution.gif','products/model_benchmark_all_dates.json','products/networks/kumamoto/result.json','scripts/train_global_example.py','scripts/run_global_examples.py','scripts/finalize_science_artifacts.py','scripts/verify_release.py','scripts/benchmark_global_model.py','scripts/download_examples.py']:
@@ -21,7 +23,7 @@ for name in ['products/insar/kumamoto_pair.npz','products/insar/kumamoto_pair.js
 archive=out/'nisar-science-teammate-handoff.zip'
 inventory=[]
 with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=5) as z:
-    z.writestr('README.md','# NISAR science teammate handoff v0.3.0\n\nStart with TEAM_HANDOFF.md and docs/MODELING_V2.md. Install the wheel in dist/ or install the included source. Both trained models, thirteen common-posting regional cubes, legacy fixtures and measured three-pair InSAR inputs are included; no token is needed for offline examples. Run scripts/download_examples.py to verify bundled fixtures without network access, scripts/run_global_v2.py to generate the full artifacts, and scripts/verify_global_v2.py after generation to check them. See PROJECT_README.md for the repository overview. Recorded verification describes the authoring-host reference run. Frontend/mockup files, credentials, virtualenvs, full generated datasets and the unverified-unit external GSI raster are excluded.\n')
+    z.writestr('README.md','# NISAR science teammate handoff v0.4.0\n\nStart with TEAM_HANDOFF.md and docs/CHARACTERIZATION_CONTRACTS.md. Install the wheel in dist/ or install the included source. Both frozen models, thirteen common-posting regional cubes, legacy inputs, measured three-pair InSAR windows and three flood-pilot cubes with independent optical evidence are included. No token is needed for offline examples. Run scripts/download_examples.py to verify bundled fixtures, scripts/run_flood_pilot.py and scripts/run_insar_readiness.py to generate the 33 new artifacts, then scripts/verify_flood_pilot.py. The prior scripts/run_global_v2.py and scripts/verify_global_v2.py remain available. See PROJECT_README.md for the repository overview. Recorded verification describes the authoring-host reference run. Frontend/mockup files, credentials, virtualenvs, full generated datasets, raw optical tiles and the unverified-unit external GSI raster are excluded.\n')
     z.writestr('PROJECT_README.md',(ROOT/'README.md').read_bytes())
     version=tomllib.loads((ROOT/'pyproject.toml').read_text())['project']['version']
     wheels=list((ROOT/'dist').glob(f'nisar_surface_dynamics-{version}-*.whl'))

@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.0",
+  "request_id": "chokwe-flood-evidence",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/flood_pilot/cases/chokwe/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2025-11-01",
+    "end_date": "2026-01-05"
+  },
+  "assessment": {
+    "start_date": "2026-01-12",
+    "end_date": "2026-02-01"
+  },
+  "reference": {
+    "mode": "local_optical_pair",
+    "path": "products/flood_pilot/cases/chokwe/reference_pair.npz"
+  },
+  "context": {
+    "start_date": "2026-01-12",
+    "end_date": "2026-01-25",
+    "source_url": "https://svs.gsfc.nasa.gov/5661/",
+    "description": "NASA documents Jan 5 and Jan 17 NISAR observations around the southern Mozambique flood. The reference window may include early wet-season flooding; this is change relative to that window, not a pristine counterfactual."
+  },
+  "policy_id": "flood_evidence_pilot_v1"
+}

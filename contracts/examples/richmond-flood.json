@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.0",
+  "request_id": "richmond-flood-evidence",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/flood_pilot/cases/richmond/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-08-11"
+  },
+  "assessment": {
+    "start_date": "2026-08-12",
+    "end_date": "2026-09-30"
+  },
+  "reference": {
+    "mode": "local_optical_pair",
+    "path": "products/flood_pilot/cases/richmond/reference_pair.npz"
+  },
+  "context": {
+    "start_date": "2026-08-12",
+    "end_date": "2026-08-13",
+    "source_url": "https://www.weather.gov/iln/20260813",
+    "description": "NWS reports heavy rain in Wayne County and rises on the Whitewater River. Short-lived flooding may fall between satellite acquisitions; absence of a later signal does not establish absence of flooding."
+  },
+  "policy_id": "flood_evidence_pilot_v1"
+}

@@ -11,6 +11,8 @@ def allowed_fixture(name):
     if path.is_absolute() or '..' in path.parts or '\\' in name:return False
     if path.parent.as_posix() in ['products/cubes','products/global_v2/cubes'] and path.suffix=='.npz':return True
     if name in ['products/insar/kumamoto_pair.npz','products/insar/kumamoto_pair.json','products/global_v2/data_inventory.json']:return True
+    if path.parent.as_posix() in ['products/flood_pilot/cases/'+case for case in ['chokwe','qadirabad','richmond']]:
+        return path.name in ['cube.npz','reference_pair.npz','reference_pair.json','admission.json']
     return path.parent.as_posix() in ['products/insar_stacks/kumamoto/cache','products/insar_stacks/kumamoto_wide/cache'] and re.fullmatch(r'pair_[0-5]\.(npz|json)',path.name) is not None
 
 

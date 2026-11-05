@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "analysis",
+    "status",
+    "corrections_applied",
+    "los_displacement_cm",
+    "pair_quality",
+    "quality",
+    "threshold_sensitivity",
+    "required_gates",
+    "artifacts",
+    "limitations"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "analysis": {
+      "const": "insar_correction_readiness"
+    },
+    "status": {
+      "const": "not_displacement_ready"
+    },
+    "corrections_applied": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "los_displacement_cm": {
+      "type": "null"
+    },
+    "pair_quality": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": {
+        "type": "object"
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "common_phase_support_pixels",
+        "common_correction_input_pixels",
+        "candidate_reference"
+      ]
+    },
+    "threshold_sensitivity": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "required_gates": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "next_input"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "blocked",
+              "available_but_unvalidated"
+            ]
+          },
+          "next_input": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "href",
+          "role",
+          "media_type",
+          "sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "units": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

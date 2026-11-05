@@ -1,0 +1,18 @@
+{
+  "request": "contracts/examples/qadirabad-flood-live.json",
+  "status": "complete",
+  "fresh_catalog_and_optical_discovery": true,
+  "checksummed_measured_caches_reused": true,
+  "offline_scientific_results_identical": true,
+  "dates": [
+    "2026-06-20",
+    "2026-07-02",
+    "2026-07-14",
+    "2026-07-26",
+    "2026-08-19",
+    "2026-08-31",
+    "2026-09-12",
+    "2026-09-24"
+  ],
+  "artifacts": 9
+}

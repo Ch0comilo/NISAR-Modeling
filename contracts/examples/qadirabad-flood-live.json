@@ -1,0 +1,33 @@
+{
+  "contract_version": "1.0",
+  "request_id": "qadirabad-flood-live",
+  "source": {
+    "mode": "catalog_point",
+    "longitude": 73.713,
+    "latitude": 32.329,
+    "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+    "max_dates": 12,
+    "native_chip_pixels": 512,
+    "target_posting_m": 40
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-07-21"
+  },
+  "assessment": {
+    "start_date": "2026-07-22",
+    "end_date": "2026-09-30"
+  },
+  "reference": {
+    "mode": "discover_optical",
+    "longitude": 73.713,
+    "latitude": 32.329
+  },
+  "context": {
+    "start_date": "2026-07-22",
+    "end_date": "2026-07-24",
+    "source_url": "https://ffd.pmd.gov.pk/b/eacdcd80-11ca-4316-a9e9-e337e5c7d8fd",
+    "description": "PMD/FFD regional Chenab bulletin context. No independently surveyed flood polygon is supplied and local inundation is not assumed."
+  },
+  "policy_id": "flood_evidence_pilot_v1"
+}

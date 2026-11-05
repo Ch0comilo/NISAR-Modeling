@@ -1,8 +1,8 @@
 {
-  "release": "v0.3.0",
-  "url": "https://github.com/Ch0comilo/NISAR-Modeling/releases/download/v0.3.0/nisar-science-teammate-handoff.zip",
-  "bytes": 34227567,
-  "sha256": "37bd36b81b0b88db6f97171c8ff8e1da54481145e078113a02256d984a0f05d2",
-  "measured_fixture_files": 35,
-  "fixtures": "thirteen 160 m regional cubes, legacy inputs, two real three-pair InSAR windows and provenance"
+  "release": "v0.4.0",
+  "url": "https://github.com/Ch0comilo/NISAR-Modeling/releases/download/v0.4.0/nisar-science-teammate-handoff.zip",
+  "bytes": 42783128,
+  "sha256": "424972c8bffa15390eef39b3cbe79a0260476152742011a75d3f4eb3f512bbc4",
+  "measured_fixture_files": 47,
+  "fixtures": "thirteen 160 m regional cubes, legacy inputs, two real InSAR windows, three 40 m flood cubes and aligned independent optical evidence with provenance"
 }

@@ -2,7 +2,17 @@
 
 Current direction approved 4 November 2026: **exploration, teaching and entertainment through measured radar dynamics**. No forecasting or automatic phenomenon classification is part of this implementation. The mockup supplies case-study context only; its methods and design did not determine this model. Neither the mockup nor application frontend is modified.
 
-## Current additions: version 0.3
+## Current additions: version 0.4
+
+Use [CHARACTERIZATION_CONTRACTS.md](docs/CHARACTERIZATION_CONTRACTS.md) for the new flood and InSAR-readiness worker inputs, result fields, dimensions, units and offline commands. [FLOOD_CHARACTERIZATION.md](docs/FLOOD_CHARACTERIZATION.md) describes three real development cases; [FLOOD_VALIDATION.md](docs/FLOOD_VALIDATION.md) gives the evidence limits. Four new schemas bring the request/result count to fourteen. Flood depth/probability/causal attribution and InSAR displacement remain null.
+
+`flood-characterize` returns measured signatures, independent optical-product transitions, baseline-only matched controls, conditional spatial intervals, trajectories, observed timing and radar-signature objects. Optical agreement is not ground-truth accuracy; mask area is not confirmed inundation extent. `complete` describes processing support, not a validated phenomenon label. Null recall with no reference positives is meaningful. Preserve unsupported/mixed groups and separate stable open water from newly open water.
+
+`insar-readiness` publishes actual correction-input eligibility and missing gates. Three common eligible cells in the wider Kumamoto stack do not meet the declared reference policy. Supplied screens are not applied, and no stable-ground or displacement claim follows from high coherence. Full new arrays regenerate offline from the release fixtures; source product IDs, checksums, sensing timestamps and optical license metadata are retained.
+
+The existing 160 m frozen Transformer is unchanged. The new 40 m flood cubes are not silently passed through a checkpoint trained for different posting. The prior spectral/stochastic/learned workers remain available under their existing measurement and record-length gates. No frontend or mockup work is included.
+
+## Previous additions: version 0.3
 
 The [v2 experiment report](docs/MODELING_V2.md) and [model card](models/global_explorer_v2/MODEL_CARD.md) cover the new frozen candidate and InSAR interval worker. There are thirteen 160 m regional cubes, nine training regions, two older development cases and two new geographic tests. The new model improves over v1 but remains slightly worse than interpolation on both new tests. Reconstruction results, latent colors and GP conditional coverage do not establish global physical accuracy.
 

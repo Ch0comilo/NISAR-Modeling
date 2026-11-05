@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.0",
+  "request_id": "qadirabad-flood-evidence",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/flood_pilot/cases/qadirabad/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-07-21"
+  },
+  "assessment": {
+    "start_date": "2026-07-22",
+    "end_date": "2026-09-30"
+  },
+  "reference": {
+    "mode": "local_optical_pair",
+    "path": "products/flood_pilot/cases/qadirabad/reference_pair.npz"
+  },
+  "context": {
+    "start_date": "2026-07-22",
+    "end_date": "2026-07-24",
+    "source_url": "https://ffd.pmd.gov.pk/b/eacdcd80-11ca-4316-a9e9-e337e5c7d8fd",
+    "description": "PMD/FFD regional Chenab bulletin context. No independently surveyed flood polygon is supplied and local inundation is not assumed."
+  },
+  "policy_id": "flood_evidence_pilot_v1"
+}

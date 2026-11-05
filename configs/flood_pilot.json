@@ -1,0 +1,27 @@
+{
+  "protocol_version":"flood_evidence_pilot_v1",
+  "purpose":"Retrospective evidence-linked flood characterization; development pilot, no globally validated flood classifier or forecasts",
+  "native_chip_pixels":512,
+  "target_posting_m":40,
+  "max_dates":12,
+  "optical_max_offset_days":7,
+  "optical_candidate_cap":16,
+  "cases":[
+    {"id":"chokwe","name":"Chokwe, Mozambique","longitude":32.986,"latitude":-24.534,
+     "scene_context":"River floodplain with agricultural, vegetated and settled areas; no pixel-level land-cover labels",
+     "collection":"NISAR_L2_GCOV_BETA_V1","start_date":"2025-11-01","end_date":"2026-02-01",
+     "baseline_start":"2025-11-01","baseline_end":"2026-01-05","assessment_start":"2026-01-12","assessment_end":"2026-02-01",
+     "event_context":{"start_date":"2026-01-12","end_date":"2026-01-25","source_url":"https://svs.gsfc.nasa.gov/5661/","description":"NASA documents Jan 5 and Jan 17 NISAR observations around the southern Mozambique flood. The reference window may include early wet-season flooding; this is change relative to that window, not a pristine counterfactual."}},
+    {"id":"qadirabad","name":"Qadirabad / Chenab, Pakistan","longitude":73.713,"latitude":32.329,
+     "scene_context":"Agricultural river corridor; independent optical water comparison does not validate under-canopy inundation",
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","start_date":"2026-06-01","end_date":"2026-09-30",
+     "baseline_start":"2026-06-01","baseline_end":"2026-07-21","assessment_start":"2026-07-22","assessment_end":"2026-09-30",
+     "event_context":{"start_date":"2026-07-22","end_date":"2026-07-24","source_url":"https://ffd.pmd.gov.pk/b/eacdcd80-11ca-4316-a9e9-e337e5c7d8fd","description":"PMD/FFD regional Chenab bulletin context. No independently surveyed flood polygon is supplied and local inundation is not assumed."}},
+    {"id":"richmond","name":"Whitewater River / Richmond, Indiana, USA","longitude":-84.894,"latitude":39.83,
+     "scene_context":"River corridor through settled and agricultural surroundings; urban context is not a building-level flood label",
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","start_date":"2026-06-01","end_date":"2026-09-30",
+     "baseline_start":"2026-06-01","baseline_end":"2026-08-11","assessment_start":"2026-08-12","assessment_end":"2026-09-30",
+     "event_context":{"start_date":"2026-08-12","end_date":"2026-08-13","source_url":"https://www.weather.gov/iln/20260813","description":"NWS reports heavy rain in Wayne County and rises on the Whitewater River. Short-lived flooding may fall between satellite acquisitions; absence of a later signal does not establish absence of flooding."}}
+  ],
+  "admission_notes":["Oahu March 2026 was considered but no matching GCOV acquisitions were returned in beta, provisional or standard collections for the requested point/window.","All thresholds and optical-time limits are diagnostic policy choices fixed before the radar/reference agreement is inspected.","Candidate controls are optically stable predominantly nonwater cells matched on pre-event radar levels; they are not experimentally guaranteed unaffected controls."]
+}

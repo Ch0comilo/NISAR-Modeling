@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nisar-surface-dynamics"
-version = "0.3.0"
+version = "0.4.0"
 description = "Worldwide, capability-aware descriptive SAR surface dynamics; science artifacts only"
 requires-python = ">=3.11"
 dependencies = ["numpy>=2.1", "scipy>=1.15", "xarray>=2025.4", "h5py>=3.12", "h5netcdf", "rasterio>=1.4", "requests", "matplotlib", "torch>=2.6", "jsonschema", "Pillow"]

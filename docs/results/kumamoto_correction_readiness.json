@@ -1,0 +1,172 @@
+{
+  "contract_version": "1.0",
+  "request_id": "kumamoto-correction-readiness",
+  "analysis": "insar_correction_readiness",
+  "status": "not_displacement_ready",
+  "corrections_applied": [],
+  "los_displacement_cm": null,
+  "pair_quality": [
+    {
+      "source_id": "NISAR_L2_PR_GUNW_025_024_A_018_026_4000_SH_20260709T202900_20260709T202935_20260721T202900_20260721T202934_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 3151,
+      "ionosphere_filled_coherent_pixels": 3140,
+      "finite_screen_coherent_pixels": 3151,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 11,
+      "eligible_fraction_of_grid": 0.0028616024973985433,
+      "eligible_fraction_of_coherent_support": 0.003490955252300857,
+      "eligible_screen_05_50_95_rad": [
+        3.8887202739715576,
+        4.015560150146484,
+        4.02130389213562
+      ],
+      "eligible_reported_uncertainty_05_50_95_rad": [
+        0.8812337815761566,
+        0.8918949365615845,
+        1.0301091074943542
+      ]
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_026_024_A_018_028_4000_SH_20260721T202900_20260721T202934_20260814T202858_20260814T202933_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 0,
+      "ionosphere_filled_coherent_pixels": 0,
+      "finite_screen_coherent_pixels": 0,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 0,
+      "eligible_fraction_of_grid": 0.0,
+      "eligible_fraction_of_coherent_support": null,
+      "eligible_screen_05_50_95_rad": null,
+      "eligible_reported_uncertainty_05_50_95_rad": null
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_028_024_A_018_029_4000_SH_20260814T202858_20260814T202933_20260826T202858_20260826T202933_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 2858,
+      "ionosphere_filled_coherent_pixels": 2841,
+      "finite_screen_coherent_pixels": 2858,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 17,
+      "eligible_fraction_of_grid": 0.004422476586888657,
+      "eligible_fraction_of_coherent_support": 0.005948215535339398,
+      "eligible_screen_05_50_95_rad": [
+        -8.344842338562012,
+        -7.968053340911865,
+        -7.893090534210205
+      ],
+      "eligible_reported_uncertainty_05_50_95_rad": [
+        0.8950203895568848,
+        1.1234724521636963,
+        1.2355063676834106
+      ]
+    }
+  ],
+  "quality": {
+    "common_phase_support_fraction": 0.0,
+    "common_phase_support_pixels": 0,
+    "common_coherence_support_fraction": 1.0,
+    "shared_reference": null,
+    "phase_comparison_status": "insufficient_common_component_support",
+    "coherence_threshold": 0.35,
+    "coherence_histogram_bin_edges": [
+      0.0,
+      0.1,
+      0.2,
+      0.30000000000000004,
+      0.4,
+      0.5,
+      0.6000000000000001,
+      0.7000000000000001,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "common_correction_input_pixels": 0,
+    "common_correction_input_fraction_of_grid": 0.0,
+    "common_correction_input_fraction_of_common_phase_support": null,
+    "candidate_reference": null,
+    "eligibility_is_correction_validation": false
+  },
+  "threshold_sensitivity": [
+    {
+      "coherence_threshold": 0.2,
+      "common_phase_support_pixels": 0,
+      "common_correction_input_pixels": 0
+    },
+    {
+      "coherence_threshold": 0.35,
+      "common_phase_support_pixels": 0,
+      "common_correction_input_pixels": 0
+    },
+    {
+      "coherence_threshold": 0.5,
+      "common_phase_support_pixels": 0,
+      "common_correction_input_pixels": 0
+    },
+    {
+      "coherence_threshold": 0.7,
+      "common_phase_support_pixels": 0,
+      "common_correction_input_pixels": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "correction_readiness_arrays",
+      "href": "correction_readiness_arrays.nc",
+      "role": "measured_correction_inputs_and_eligibility",
+      "media_type": "application/x-netcdf",
+      "sha256": "172dcaa66fae715ec451e1351e65af2bb5bc068cb298bddd979cf47bcdf1a4ce"
+    },
+    {
+      "id": "common_correction_input_eligible",
+      "href": "common_correction_input_eligible.tif",
+      "role": "common_input_support_not_validated_stability",
+      "media_type": "image/tiff",
+      "sha256": "3e343d55415a98acfe8108410b581289a79a38dbdcbe578581ac4f2c36346ef3"
+    },
+    {
+      "id": "reported_ionosphere_uncertainty_rad",
+      "href": "reported_ionosphere_uncertainty_rad.tif",
+      "role": "product_reported_uncertainty_not_calibrated_error",
+      "media_type": "image/tiff",
+      "sha256": "a4219c1f5b80ff7de5664599358d68be4710ebcfa6b90e188c344922c5df9737"
+    }
+  ],
+  "required_gates": [
+    {
+      "id": "common_component_and_correction_support",
+      "status": "blocked",
+      "next_input": "At least eight common coherent selected-component cells with unfilled finite ionosphere screen and positive reported uncertainty; this threshold is a policy, not validation."
+    },
+    {
+      "id": "independent_stable_reference",
+      "status": "blocked",
+      "next_input": "External GNSS/geologic evidence or other independently checked stable reference polygon on common support."
+    },
+    {
+      "id": "ionosphere_correction_convention",
+      "status": "blocked",
+      "next_input": "Verify product-version correction sign, units and reference convention against processor documentation and independent geodesy before applying the screen."
+    },
+    {
+      "id": "atmosphere_and_tides",
+      "status": "blocked",
+      "next_input": "Versioned tropospheric and tidal correction fields with acquisition timestamps, datum and uncertainty provenance."
+    },
+    {
+      "id": "unwrapping_and_network_validation",
+      "status": "blocked",
+      "next_input": "Redundant compatible pair intervals for phase closure, component checks and independent displacement validation; a chain has no closure test."
+    },
+    {
+      "id": "geodetic_sign_and_geometry",
+      "status": "blocked",
+      "next_input": "Validate LOS sign, wavelength and look geometry against an independently measured displacement before inversion."
+    }
+  ],
+  "limitations": [
+    "Ionosphere input eligibility is not correction accuracy or stable-ground validation.",
+    "Filled flags, finite screens and positive reported uncertainty are different quality conditions; absence of a fill flag does not establish trustworthy correction.",
+    "All fractions name their denominator. No correction is applied and no phase is integrated or converted into a deformation estimate.",
+    "The maximum-minimum-coherence candidate is a proposed data-support location, not an independently stable reference.",
+    "No earthquake detection, earthquake attribution, vertical motion or forecasting is inferred from this audit."
+  ]
+}

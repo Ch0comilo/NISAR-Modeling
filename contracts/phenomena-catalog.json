@@ -1,15 +1,164 @@
 {
- "contract_version":"1.0",
- "purpose":"Educational exploration profiles; never classifier labels or event probabilities",
- "themes":[
-  {"id":"agriculture","signals":["HH/HV trajectories","relative cross-pol","temporal variability","spatial directional texture","spectral candidates"],"question":"Which regions change at different times, and do their co-/cross-polarized trajectories differ?","physical_hypotheses":["canopy geometry","soil or vegetation moisture","management and harvest structure"],"limit":"No crop type, crop health or moisture inversion is inferred."},
-  {"id":"wildfires","signals":["pre/post measured differences","persistent trajectory shifts","coherence where real pairs exist"],"question":"Is there a persistent radar response across the independently reported fire interval, or little detectable response?","physical_hypotheses":["vegetation structure change","moisture change","exposure of rough ground"],"limit":"No burned-area label or cause follows from a SAR anomaly. Independent event/perimeter and comparable pre-event support are required."},
-  {"id":"floods","signals":["co-/cross-pol changes","temporal jumps","relative scattering","coherence when available"],"question":"Do parts of the scene darken or brighten, and what alternative scattering mechanisms could explain this?","physical_hypotheses":["smooth specular water","wind-roughened water","water interacting with vegetation or structures","wet soil"],"limit":"No validated inundation extent, depth or affected-area estimate is produced."},
-  {"id":"landslides","signals":["localized backscatter change","coherence change","quality-controlled phase or offsets when supplied"],"question":"Do actual observations bracket the event, and is the terrain observable by radar?","physical_hypotheses":["surface roughness change","vegetation removal","slope displacement","terrain shadow or layover"],"limit":"Intensity is not displacement. DEM/visibility, geodetic or offset evidence is needed; the Niscemi example is aftermath-only."},
-  {"id":"earthquakes","signals":["wrapped phase","coherence","connected components","referenced unwrapped phase","independent event context"],"question":"Where do coherent fringes survive, and which pixels cannot support a motion interpretation?","physical_hypotheses":["coseismic and postseismic motion","atmospheric/ionospheric phase","unwrapping error"],"limit":"Uncorrected phase-equivalent centimetres are not validated LOS displacement; magnitude and hazard probability are not inferred."},
-  {"id":"volcanoes","signals":["phase/coherence pairs","scattering trajectories","corrected referenced networks when available"],"question":"Does a spatial phase pattern persist across independent pairs and correction choices?","physical_hypotheses":["deformation","new material or vegetation change","atmospheric gradients"],"limit":"No eruption prediction or attribution from a single interferogram."},
-  {"id":"wetlands","signals":["polarization trajectories","temporal variability","spectral candidates"],"question":"How do relative scattering and temporal rhythms vary between neighboring areas?","physical_hypotheses":["hydrologic change","vegetation geometry","surface roughness"],"limit":"No water/forest class or annual cycle is asserted without the relevant evidence."},
-  {"id":"ice","signals":["backscatter dynamics","coherence","verified GOFF offsets in future adapters"],"question":"Which signals remain coherent, and which show large structural or positional changes?","physical_hypotheses":["surface melt","snow/ice structure change","ice movement"],"limit":"GOFF speed retrieval is not implemented by this release; no glacier velocity is fabricated."},
-  {"id":"subsidence","signals":["coherent phase network","stable reference","correction diagnostics"],"question":"Does referenced phase accumulate consistently across reliable connected pairs?","physical_hypotheses":["ground motion","atmosphere","reference instability"],"limit":"A corrected time-series inversion and independent validation are required; single-pair phase is not vertical subsidence."}
- ]
+  "contract_version": "1.0",
+  "purpose": "Educational exploration profiles; never classifier labels or event probabilities",
+  "themes": [
+    {
+      "id": "agriculture",
+      "signals": [
+        "HH/HV trajectories",
+        "relative cross-pol",
+        "temporal variability",
+        "spatial directional texture",
+        "spectral candidates"
+      ],
+      "question": "Which regions change at different times, and do their co-/cross-polarized trajectories differ?",
+      "physical_hypotheses": [
+        "canopy geometry",
+        "soil or vegetation moisture",
+        "management and harvest structure"
+      ],
+      "limit": "No crop type, crop health or moisture inversion is inferred."
+    },
+    {
+      "id": "wildfires",
+      "signals": [
+        "pre/post measured differences",
+        "persistent trajectory shifts",
+        "coherence where real pairs exist"
+      ],
+      "question": "Is there a persistent radar response across the independently reported fire interval, or little detectable response?",
+      "physical_hypotheses": [
+        "vegetation structure change",
+        "moisture change",
+        "exposure of rough ground"
+      ],
+      "limit": "No burned-area label or cause follows from a SAR anomaly. Independent event/perimeter and comparable pre-event support are required."
+    },
+    {
+      "id": "floods",
+      "signals": [
+        "co-/cross-pol changes",
+        "temporal jumps",
+        "relative scattering",
+        "coherence when available"
+      ],
+      "question": "Do parts of the scene darken or brighten, and what alternative scattering mechanisms could explain this?",
+      "physical_hypotheses": [
+        "smooth specular water",
+        "wind-roughened water",
+        "water interacting with vegetation or structures",
+        "wet soil"
+      ],
+      "limit": "No validated inundation extent, depth or affected-area estimate is produced."
+    },
+    {
+      "id": "landslides",
+      "signals": [
+        "localized backscatter change",
+        "coherence change",
+        "quality-controlled phase or offsets when supplied"
+      ],
+      "question": "Do actual observations bracket the event, and is the terrain observable by radar?",
+      "physical_hypotheses": [
+        "surface roughness change",
+        "vegetation removal",
+        "slope displacement",
+        "terrain shadow or layover"
+      ],
+      "limit": "Intensity is not displacement. DEM/visibility, geodetic or offset evidence is needed; the Niscemi example is aftermath-only."
+    },
+    {
+      "id": "earthquakes",
+      "signals": [
+        "wrapped phase",
+        "coherence",
+        "connected components",
+        "referenced unwrapped phase",
+        "independent event context"
+      ],
+      "question": "Where do coherent fringes survive, and which pixels cannot support a motion interpretation?",
+      "physical_hypotheses": [
+        "coseismic and postseismic motion",
+        "atmospheric/ionospheric phase",
+        "unwrapping error"
+      ],
+      "limit": "Uncorrected phase-equivalent centimetres are not validated LOS displacement; magnitude and hazard probability are not inferred."
+    },
+    {
+      "id": "volcanoes",
+      "signals": [
+        "phase/coherence pairs",
+        "scattering trajectories",
+        "corrected referenced networks when available"
+      ],
+      "question": "Does a spatial phase pattern persist across independent pairs and correction choices?",
+      "physical_hypotheses": [
+        "deformation",
+        "new material or vegetation change",
+        "atmospheric gradients"
+      ],
+      "limit": "No eruption prediction or attribution from a single interferogram."
+    },
+    {
+      "id": "wetlands",
+      "signals": [
+        "polarization trajectories",
+        "temporal variability",
+        "spectral candidates"
+      ],
+      "question": "How do relative scattering and temporal rhythms vary between neighboring areas?",
+      "physical_hypotheses": [
+        "hydrologic change",
+        "vegetation geometry",
+        "surface roughness"
+      ],
+      "limit": "No water/forest class or annual cycle is asserted without the relevant evidence."
+    },
+    {
+      "id": "ice",
+      "signals": [
+        "backscatter dynamics",
+        "coherence",
+        "verified GOFF offsets in future adapters"
+      ],
+      "question": "Which signals remain coherent, and which show large structural or positional changes?",
+      "physical_hypotheses": [
+        "surface melt",
+        "snow/ice structure change",
+        "ice movement"
+      ],
+      "limit": "GOFF speed retrieval is not implemented by this release; no glacier velocity is fabricated."
+    },
+    {
+      "id": "subsidence",
+      "signals": [
+        "coherent phase network",
+        "stable reference",
+        "correction diagnostics"
+      ],
+      "question": "Does referenced phase accumulate consistently across reliable connected pairs?",
+      "physical_hypotheses": [
+        "ground motion",
+        "atmosphere",
+        "reference instability"
+      ],
+      "limit": "A corrected time-series inversion and independent validation are required; single-pair phase is not vertical subsidence."
+    }
+  ],
+  "characterization_workers": {
+    "floods": {
+      "command": "flood-characterize",
+      "request_schema": "flood-request.schema.json",
+      "result_schema": "flood-result.schema.json",
+      "status": "development_pilot",
+      "evidence": "independent optical product, baseline matched controls and observed timing"
+    },
+    "earthquakes": {
+      "command": "insar-readiness",
+      "request_schema": "insar-readiness-request.schema.json",
+      "result_schema": "insar-readiness-result.schema.json",
+      "status": "correction_input_audit_only",
+      "displacement_available": false
+    }
+  }
 }
