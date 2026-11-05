@@ -1,0 +1,82 @@
+{
+  "real_data_jobs_verified": 9,
+  "regional_gcov_cases": 7,
+  "regional_acquisition_chips": 66,
+  "registered_artifacts": 152,
+  "checks": [
+    {
+      "case": "forest_river",
+      "status": "complete",
+      "dates": 10,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "deliblato",
+      "status": "complete",
+      "dates": 8,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "chenab",
+      "status": "complete",
+      "dates": 8,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "niscemi",
+      "status": "complete",
+      "dates": 8,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "okavango",
+      "status": "complete",
+      "dates": 8,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "amazon",
+      "status": "complete",
+      "dates": 8,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "murray",
+      "status": "complete",
+      "dates": 16,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    },
+    {
+      "case": "live-world-point",
+      "status": "complete",
+      "dates": 3,
+      "artifact_hashes": true,
+      "coordinates_and_values": true,
+      "gif_frame_counts": true,
+      "frozen_global_projection": true
+    }
+  ],
+  "earthquake_deformation_guard": true,
+  "checkpoint_sha256": "98b93698837e12961ec64373546597cd39a183bf6de3594e6eccb4cf3f33bef1"
+}

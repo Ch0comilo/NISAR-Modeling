@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:nisar-surface-dynamics:result:1.0",
+  "type":"object","additionalProperties":false,
+  "required":["contract_version","request_id","status","scope","observations","capabilities","artifacts","insights","limitations"],
+  "properties":{
+    "contract_version":{"const":"1.0"},"request_id":{"type":"string"},
+    "status":{"enum":["complete","partial","no_data"]},
+    "scope":{"const":"descriptive_observed_surface_dynamics"},
+    "observations":{"type":"object","required":["dates","polarizations","grid"],"properties":{"dates":{"type":"array","items":{"type":"string","format":"date"}},"polarizations":{"type":"array","items":{"enum":["HH","HV","VV","VH"]}},"grid":{"type":"object"},"sources":{"type":"array"},"selection":{"type":"object"}}},
+    "capabilities":{"type":"object","additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"enum":["available","experimental","not_requested","insufficient_data","unsupported_domain","failed"]},"reason":{"type":"string"},"metadata":{"type":"object"}}}},
+    "artifacts":{"type":"array","items":{"type":"object","required":["id","href","media_type","sha256","role"],"properties":{"id":{"type":"string"},"href":{"type":"string"},"media_type":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"role":{"type":"string"},"units":{"type":"string"},"dimensions":{"type":"array","items":{"type":"string"}},"legend":{"type":"object"}}}},
+    "insights":{"type":"array","items":{"type":"object","required":["id","observation","interpretation_limit"],"properties":{"id":{"type":"string"},"observation":{"type":"string"},"interpretation_limit":{"type":"string"},"evidence_artifacts":{"type":"array","items":{"type":"string"}}}}},
+    "limitations":{"type":"array","items":{"type":"string"}},
+    "context":{"type":"object"}
+  }
+}

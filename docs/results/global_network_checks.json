@@ -1,0 +1,77 @@
+{
+  "scope": "eight fixed real point queries, not universal coverage",
+  "cases": [
+    {
+      "case_id": "forest_river",
+      "status": "complete",
+      "catalog_hits": 35,
+      "compatible_networks": 4,
+      "edges": 34,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "deliblato",
+      "status": "complete",
+      "catalog_hits": 35,
+      "compatible_networks": 4,
+      "edges": 34,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "chenab",
+      "status": "complete",
+      "catalog_hits": 33,
+      "compatible_networks": 5,
+      "edges": 26,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "niscemi",
+      "status": "complete",
+      "catalog_hits": 26,
+      "compatible_networks": 3,
+      "edges": 26,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "okavango",
+      "status": "complete",
+      "catalog_hits": 20,
+      "compatible_networks": 2,
+      "edges": 17,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "amazon",
+      "status": "complete",
+      "catalog_hits": 21,
+      "compatible_networks": 3,
+      "edges": 21,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "murray",
+      "status": "complete",
+      "catalog_hits": 30,
+      "compatible_networks": 3,
+      "edges": 30,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    },
+    {
+      "case_id": "kumamoto",
+      "status": "complete",
+      "catalog_hits": 24,
+      "compatible_networks": 3,
+      "edges": 23,
+      "independent_cycles": 0,
+      "quantitative_phase_reads": 0
+    }
+  ]
+}

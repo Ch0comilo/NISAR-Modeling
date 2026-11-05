@@ -1,0 +1,5 @@
+{
+ "contract_version":"1.0","request_id":"world-point-demo","theme":"explore",
+ "source":{"mode":"catalog_point","longitude":23.0,"latitude":-19.5,"start_date":"2026-06-01","end_date":"2026-10-31","max_dates":8,"native_chip_pixels":512,"aggregate_pixels":4},
+ "analyses":["physical","spectral","stochastic"]
+}

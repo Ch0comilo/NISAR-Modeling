@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["contract_version", "request_id", "source"],
+  "properties": {
+    "contract_version": {"const": "1.0"},
+    "request_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}$"},
+    "source": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["mode", "catalog_path"], "properties": {"mode": {"const": "local_catalog"}, "catalog_path": {"type": "string", "minLength": 1}}},
+      {"type": "object", "additionalProperties": false, "required": ["mode", "longitude", "latitude", "start_date", "end_date"], "properties": {
+        "mode": {"const": "catalog_point"}, "longitude": {"type": "number", "minimum": -180, "maximum": 180}, "latitude": {"type": "number", "minimum": -90, "maximum": 90}, "start_date": {"type": "string", "format": "date"}, "end_date": {"type": "string", "format": "date"}
+      }}
+    ]},
+    "max_baseline_days": {"type": "integer", "minimum": 1, "maximum": 366},
+    "event_date": {"type": "string", "format": "date"}
+  }
+}

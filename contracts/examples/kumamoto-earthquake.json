@@ -1,0 +1,6 @@
+{
+ "contract_version":"1.0","request_id":"kumamoto-earthquake",
+ "source":{"mode":"local_pair","pair_path":"products/insar/kumamoto_pair.npz"},
+ "coherence_threshold":0.35,
+ "context_source_url":"https://www.gsi.go.jp/uchusokuchi/20260728kumamoto-e.html"
+}

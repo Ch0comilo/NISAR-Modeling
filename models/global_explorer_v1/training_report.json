@@ -1,0 +1,102 @@
+{
+  "architecture": "2-layer bidirectional masked temporal Transformer, width48, heads4",
+  "parameters": 41716,
+  "training_cases": [
+    "forest_river",
+    "deliblato",
+    "chenab",
+    "niscemi",
+    "okavango"
+  ],
+  "heldout_geographic_cases": [
+    "amazon",
+    "murray"
+  ],
+  "training_pixel_sequences": {
+    "forest_river": 1536,
+    "deliblato": 1536,
+    "chenab": 1536,
+    "niscemi": 1536,
+    "okavango": 1536
+  },
+  "polarizations": [
+    "HH",
+    "HV"
+  ],
+  "trained_bands": [
+    "L"
+  ],
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_normalized_mse": 0.36355740080277127,
+      "spatial_validation_rmse_db": 1.3931241035461426
+    },
+    {
+      "epoch": 2,
+      "train_normalized_mse": 0.2741356631120046,
+      "spatial_validation_rmse_db": 1.1191606044769287
+    },
+    {
+      "epoch": 3,
+      "train_normalized_mse": 0.23378468429048857,
+      "spatial_validation_rmse_db": 1.0230025053024292
+    },
+    {
+      "epoch": 4,
+      "train_normalized_mse": 0.20968692402044933,
+      "spatial_validation_rmse_db": 0.9787774920463562
+    },
+    {
+      "epoch": 5,
+      "train_normalized_mse": 0.18505819191535314,
+      "spatial_validation_rmse_db": 0.9372686982154846
+    },
+    {
+      "epoch": 6,
+      "train_normalized_mse": 0.15192332801719508,
+      "spatial_validation_rmse_db": 0.9584000468254089
+    },
+    {
+      "epoch": 7,
+      "train_normalized_mse": 0.13843806684017182,
+      "spatial_validation_rmse_db": 0.9477087378501892
+    },
+    {
+      "epoch": 8,
+      "train_normalized_mse": 0.13468643017113208,
+      "spatial_validation_rmse_db": 0.907564377784729
+    },
+    {
+      "epoch": 9,
+      "train_normalized_mse": 0.12973163947463034,
+      "spatial_validation_rmse_db": 0.9715434908866882
+    },
+    {
+      "epoch": 10,
+      "train_normalized_mse": 0.12127120147148768,
+      "spatial_validation_rmse_db": 0.8625720143318176
+    }
+  ],
+  "heldout_case_results": {
+    "amazon": {
+      "task": "withheld_internal_acquisition_reconstruction",
+      "masked_date": "2026-09-03",
+      "pixel_count_correlated": 512,
+      "transformer_rmse_db": 1.8223183155059814,
+      "visible_temporal_mean_rmse_db": 1.7150868847454683,
+      "linear_interpolation_rmse_db": 1.6738313436508179,
+      "effective_geographic_case_count": 1
+    },
+    "murray": {
+      "task": "withheld_internal_acquisition_reconstruction",
+      "masked_date": "2026-05-24",
+      "pixel_count_correlated": 512,
+      "transformer_rmse_db": 1.8485594987869263,
+      "visible_temporal_mean_rmse_db": 1.7696188935365689,
+      "linear_interpolation_rmse_db": 1.3049544095993042,
+      "effective_geographic_case_count": 1
+    }
+  },
+  "interpretation": "Self-supervised measured-date reconstruction and exploratory embeddings; no event labels, forecast or demonstrated global generalization. All observations in a sequence may contextualize a masked date."
+}

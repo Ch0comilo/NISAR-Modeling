@@ -1,0 +1,13 @@
+{
+  "contract_version": "1.0",
+  "request_id": "kumamoto-network",
+  "source": {
+    "mode": "catalog_point",
+    "longitude": 130.65,
+    "latitude": 32.65,
+    "start_date": "2026-06-01",
+    "end_date": "2026-10-31"
+  },
+  "max_baseline_days": 48,
+  "event_date": "2026-07-28"
+}

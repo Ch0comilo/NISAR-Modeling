@@ -1,0 +1,13 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,
+ "required":["contract_version","request_id","source"],
+ "properties":{
+  "contract_version":{"const":"1.0"},"request_id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},
+  "source":{"oneOf":[
+   {"type":"object","additionalProperties":false,"required":["mode","pair_path"],"properties":{"mode":{"const":"local_pair"},"pair_path":{"type":"string"}}},
+   {"type":"object","additionalProperties":false,"required":["mode","longitude","latitude","event_date"],"properties":{"mode":{"const":"catalog_event"},"longitude":{"type":"number","minimum":-180,"maximum":180},"latitude":{"type":"number","minimum":-90,"maximum":90},"event_date":{"type":"string","format":"date"},"extent_km":{"type":"number","minimum":2,"maximum":25}}}
+  ]},
+  "coherence_threshold":{"type":"number","minimum":0.1,"maximum":0.9},
+  "context_source_url":{"type":"string","format":"uri"}
+ }
+}

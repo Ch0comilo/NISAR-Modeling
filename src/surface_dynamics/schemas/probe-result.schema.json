@@ -1,0 +1,11 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,
+ "required":["contract_version","request_id","status","observed_series"],
+ "properties":{
+  "contract_version":{"const":"1.0"},"request_id":{"type":"string"},"status":{"enum":["complete","outside_observed_footprint"]},
+  "selected_pixel":{"type":"array","items":{"type":"integer"},"minItems":2,"maxItems":2},"pixel_center_native":{"type":"array","items":{"type":"number"},"minItems":2,"maxItems":2},"epsg":{"type":"integer"},"region_pixels":{"type":"integer"},"radius_m":{"type":"number"},
+  "observed_series":{"type":"array","items":{"type":"object","required":["date","polarization","mean_log_power_db","valid_pixels","spatial_intervals_db"],"properties":{"date":{"type":"string","format":"date"},"polarization":{"enum":["HH","HV","VV","VH"]},"mean_log_power_db":{"type":["number","null"]},"valid_pixels":{"type":"integer"},"spatial_intervals_db":{"type":["object","null"]}}}},
+  "descriptors_at_selected_pixel":{"type":"object"},"latent_at_selected_pixel":{"type":["array","null"]},"latent_at_observed_dates":{"type":["array","null"]},"interval_type":{"type":"string"},"limitations":{"type":"array","items":{"type":"string"}}
+ },
+ "allOf":[{"if":{"properties":{"status":{"const":"complete"}}},"then":{"required":["selected_pixel","epsg","interval_type"]}}]
+}

@@ -1,0 +1,145 @@
+{
+  "contract_version": "1.0",
+  "request_id": "kumamoto-earthquake",
+  "status": "complete",
+  "analysis": "interferometric_observations",
+  "source": {
+    "title": "NISAR_L2_PR_GUNW_026_024_A_018_028_4000_SH_20260721T202900_20260721T202934_20260814T202858_20260814T202933_P05023_N_F_J_001",
+    "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GUNW_PROVISIONAL_V1/NISAR_L2_PR_GUNW_026_024_A_018_028_4000_SH_20260721T202900_20260721T202934_20260814T202858_20260814T202933_P05023_N_F_J_001/NISAR_L2_PR_GUNW_026_024_A_018_028_4000_SH_20260721T202900_20260721T202934_20260814T202858_20260814T202933_P05023_N_F_J_001.h5",
+    "longitude": 130.65,
+    "latitude": 32.65,
+    "identification": {
+      "frameNumber": 18,
+      "isFullFrame": "True",
+      "isUrgentObservation": "False",
+      "orbitPassDirection": "Ascending",
+      "processingDateTime": "2026-08-20T12:32:32",
+      "productSpecificationVersion": "1.5.0",
+      "productVersion": "1.0.11",
+      "radarBand": "L",
+      "referenceAbsoluteOrbitNumber": 5140,
+      "referenceHasInputDataException": 0,
+      "referenceZeroDopplerEndTime": "2026-07-21T20:29:34.999342105",
+      "referenceZeroDopplerStartTime": "2026-07-21T20:29:00.000000000",
+      "secondaryAbsoluteOrbitNumber": 5486,
+      "secondaryHasInputDataException": 0,
+      "secondaryZeroDopplerEndTime": "2026-08-14T20:29:33.999342105",
+      "secondaryZeroDopplerStartTime": "2026-08-14T20:28:58.000000000",
+      "trackNumber": 24
+    },
+    "polarization": "HH",
+    "corrections_applied_by_this_pipeline": [],
+    "transfer_bytes": 50331664,
+    "sha256": "bfd4a0f2a129d1ce79cc35fb8218e2a2e97a16f338abbebe38586a896eeffe53"
+  },
+  "selection": {},
+  "quality": {
+    "coherence_threshold": 0.35,
+    "selected_component": 2,
+    "display_reference": "median of coherent selected component; stability is not established",
+    "datum_phase_radians": 17.184539794921875,
+    "selected_fraction": 0.146064,
+    "median_coherence": 0.3668239116668701,
+    "ionosphere_filled_fraction": 0.737552,
+    "wavelength_m": 0.2419632429378531,
+    "one_fringe_phase_equivalent_cm": 12.098162146892655,
+    "phase_equivalent_sign": "positive referenced interferometric phase; not validated toward/away sign",
+    "los_displacement_status": "unavailable_uncorrected_phase_and_unverified_stable_reference",
+    "corrections_applied": [],
+    "observability": {
+      "threshold_sensitivity": [
+        {
+          "coherence_threshold": 0.2,
+          "valid_fraction": 0.188064,
+          "connected_components": 1,
+          "largest_component_fraction": 0.188064,
+          "valid_ionosphere_unfilled_fraction": 0.009696
+        },
+        {
+          "coherence_threshold": 0.35,
+          "valid_fraction": 0.146064,
+          "connected_components": 1,
+          "largest_component_fraction": 0.146064,
+          "valid_ionosphere_unfilled_fraction": 0.005408
+        },
+        {
+          "coherence_threshold": 0.5,
+          "valid_fraction": 0.076,
+          "connected_components": 1,
+          "largest_component_fraction": 0.076,
+          "valid_ionosphere_unfilled_fraction": 0.002336
+        },
+        {
+          "coherence_threshold": 0.7,
+          "valid_fraction": 0.014992,
+          "connected_components": 1,
+          "largest_component_fraction": 0.014992,
+          "valid_ionosphere_unfilled_fraction": 0.0004
+        }
+      ],
+      "unwrapped_component_count_at_threshold": 1,
+      "selected_component_ionosphere_filled_fraction": 0.9629751341877533,
+      "unwrapped_valid_fraction_at_threshold": 0.146064,
+      "wrapped_coherence_quantiles": {
+        "q05": 0.13522589281201364,
+        "q25": 0.23598119989037514,
+        "q50": 0.3668238967657089,
+        "q75": 0.5330444723367691,
+        "q95": 0.7465135276317596
+      },
+      "interpretation": "Coherence and connected support control observability, not earthquake likelihood or surface safety."
+    },
+    "interpretation": "Phase-equivalent range scale is for teaching wavelength sensitivity. It includes atmospheric/ionospheric/unwrapping contributions and is not a deformation estimate."
+  },
+  "artifacts": [
+    {
+      "id": "referenced_unwrapped_rad",
+      "href": "referenced_unwrapped_rad.tif",
+      "media_type": "image/tiff",
+      "role": "uncorrected_interferometric_measurement",
+      "units": "radians",
+      "sha256": "a40d175a977dcbc7f8fc54e102e25c5f644a590ad0135f00c4c05c86585c0048"
+    },
+    {
+      "id": "phase_equivalent_cm",
+      "href": "phase_equivalent_cm.tif",
+      "media_type": "image/tiff",
+      "role": "uncorrected_interferometric_measurement",
+      "units": "phase-equivalent cm",
+      "sha256": "37468804ffc095bee5b16d20e288c2e97c25f90380968d7589f97bec8c141cf9"
+    },
+    {
+      "id": "component_valid",
+      "href": "component_valid.tif",
+      "media_type": "image/tiff",
+      "role": "uncorrected_interferometric_measurement",
+      "units": "mask",
+      "sha256": "90aa7b43dcb8ee067834397b8c8ccb4b1ee8e11a4f4ff3a635c7af72258e8add"
+    },
+    {
+      "id": "ionosphere_filled",
+      "href": "ionosphere_filled.tif",
+      "media_type": "image/tiff",
+      "role": "uncorrected_interferometric_measurement",
+      "units": "mask",
+      "sha256": "e74d5f27206cb53768ca7e2a64303caa4914d0166f9448af085e030b03214916"
+    },
+    {
+      "id": "interferometry",
+      "href": "interferometry.png",
+      "media_type": "image/png",
+      "sha256": "2d5dccb656e62b2ce4d999f49f1fc3155693fb67a8aea61b1d30b40d81ad03fb",
+      "role": "phase_coherence_quality"
+    },
+    {
+      "id": "interferometric_arrays",
+      "href": "interferometric_arrays.npz",
+      "media_type": "application/x-npz",
+      "sha256": "85ec1c6c985806fe2530d83ddebdbb9b40e857d4c814d7bc52e828ed1efe26b0",
+      "role": "phase_coherence_quality"
+    }
+  ],
+  "context_source_url": "https://www.gsi.go.jp/uchusokuchi/20260728kumamoto-e.html",
+  "los_displacement_cm": null,
+  "deformation_attribution": null
+}

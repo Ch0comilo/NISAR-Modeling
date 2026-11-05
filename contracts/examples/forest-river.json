@@ -1,0 +1,6 @@
+{
+ "contract_version":"1.0","request_id":"forest_river","theme":"agriculture",
+ "source":{"mode":"local_cube","cube_path":"products/cubes/forest_river.npz"},
+ "analyses":["physical","spectral","stochastic","transformer"],
+ "transformer_checkpoint":"models/global_explorer_v1/masked_temporal_transformer.pt","stochastic_draws":256
+}

@@ -1,0 +1,10 @@
+[
+  {"id":"forest_river","name":"Forest River, USA","longitude":-97.7,"latitude":48.2,"theme":"agriculture"},
+  {"id":"deliblato","name":"Deliblato, Serbia","longitude":21.1,"latitude":44.85,"theme":"wildfires"},
+  {"id":"chenab","name":"Chenab River, Pakistan","longitude":73.97,"latitude":32.41,"theme":"floods"},
+  {"id":"niscemi","name":"Niscemi, Italy","longitude":14.38,"latitude":37.15,"theme":"landslides"},
+  {"id":"okavango","name":"Okavango, Botswana","longitude":23.0,"latitude":-19.5,"theme":"wetlands"},
+  {"id":"amazon","name":"Amazon floodplain, Brazil","longitude":-60.02,"latitude":-3.1,"theme":"wetlands"},
+  {"id":"murray","name":"Murray Basin, Australia","longitude":145.5,"latitude":-35.5,"theme":"agriculture"},
+  {"id":"kumamoto","name":"Kumamoto, Japan","longitude":130.65,"latitude":32.65,"theme":"earthquakes","context_date":"2026-07-28","context_source":"https://web1.gsi.go.jp/uchusokuchi/20260728kumamoto.html"}
+]

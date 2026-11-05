@@ -1,0 +1,187 @@
+{
+  "benchmark_version": "1.0",
+  "task": "all_internal_observed_acquisition_reconstruction",
+  "checkpoint_sha256": "98b93698837e12961ec64373546597cd39a183bf6de3594e6eccb4cf3f33bef1",
+  "seed": 59,
+  "cases": [
+    {
+      "case_id": "amazon",
+      "status": "complete",
+      "geographic_role": "unseen_case_id_not_independent_geography_proof",
+      "sampled_spatially_correlated_pixels": 512,
+      "scored_acquisitions": 6,
+      "scored_channel_pixels": 6144,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-07-05",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.4933048559126407,
+          "temporal_mean_rmse_db": 1.0111564996476337,
+          "interpolation_rmse_db": 0.8033076755707477
+        },
+        {
+          "masked_date": "2026-07-17",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.527074354267782,
+          "temporal_mean_rmse_db": 0.903552864496353,
+          "interpolation_rmse_db": 0.8304048257826588
+        },
+        {
+          "masked_date": "2026-08-10",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.6866987440011192,
+          "temporal_mean_rmse_db": 0.937227050966914,
+          "interpolation_rmse_db": 1.2342972908594423
+        },
+        {
+          "masked_date": "2026-09-03",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.8308853017881634,
+          "temporal_mean_rmse_db": 1.8974698419440197,
+          "interpolation_rmse_db": 1.8128281301252391
+        },
+        {
+          "masked_date": "2026-09-15",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.4210908915758207,
+          "temporal_mean_rmse_db": 0.8664530147499958,
+          "interpolation_rmse_db": 1.1796072934597142
+        },
+        {
+          "masked_date": "2026-09-27",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.6054153113753837,
+          "temporal_mean_rmse_db": 1.1204171033745556,
+          "interpolation_rmse_db": 1.1207808657275202
+        }
+      ],
+      "pooled": {
+        "transformer_rmse_db": 1.5997847126822933,
+        "temporal_mean_rmse_db": 1.1778304139514317,
+        "interpolation_rmse_db": 1.2105325373346103
+      }
+    },
+    {
+      "case_id": "murray",
+      "status": "complete",
+      "geographic_role": "unseen_case_id_not_independent_geography_proof",
+      "sampled_spatially_correlated_pixels": 512,
+      "scored_acquisitions": 14,
+      "scored_channel_pixels": 14336,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-01-24",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 2.0512189862873047,
+          "temporal_mean_rmse_db": 3.4926227613852125,
+          "interpolation_rmse_db": 0.7980200616625585
+        },
+        {
+          "masked_date": "2026-02-05",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 3.3419559203422775,
+          "temporal_mean_rmse_db": 3.237157543973566,
+          "interpolation_rmse_db": 1.8581058705399973
+        },
+        {
+          "masked_date": "2026-03-01",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 4.082685735851503,
+          "temporal_mean_rmse_db": 3.710989258716815,
+          "interpolation_rmse_db": 5.609001698884126
+        },
+        {
+          "masked_date": "2026-03-13",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 4.92996969817841,
+          "temporal_mean_rmse_db": 3.016750407520277,
+          "interpolation_rmse_db": 4.060655630479054
+        },
+        {
+          "masked_date": "2026-04-06",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 2.691326077772747,
+          "temporal_mean_rmse_db": 2.452444716697033,
+          "interpolation_rmse_db": 1.2573538709511627
+        },
+        {
+          "masked_date": "2026-04-18",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 3.0089906322793087,
+          "temporal_mean_rmse_db": 2.614732759567139,
+          "interpolation_rmse_db": 1.7417751976838534
+        },
+        {
+          "masked_date": "2026-04-30",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 2.104049032420717,
+          "temporal_mean_rmse_db": 2.669722673694022,
+          "interpolation_rmse_db": 1.7446487493670393
+        },
+        {
+          "masked_date": "2026-05-24",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 1.6992699457947924,
+          "temporal_mean_rmse_db": 1.7430762457195104,
+          "interpolation_rmse_db": 1.3039720656181213
+        },
+        {
+          "masked_date": "2026-06-05",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 3.3712984340479095,
+          "temporal_mean_rmse_db": 2.1551982242440184,
+          "interpolation_rmse_db": 1.672048644655407
+        },
+        {
+          "masked_date": "2026-07-11",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 5.097713442813254,
+          "temporal_mean_rmse_db": 2.767270211603755,
+          "interpolation_rmse_db": 0.9261181326861212
+        },
+        {
+          "masked_date": "2026-07-23",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 5.310638372783384,
+          "temporal_mean_rmse_db": 3.2520997373224896,
+          "interpolation_rmse_db": 0.8959789499136319
+        },
+        {
+          "masked_date": "2026-08-16",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 4.01295112334353,
+          "temporal_mean_rmse_db": 3.872941621245111,
+          "interpolation_rmse_db": 1.0819235202253847
+        },
+        {
+          "masked_date": "2026-09-09",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 4.2842490228445556,
+          "temporal_mean_rmse_db": 3.7400543090275944,
+          "interpolation_rmse_db": 1.5171494347190433
+        },
+        {
+          "masked_date": "2026-09-21",
+          "scored_channel_pixels": 1024,
+          "transformer_rmse_db": 2.2786566128610772,
+          "temporal_mean_rmse_db": 2.473499347792397,
+          "interpolation_rmse_db": 1.3470542757115553
+        }
+      ],
+      "pooled": {
+        "transformer_rmse_db": 3.636785785335055,
+        "temporal_mean_rmse_db": 3.0065591632956408,
+        "interpolation_rmse_db": 2.2542207321899603
+      }
+    }
+  ],
+  "checkpoint_updated": false,
+  "interpretation": [
+    "Each score hides a complete acquisition from the bidirectional Transformer; all other selected dates remain visible.",
+    "All methods are scored on exactly the same finite target pixels/channels with valid observations on both sides.",
+    "Interpolation uses the nearest valid neighbor on each side and actual acquisition times; temporal mean excludes the target.",
+    "Pixels and overlapping temporal windows are correlated; row/sample counts are not independent geographic replication.",
+    "Case IDs are a convenience check; spatial provenance must establish an independent geographic holdout.",
+    "This benchmark neither forecasts nor retrains/selects the model on held-out regions."
+  ]
+}

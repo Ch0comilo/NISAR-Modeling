@@ -1,0 +1,5 @@
+{
+ "contract_version":"1.0","request_id":"forest-map-probe",
+ "dataset_path":"products/runs/forest_river/surface_dynamics.nc",
+ "longitude":-97.7,"latitude":48.2,"radius_m":1000
+}

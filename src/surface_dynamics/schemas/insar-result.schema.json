@@ -1,0 +1,11 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,
+ "required":["contract_version","request_id","status","analysis","artifacts"],
+ "properties":{
+  "contract_version":{"const":"1.0"},"request_id":{"type":"string"},"status":{"enum":["complete","no_data"]},"analysis":{"const":"interferometric_observations"},
+  "source":{"type":"object"},"selection":{"type":"object"},"quality":{"type":"object","required":["selected_component","selected_fraction","ionosphere_filled_fraction","los_displacement_status"]},
+  "context_source_url":{"type":["string","null"]},"los_displacement_cm":{"type":"null"},"deformation_attribution":{"type":"null"},"reason":{"type":"string"},
+  "artifacts":{"type":"array","items":{"type":"object","required":["id","href","media_type","sha256","role"],"properties":{"id":{"type":"string"},"href":{"type":"string"},"media_type":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"role":{"type":"string"},"units":{"type":"string"}}}}
+ },
+ "allOf":[{"if":{"properties":{"status":{"const":"complete"}}},"then":{"required":["source","quality","los_displacement_cm","deformation_attribution"]}},{"if":{"properties":{"status":{"const":"no_data"}}},"then":{"required":["reason"]}}]
+}

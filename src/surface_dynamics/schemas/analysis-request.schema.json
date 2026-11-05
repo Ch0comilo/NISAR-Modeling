@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:nisar-surface-dynamics:request:1.0",
+  "title":"Descriptive surface dynamics request",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["contract_version","request_id","source","analyses"],
+  "properties":{
+    "contract_version":{"const":"1.0"},
+    "request_id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},
+    "theme":{"enum":["explore","agriculture","wildfires","floods","landslides","earthquakes","volcanoes","wetlands","ice","subsidence"]},
+    "source":{
+      "oneOf":[
+        {"type":"object","additionalProperties":false,"required":["mode","cube_path"],"properties":{"mode":{"const":"local_cube"},"cube_path":{"type":"string","minLength":1}}},
+        {"type":"object","additionalProperties":false,"required":["mode","longitude","latitude","start_date","end_date"],"properties":{"mode":{"const":"catalog_point"},"longitude":{"type":"number","minimum":-180,"maximum":180},"latitude":{"type":"number","minimum":-90,"maximum":90},"start_date":{"type":"string","format":"date"},"end_date":{"type":"string","format":"date"},"max_dates":{"type":"integer","minimum":3,"maximum":32},"native_chip_pixels":{"enum":[256,512]},"aggregate_pixels":{"enum":[1,2,4,8]},"series_key":{"type":"string"}}}
+      ]
+    },
+    "analyses":{"type":"array","uniqueItems":true,"minItems":1,"items":{"enum":["physical","spectral","stochastic","transformer"]}},
+    "transformer_checkpoint":{"type":"string"},
+    "stochastic_draws":{"type":"integer","minimum":64,"maximum":512},
+    "context":{"type":"object","additionalProperties":false,"properties":{"event_date":{"type":"string","format":"date"},"source_url":{"type":"string","format":"uri"},"description":{"type":"string","maxLength":2000}}}
+  }
+}

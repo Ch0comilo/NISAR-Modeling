@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["contract_version", "request_id", "status", "analysis", "networks", "catalog", "limitations"],
+  "properties": {
+    "contract_version": {"const": "1.0"}, "request_id": {"type": "string"},
+    "status": {"enum": ["complete", "no_data"]},
+    "analysis": {"const": "catalog_interferometric_network"},
+    "networks": {"type": "array", "items": {"type": "object", "required": ["series_key", "dates", "edges", "connected_components", "connected_component_count", "cycle_rank", "minimum_temporal_baseline_forest", "independent_closure_cycles", "pairs_excluded_by_baseline", "spatial_phase_support", "time_series_inversion"], "properties": {
+      "series_key": {"type": "string"}, "dates": {"type": "array", "items": {"type": "string", "format": "date"}},
+      "edges": {"type": "array", "items": {"type": "object", "required": ["id", "reference_date", "secondary_date", "temporal_baseline_days", "brackets_context_date"], "properties": {"id": {"type": "string"}, "reference_date": {"type": "string", "format": "date"}, "secondary_date": {"type": "string", "format": "date"}, "temporal_baseline_days": {"type": "integer", "minimum": 1}, "brackets_context_date": {"type": ["boolean", "null"]}}}},
+      "connected_components": {"type": "array", "items": {"type": "array", "items": {"type": "string", "format": "date"}}},
+      "connected_component_count": {"type": "integer", "minimum": 0}, "cycle_rank": {"type": "integer", "minimum": 0},
+      "minimum_temporal_baseline_forest": {"type": "array", "items": {"type": "string"}},
+      "independent_closure_cycles": {"type": "array", "items": {"type": "object", "required": ["edge_ids", "phase_closure_status"], "properties": {"edge_ids": {"type": "array", "minItems": 3, "items": {"type": "string"}}, "phase_closure_status": {"const": "not_measured_catalog_only"}}}},
+      "pairs_excluded_by_baseline": {"type": "integer", "minimum": 0}, "spatial_phase_support": {"const": "unknown_until_quantitative_pair_reads"}, "time_series_inversion": {"const": "not_performed"}
+    }}},
+    "catalog": {"type": "object"}, "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

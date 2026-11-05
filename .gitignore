@@ -1,0 +1,29 @@
+# Credentials must never be stored in this research workspace.
+.env
+.env.*
+.secrets/
+*.dpapi
+scratch/.venv/
+.venv/
+src/*.egg-info/
+build/
+dist/
+__pycache__/
+*.pyc
+scratch/.mplconfig/
+# Measured inputs and generated arrays belong in release assets or a data store.
+# These paths stay on disk; excluding them keeps Git clones small.
+products/
+arrays/
+figures/
+scratch/
+descriptive/
+research/
+RESEARCH_PROPOSAL.md
+deliverables/
+# Separate user-owned presentation; never publish it with this science package.
+mockup/
+# Machine-specific live smoke runner (protected-credential path, no credential value).
+scripts/live_catalog_smoke.py
+*.log
+.pytest_cache/
