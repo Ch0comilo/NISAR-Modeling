@@ -57,15 +57,18 @@ def spatial_structure(db,pixel_m,pixel_m_y=None):
 
 def region_series(db,mask,draws=400,block=8,seed=17):
     """Spatial block-bootstrap intervals of mean dB; not temporal/sensor uncertainty."""
-    rng=np.random.default_rng(seed);h,w=mask.shape;blocks=[]
+    rng=np.random.default_rng(seed);h,w=mask.shape;blocks=[];counts=[]
     for y in range(0,h,block):
         for x in range(0,w,block):
-            submask=mask[y:y+block,x:x+block]
-            if submask.size<block*block or submask.mean()<.8:continue
             z=db[:,:,y:y+block,x:x+block]
-            value=np.nanmean(np.where(submask[None,None],z,np.nan),axis=(2,3))
-            if np.isfinite(value).all():blocks.append(value)
+            submask=mask[y:y+block,x:x+block]&np.isfinite(z).all(axis=(0,1))
+            if submask.size<block*block or submask.mean()<.8:continue
+            blocks.append(z[:,:,submask].sum(-1));counts.append(int(submask.sum()))
     if len(blocks)<4:return None
-    b=np.stack(blocks,axis=-1)
-    sampled=b[:,:,rng.integers(0,len(blocks),size=(draws,len(blocks)))].mean(-1)
-    return {'mean_db':b.mean(-1),'quantile_db':np.quantile(sampled,[.025,.1,.25,.5,.75,.9,.975],axis=2),'block_count':len(blocks),'draw_count':draws,'interval_type':'spatial_block_bootstrap_mean_log_power','block_pixels':block}
+    b=np.stack(blocks,axis=-1);counts=np.asarray(counts)
+    indices=rng.integers(0,len(blocks),size=(draws,len(blocks)))
+    sampled=b[:,:,indices].sum(-1)/counts[indices].sum(-1)[None,None]
+    return {'mean_db':b.sum(-1)/counts.sum(),'quantile_db':np.quantile(sampled,[.025,.1,.25,.5,.75,.9,.975],axis=2),
+            'block_count':len(blocks),'draw_count':draws,'supported_pixels':int(counts.sum()),
+            'interval_type':'spatial_block_bootstrap_cell_weighted_mean_log_power','block_pixels':block,
+            'support_scope':'Complete finite channel/date cells in full blocks with >=80% common mask support; weighted by cell count, not equal block means'}

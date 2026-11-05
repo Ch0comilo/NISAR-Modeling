@@ -6,9 +6,17 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 ![Controlled dynamics across thirteen real NISAR regions](docs/images/global_dynamic_atlas_v2.png)
 
-[Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.4.0)
+[Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.5.0)
 
-## Current release: v0.4.0
+## Current release: v0.5.0
+
+The new **shared characterization report** answers what changed, when it was observed, how its trajectory behaved, which independent evidence is usable and which alternative explanations remain. It exports fixed-support trajectories, physical summaries, observed-pattern maps, linked spectra/GP results and explicit evidence states under one teammate contract. Five new measured scenes add **42 GCOV acquisitions**; eight shared reports, four fresh flood-policy comparisons and two new InSAR jobs have **291 independently checked artifacts**.
+
+The new validation finds important limits: cloud/timing gaps prevent new-water recall estimates at the two fresh flood-context sites, and an embedding kNN probe produces severe nonwater false flags in the Australian control. The frozen Transformer is unchanged and is not promoted to phenomenon labeling. The first independent optical vegetation-disturbance adapter and a new Venezuela earthquake-context stack retain explicit attribution/correction gates. **70 offline tests pass.**
+
+[V0.5 scientific results](docs/CHARACTERIZATION_V05.md) · [Shared input/output contract](docs/CHARACTERIZATION_V05_CONTRACTS.md) · [Validation report](docs/CHARACTERIZATION_V05_VALIDATION.md)
+
+## Previous release: v0.4.0
 
 The new **evidence-linked flood characterization** worker describes real radar changes, compares independent optical-water observations, selects controls from baseline radar measurements and returns observed timing, trajectories, radar-signature objects and explanations linked to data artifacts. Three real development scenes use 21 NISAR acquisitions. New-water reference cells in Pakistan show a **-4.93 dB matched mean contrast**, while existing water also triggers the darkening rule; baseline sensitivity is exposed rather than hidden. Mozambique and Indiana remain partial because of cloud, timing and acquisition limits. These are observed signatures and optical-product agreement, not validated flood extent or global classification accuracy.
 
@@ -29,6 +37,7 @@ New **multi-pair InSAR** processing compares three actual Kumamoto intervals, ex
 | Module | Implemented methods | Results for an exploration app |
 |---|---|---|
 | Measured surface change | Gamma0 power, robust dispersion, actual-date slopes and steps, spatial texture, POD | Georeferenced layers, trajectories, transition rates, modes and measured-date animations |
+| Shared characterization **new** | Fixed common populations, observed trajectory patterns, evidence states and linked method outputs | One traceable report of what changed, observed timing, spatial behavior and alternative explanations |
 | Flood characterization **new** | Fixed radar signatures, independent OPERA optical-water evidence, baseline-only matched controls, spatial bootstrap, observed timing | Support-aware comparisons, trajectories, radar-signature GeoJSON objects and evidence-linked explanations |
 | Spectral structure | Actual-time generalized Lomb–Scargle, sampling-window diagnostics, permutation tests, local sinusoidal fits when supported | Candidate-period maps, spectra and time-frequency arrays |
 | Stochastic states | Empirical-Bayes Matérn-3/2 Gaussian processes, Monte Carlo draws, spatial block bootstrap | Historical latent-state distributions and separate spatial-heterogeneity intervals |
@@ -60,6 +69,7 @@ Restore the regional cubes and InSAR pairs from the checksummed release asset, t
 
 ```powershell
 .venv\Scripts\python.exe scripts\download_examples.py
+.venv\Scripts\python.exe -m surface_dynamics characterize contracts\examples\wheatbelt-characterization.json --output products\characterization_v05\runs\wheatbelt
 .venv\Scripts\python.exe -m surface_dynamics flood-characterize contracts\examples\qadirabad-flood.json --output products\flood_pilot\runs\qadirabad
 .venv\Scripts\python.exe -m surface_dynamics insar-readiness contracts\examples\kumamoto-readiness.json --output products\insar_readiness\kumamoto_wide
 .venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\hokkaido-v2.json --output products\global_v2\runs\hokkaido
@@ -126,6 +136,10 @@ Git contains source, contracts, documentation, compact trained weights and selec
 .venv\Scripts\python.exe scripts\run_flood_pilot.py
 .venv\Scripts\python.exe scripts\run_insar_readiness.py
 .venv\Scripts\python.exe scripts\verify_flood_pilot.py
+.venv\Scripts\python.exe scripts\run_characterization_v05.py
+.venv\Scripts\python.exe scripts\evaluate_characterization_v05.py
+.venv\Scripts\python.exe scripts\run_insar_v05.py
+.venv\Scripts\python.exe scripts\verify_characterization_v05.py
 ```
 
 `train_global_example.py` retrains the experimental representation; it is separate from the frozen benchmark. The model's five training geographies and two holdouts are documented in its card. Future scientific work should prioritize independent geography/season validation, native NISAR support, coherent common reference support and correction provenance before stronger model or deformation claims.

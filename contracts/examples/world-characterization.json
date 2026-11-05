@@ -1,0 +1,26 @@
+{
+  "contract_version": "1.0",
+  "request_id": "world-surface-behavior",
+  "theme": "agriculture",
+  "source": {
+    "mode": "catalog_point",
+    "longitude": 117.5,
+    "latitude": -31.5,
+    "max_dates": 12,
+    "native_chip_pixels": 512,
+    "target_posting_m": 40
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-08-31"
+  },
+  "assessment": {
+    "start_date": "2026-09-01",
+    "end_date": "2026-10-31"
+  },
+  "water_reference": {
+    "mode": "discover_optical",
+    "longitude": 117.5,
+    "latitude": -31.5
+  }
+}

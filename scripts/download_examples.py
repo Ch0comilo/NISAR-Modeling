@@ -13,6 +13,16 @@ def allowed_fixture(name):
     if name in ['products/insar/kumamoto_pair.npz','products/insar/kumamoto_pair.json','products/global_v2/data_inventory.json']:return True
     if path.parent.as_posix() in ['products/flood_pilot/cases/'+case for case in ['chokwe','qadirabad','richmond']]:
         return path.name in ['cube.npz','reference_pair.npz','reference_pair.json','admission.json']
+    if path.parent.as_posix() in ['products/characterization_v05/cases/'+case for case in ['rajshahi','gimcheon','benguerir','wheatbelt']]:
+        return path.name in ['cube.npz','reference_pair.npz','reference_pair.json','admission.json']
+    if path.parent.as_posix()=='products/characterization_v05/cases/rowe_creek':
+        return path.name in ['cube.npz','admission.json','disturbance_reference.npz','disturbance_reference.json']
+    if path.parent.as_posix()=='products/characterization_v05/insar_candidate':
+        return path.name in ['catalog.json','selection_freeze.json']
+    if path.parent.as_posix()=='products/characterization_v05/insar_candidate/cache':
+        return re.fullmatch(r'pair_[0-2]\.(npz|json)',path.name) is not None
+    if path.parent.as_posix()=='products/characterization_v05':
+        return path.name in ['protocol_freeze.json','probe_freeze.json']
     return path.parent.as_posix() in ['products/insar_stacks/kumamoto/cache','products/insar_stacks/kumamoto_wide/cache'] and re.fullmatch(r'pair_[0-5]\.(npz|json)',path.name) is not None
 
 
@@ -26,15 +36,17 @@ def restore(archive,root=ROOT):
         else:
             selected=[n for n in names if (n.startswith('products/cubes/') and n.endswith('.npz')) or n in ['products/insar/kumamoto_pair.npz','products/insar/kumamoto_pair.json']]
             if len(selected)!=9:raise ValueError('Expected legacy seven cubes and one measured pair with provenance')
-        if not 1<=len(selected)<=64 or len(selected)!=len(set(selected)):raise ValueError('Invalid measured fixture inventory')
-        verified=[]
+        if not 1<=len(selected)<=128 or len(selected)!=len(set(selected)):raise ValueError('Invalid measured fixture inventory')
+        verified=[];total_bytes=0
         for name in selected:
             if not allowed_fixture(name):raise ValueError('Archive member is outside the measured-input allowlist')
             relative=PurePosixPath(name)
             destination=(root/Path(*relative.parts)).resolve()
             if not destination.is_relative_to(root):raise ValueError('Archive escapes destination')
             record=records[name]
-            if record['bytes']>25*1024*1024 or z.getinfo(name).file_size!=record['bytes']:raise ValueError('Unexpected fixture size')
+            if not 0<=record['bytes']<=25*1024*1024 or z.getinfo(name).file_size!=record['bytes']:raise ValueError('Unexpected fixture size')
+            total_bytes+=record['bytes']
+            if total_bytes>128*1024*1024:raise ValueError('Total curated fixture payload exceeds bounded restore budget')
             data=z.read(name)
             if hashlib.sha256(data).hexdigest()!=record['sha256']:raise ValueError('Fixture checksum mismatch')
             if destination.exists() and destination.read_bytes()!=data:raise ValueError(f'Refusing to overwrite different measured data: {name}')
@@ -64,7 +76,7 @@ def main():
             with path.open('wb') as stream:
                 for chunk in response.iter_content(1024*1024):
                     size+=len(chunk)
-                    if size>50*1024*1024:raise ValueError('Release bundle exceeds download budget')
+                    if size>80*1024*1024:raise ValueError('Release bundle exceeds download budget')
                     digest.update(chunk);stream.write(chunk)
         if size!=manifest['bytes'] or digest.hexdigest()!=manifest['sha256']:raise ValueError('Release bundle size/checksum mismatch')
         print(json.dumps(restore(path)))

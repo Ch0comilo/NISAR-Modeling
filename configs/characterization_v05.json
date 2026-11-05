@@ -1,0 +1,27 @@
+{
+  "protocol_id":"surface_characterization_v05_fixed_v1",
+  "flood_policy_id":"flood_evidence_pilot_v1",
+  "native_chip_pixels":512,
+  "target_posting_m":40,
+  "max_dates":12,
+  "optical_max_offset_days":7,
+  "optical_candidate_cap":16,
+  "cases":[
+    {"id":"rajshahi","name":"Padma / Rajshahi, Bangladesh","role":"fresh_flood_context_test","theme":"floods","longitude":88.60,"latitude":24.36,
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","baseline_start":"2026-06-01","baseline_end":"2026-09-09","assessment_start":"2026-09-10","assessment_end":"2026-10-31",
+     "context":{"start_date":"2026-09-10","end_date":"2026-09-12","source_url":"https://www.gdacs.org/report.aspx?eventid=1104156&eventtype=FL","description":"GDACS documents western Bangladesh flooding in Rajshahi and neighboring districts. This regional context is not a surveyed local flood polygon."}},
+    {"id":"gimcheon","name":"Gimcheon river corridor, South Korea","role":"fresh_flood_context_test","theme":"floods","longitude":128.11,"latitude":36.12,
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","baseline_start":"2026-06-01","baseline_end":"2026-07-06","assessment_start":"2026-07-07","assessment_end":"2026-09-30",
+     "context":{"start_date":"2026-07-07","end_date":"2026-07-20","source_url":"https://upload.disasterscharter.org/activations/flood-in-korea-republic-of-activation-1040-","description":"The International Charter documents monsoon flooding including Gimcheon. An activation interval is scene context, not an estimated local onset or inundation map."}},
+    {"id":"benguerir","name":"Ben Guerir surroundings, Morocco","role":"candidate_nonwater_control","theme":"explore","longitude":-7.90,"latitude":32.24,
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","baseline_start":"2026-06-01","baseline_end":"2026-08-31","assessment_start":"2026-09-01","assessment_end":"2026-10-31"},
+    {"id":"wheatbelt","name":"Western Australian Wheatbelt","role":"candidate_nonwater_control","theme":"agriculture","longitude":117.50,"latitude":-31.50,
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","baseline_start":"2026-06-01","baseline_end":"2026-08-31","assessment_start":"2026-09-01","assessment_end":"2026-10-31"},
+    {"id":"rowe_creek","name":"Rowe Creek / Fossil surroundings, Oregon","role":"wildfire_development","theme":"wildfires","longitude":-120.26,"latitude":44.97,
+     "collection":"NISAR_L2_GCOV_PROVISIONAL_V1","baseline_start":"2026-06-01","baseline_end":"2026-07-14","assessment_start":"2026-07-15","assessment_end":"2026-09-30",
+     "context":{"start_date":"2026-07-15","end_date":"2026-07-31","source_url":"https://www.usgs.gov/media/images/rowe-creek-complex-fire-oregon-2026","description":"USGS documents the Rowe Creek Complex near Fossil in July 2026. The selected point is an a priori scene candidate; overlap with a burned perimeter is not assumed."}}
+  ],
+  "behavior_policy":{"id":"observed_behavior_v1","co_pol_change_db":3.0,"minimum_baseline_dates":3,"minimum_assessment_dates":2,"repeated_minimum_count":2,"repeated_fraction":0.75,"gradual_minimum_dates":6,"gradual_directional_fraction":0.8,"gradual_maximum_step_fraction":0.6,"minimum_comparison_pixels":8},
+  "representation_probe":{"id":"frozen_optical_transition_knn_v1","training_cases":["chokwe","qadirabad","richmond"],"test_cases":["rajshahi","gimcheon","benguerir","wheatbelt"],"posting_m":160,"label_groups":[0,1,2],"minimum_training_class_pixels":8,"maximum_pixels_per_case_class":256,"neighbors":5,"seed":211,"physical_features":["baseline_HH","baseline_HV","target_delta_HH","target_delta_HV","baseline_MAD_HH","baseline_MAD_HV","slope_HH","slope_HV"],"learned_features":"frozen constant-control state at first assessment minus its state at last baseline; 48 coordinates","scaling":"training samples only, per-feature mean and standard deviation; SD floor 0.0001","scope":"optical-product transition retrieval proxy, not independent physical-behavior truth or a trained global flood classifier"},
+  "admission_policy":"Select compatible series with >=3 baseline dates preferred, then earliest assessment availability, then baseline count and assessment count. Preserve the last baseline and first assessment when capped. No relocation, threshold tuning or case replacement based on radar/reference agreement. Empty or poorly referenced scenes remain explicit outcomes. Candidate controls are not guaranteed event-free; only qualified independent reference-stable nonwater cells support their proxy negative assessment."
+}

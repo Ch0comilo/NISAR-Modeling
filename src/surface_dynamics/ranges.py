@@ -3,13 +3,19 @@ import io
 from collections import OrderedDict
 from urllib.parse import urlparse
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 class RangeReader(io.RawIOBase):
     def __init__(self, url, token, block_size=1024*1024, budget=256*1024*1024):
-        if urlparse(url).netloc != 'nisar.asf.earthdatacloud.nasa.gov':
+        if urlparse(url).scheme!='https' or urlparse(url).netloc != 'nisar.asf.earthdatacloud.nasa.gov':
             raise ValueError('Unexpected archive host')
         self.url=url
         self.session=requests.Session()
+        retry=Retry(total=3,status_forcelist=[429,502,503,504],allowed_methods=['GET'],
+                    backoff_factor=.5,backoff_max=3,raise_on_status=False,
+                    respect_retry_after_header=False)
+        self.session.mount('https://',HTTPAdapter(max_retries=retry))
         self.session.headers['Authorization']='Bearer '+token
         self.pos=0
         self.block_size=block_size
@@ -63,5 +69,5 @@ class RangeReader(io.RawIOBase):
     def readinto(self,b):
         data=self.read(len(b)); b[:len(data)]=data; return len(data)
     def close(self):
-        self.session.close()
+        if hasattr(self,'session'):self.session.close()
         super().close()

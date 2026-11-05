@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "status",
+    "artifacts",
+    "insights",
+    "limitations",
+    "analysis",
+    "theme",
+    "policy",
+    "observations",
+    "quality",
+    "what_changed",
+    "when",
+    "behavior",
+    "methods",
+    "evidence",
+    "alternative_explanations",
+    "phenomenon_probability",
+    "causal_attribution",
+    "displacement_cm"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "no_data",
+        "partial",
+        "complete"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "href",
+          "role",
+          "media_type",
+          "sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "units": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "legend": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "observation",
+          "interpretation_limit",
+          "evidence_artifacts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "observation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interpretation_limit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date",
+        "source_url",
+        "description"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "analysis": {
+      "const": "surface_behavior_characterization"
+    },
+    "theme": {
+      "enum": [
+        "explore",
+        "floods",
+        "wildfires",
+        "agriculture",
+        "landslides",
+        "earthquakes",
+        "volcanoes",
+        "wetlands",
+        "ice",
+        "subsidence"
+      ]
+    },
+    "policy": {
+      "type": "object"
+    },
+    "observations": {
+      "type": "object"
+    },
+    "quality": {
+      "type": "object"
+    },
+    "what_changed": {
+      "type": "object"
+    },
+    "when": {
+      "type": "object"
+    },
+    "behavior": {
+      "type": "object"
+    },
+    "methods": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "status",
+        "items"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_supplied",
+            "independent_product_comparison",
+            "insufficient_independent_support",
+            "limited_independent_support"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "alternative_explanations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "phenomenon_probability": {
+      "type": "null"
+    },
+    "causal_attribution": {
+      "type": "null"
+    },
+    "displacement_cm": {
+      "type": "null"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "no_data"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  ]
+}

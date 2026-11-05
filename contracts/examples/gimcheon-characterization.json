@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.0",
+  "request_id": "gimcheon-surface-behavior",
+  "theme": "floods",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/characterization_v05/cases/gimcheon/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-07-06"
+  },
+  "assessment": {
+    "start_date": "2026-07-07",
+    "end_date": "2026-09-30"
+  },
+  "context": {
+    "start_date": "2026-07-07",
+    "end_date": "2026-07-20",
+    "source_url": "https://upload.disasterscharter.org/activations/flood-in-korea-republic-of-activation-1040-",
+    "description": "The International Charter documents monsoon flooding including Gimcheon. An activation interval is scene context, not an estimated local onset or inundation map."
+  },
+  "water_reference": {
+    "mode": "local_optical_pair",
+    "path": "products/characterization_v05/cases/gimcheon/reference_pair.npz"
+  }
+}

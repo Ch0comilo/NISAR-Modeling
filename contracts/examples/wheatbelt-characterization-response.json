@@ -1,0 +1,1201 @@
+{
+  "contract_version": "1.0",
+  "request_id": "wheatbelt-surface-behavior",
+  "analysis": "surface_behavior_characterization",
+  "status": "complete",
+  "theme": "agriculture",
+  "policy": {
+    "id": "observed_behavior_v1",
+    "co_pol_change_db": 3.0,
+    "minimum_baseline_dates": 3,
+    "minimum_assessment_dates": 2,
+    "repeated_minimum_count": 2,
+    "repeated_fraction": 0.75,
+    "gradual_minimum_dates": 6,
+    "gradual_directional_fraction": 0.8,
+    "gradual_maximum_step_fraction": 0.6,
+    "minimum_comparison_pixels": 8
+  },
+  "observations": {
+    "dates": [
+      "2026-06-17",
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-03",
+      "2026-10-15"
+    ],
+    "comparison_dates": [
+      "2026-06-17",
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-03",
+      "2026-10-15"
+    ],
+    "baseline_dates": [
+      "2026-06-17",
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28"
+    ],
+    "assessment_dates": [
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-03",
+      "2026-10-15"
+    ],
+    "first_assessment_date": "2026-09-09",
+    "polarizations": [
+      "HH",
+      "HV"
+    ],
+    "co_polarization": "HH",
+    "cross_polarization": "HV",
+    "grid": {
+      "epsg": 32750,
+      "width": 256,
+      "height": 256,
+      "posting_m": [
+        40.0,
+        40.0
+      ]
+    },
+    "sources": [
+      {
+        "date": "2026-06-17",
+        "title": "NISAR_L2_PR_GCOV_023_053_A_162_2005_DHDH_A_20260617T220741_20260617T220815_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_023_053_A_162_2005_DHDH_A_20260617T220741_20260617T220815_P05023_N_F_J_001/NISAR_L2_PR_GCOV_023_053_A_162_2005_DHDH_A_20260617T220741_20260617T220815_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 20971536,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "28ccc7b52bc78507f07866160ead0857167fa8f967838f713dd82675c9cffd60"
+      },
+      {
+        "date": "2026-06-29",
+        "title": "NISAR_L2_PR_GCOV_024_053_A_162_2005_DHDH_A_20260629T220740_20260629T220815_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_024_053_A_162_2005_DHDH_A_20260629T220740_20260629T220815_P05023_N_F_J_001/NISAR_L2_PR_GCOV_024_053_A_162_2005_DHDH_A_20260629T220740_20260629T220815_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 20971536,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "4d595f61a1abdf572def96962df2974d0ccf5052e50a48fb24f30c6cd89bf0aa"
+      },
+      {
+        "date": "2026-07-11",
+        "title": "NISAR_L2_PR_GCOV_025_053_A_162_2005_DHDH_A_20260711T220739_20260711T220814_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_025_053_A_162_2005_DHDH_A_20260711T220739_20260711T220814_P05023_N_F_J_001/NISAR_L2_PR_GCOV_025_053_A_162_2005_DHDH_A_20260711T220739_20260711T220814_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 22020112,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "175e5714e2c8f50dc14b7a2231a7890cbc2a576c39f0ae7ec5034a09b1fa747d"
+      },
+      {
+        "date": "2026-07-23",
+        "title": "NISAR_L2_PR_GCOV_026_053_A_162_2005_DHDH_A_20260723T220739_20260723T220813_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_026_053_A_162_2005_DHDH_A_20260723T220739_20260723T220813_P05023_N_F_J_001/NISAR_L2_PR_GCOV_026_053_A_162_2005_DHDH_A_20260723T220739_20260723T220813_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 20971536,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "c3599b1733e63c6d8165e5ae99b38a0387ced351d08d15dbb3f4da5fafae5933"
+      },
+      {
+        "date": "2026-08-16",
+        "title": "NISAR_L2_PR_GCOV_028_053_A_162_2005_DHDH_A_20260816T220737_20260816T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_028_053_A_162_2005_DHDH_A_20260816T220737_20260816T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_028_053_A_162_2005_DHDH_A_20260816T220737_20260816T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 19922960,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "b7c510ea15a6d13a34696794bc8ff9232bf5a8bdaf04987b56b0360fcdf5f6dc"
+      },
+      {
+        "date": "2026-08-28",
+        "title": "NISAR_L2_PR_GCOV_029_053_A_162_2005_DHDH_A_20260828T220737_20260828T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_029_053_A_162_2005_DHDH_A_20260828T220737_20260828T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_029_053_A_162_2005_DHDH_A_20260828T220737_20260828T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 22020112,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "bdd12c6803eb7ed9cc92aa84e8e66f904149b53feca4bd05796d4945652fb216"
+      },
+      {
+        "date": "2026-09-09",
+        "title": "NISAR_L2_PR_GCOV_030_053_A_162_2005_DHDH_A_20260909T220737_20260909T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_030_053_A_162_2005_DHDH_A_20260909T220737_20260909T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_030_053_A_162_2005_DHDH_A_20260909T220737_20260909T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 19922960,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "33d58ddeca2b172ed867529a7f351384056bb727e25cb522a968187bb00c7e26"
+      },
+      {
+        "date": "2026-09-21",
+        "title": "NISAR_L2_PR_GCOV_031_053_A_162_2005_DHDH_A_20260921T220737_20260921T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_031_053_A_162_2005_DHDH_A_20260921T220737_20260921T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_031_053_A_162_2005_DHDH_A_20260921T220737_20260921T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 20971536,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "324e5a4274c79d5a11d62c4e7e5e1ece99e1e984d44a2ecd19bc00da4450f854"
+      },
+      {
+        "date": "2026-10-03",
+        "title": "NISAR_L2_PR_GCOV_032_053_A_162_2005_DHDH_A_20261003T220737_20261003T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_032_053_A_162_2005_DHDH_A_20261003T220737_20261003T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_032_053_A_162_2005_DHDH_A_20261003T220737_20261003T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 19922960,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "1add355326af841448bb9c04ef36c842081e8db5f14aef24f9b07592e626f00e"
+      },
+      {
+        "date": "2026-10-15",
+        "title": "NISAR_L2_PR_GCOV_033_053_A_162_2005_DHDH_A_20261015T220737_20261015T220812_P05023_N_F_J_001",
+        "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_033_053_A_162_2005_DHDH_A_20261015T220737_20261015T220812_P05023_N_F_J_001/NISAR_L2_PR_GCOV_033_053_A_162_2005_DHDH_A_20261015T220737_20261015T220812_P05023_N_F_J_001.h5",
+        "epsg": 32750,
+        "slice": [
+          10276,
+          10788,
+          8470,
+          8982
+        ],
+        "pols": [
+          "HH",
+          "HV"
+        ],
+        "center_frequency_hz": null,
+        "flags": {
+          "productVersion": "1.0.11",
+          "compositeReleaseId": "P05023",
+          "radarBand": "L",
+          "instrumentName": "LSAR",
+          "hasInputDataException": 0,
+          "noiseCorrectionApplied": "False",
+          "isFullCovariance": "False"
+        },
+        "transfer_bytes": 20971536,
+        "query_point": [
+          117.5,
+          -31.5
+        ],
+        "requested_pixels": 512,
+        "crop_policy": "point_centered",
+        "sha256": "d07463594e83485d28be947def9ea372c9c5da3d21129c8e44ece7a5a4fd092e"
+      }
+    ],
+    "processing": {
+      "collection": "NISAR_L2_GCOV_PROVISIONAL_V1",
+      "target_posting_m": 40,
+      "aggregation": "arithmetic linear power before dB; strict native block support",
+      "excluded_empty_acquisitions": [],
+      "selection_policy": "baseline_then_event_latency_v1",
+      "role": "candidate_nonwater_control"
+    },
+    "input_cube_sha256": "71ed73ad525279ac6f7803d869ad4313bfd3b46bbe5fdf155c5ce87d24009d83"
+  },
+  "quality": {
+    "selected_grid_cells": 65536,
+    "fixed_common_support_cells": 65536,
+    "fixed_fraction_of_selection": 1.0,
+    "per_date_channel_supported_cells": [
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ],
+      [
+        65536,
+        65536
+      ]
+    ],
+    "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+  },
+  "what_changed": {
+    "channels": [
+      {
+        "polarization": "HH",
+        "first_assessment_change_db": {
+          "mean": -0.4518861566573378,
+          "median": -0.6222176551818848,
+          "p05": -3.007314443588257,
+          "p25": -1.6235146522521973,
+          "p75": 0.48885250091552734,
+          "p95": 2.8030965328216553
+        },
+        "median_temporal_scaled_mad_db": 1.6282504796981812,
+        "first_assessment_darkening_fraction": 0.0504608154296875,
+        "first_assessment_brightening_fraction": 0.0441436767578125
+      },
+      {
+        "polarization": "HV",
+        "first_assessment_change_db": {
+          "mean": -0.5878063326526899,
+          "median": -0.6885166168212891,
+          "p05": -3.1039633750915527,
+          "p25": -1.6483986377716064,
+          "p75": 0.26964235305786133,
+          "p95": 2.467092514038086
+        },
+        "median_temporal_scaled_mad_db": 1.3497340679168701,
+        "first_assessment_darkening_fraction": 0.05792236328125,
+        "first_assessment_brightening_fraction": 0.0387725830078125
+      }
+    ],
+    "polarization_ratio_change": {
+      "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+      "mean_db": -0.1359201759953521,
+      "median_db": -0.10802078247070312,
+      "independent_measurement": false
+    },
+    "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+  },
+  "when": {
+    "first_change_interval": null,
+    "observed_changed_acquisitions": 0,
+    "observed_change_span_days": null,
+    "signal_return_interval": null,
+    "statistic": "Median co-pol change on fixed common spatial support"
+  },
+  "behavior": {
+    "regional_pattern": "no_observed_threshold_crossing",
+    "spatial_pattern_counts": {
+      "no_observed_threshold_crossing": 33315,
+      "repeated_observed_darkening": 10296,
+      "repeated_observed_brightening": 654,
+      "intermittent_observed_crossings": 21152,
+      "mixed_observed_change": 19,
+      "gradual_observed_darkening": 99,
+      "gradual_observed_brightening": 1
+    },
+    "legend": {
+      "0": "insufficient_temporal_support",
+      "1": "no_observed_threshold_crossing",
+      "2": "repeated_observed_darkening",
+      "3": "repeated_observed_brightening",
+      "4": "intermittent_observed_crossings",
+      "5": "mixed_observed_change",
+      "6": "gradual_observed_darkening",
+      "7": "gradual_observed_brightening",
+      "255": "unsupported"
+    },
+    "spatial_pattern_unit": "analysis cells",
+    "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+    "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+  },
+  "evidence": {
+    "status": "independent_product_comparison",
+    "items": [
+      {
+        "kind": "independent_optical_water_product",
+        "status": "complete",
+        "manifest": "water_evidence/result.json",
+        "reference_evidence": {
+          "status": "temporally_eligible",
+          "pre_date": "2026-08-30",
+          "post_date": "2026-09-09",
+          "pre_offset_days": 2,
+          "post_offset_days": 0,
+          "source_family": "OPERA_DSWX_HLS",
+          "sha256": "923c03b91678a72885c466003dc201f694a5389bffe2c0793169ba6976a6d961",
+          "provenance": {
+            "sha256": "923c03b91678a72885c466003dc201f694a5389bffe2c0793169ba6976a6d961",
+            "source_family": "OPERA_DSWX_HLS",
+            "epochs": {
+              "pre": {
+                "status": "selected",
+                "valid_analysis_cell_fraction": 0.972076416015625,
+                "absolute_date_offset_days": 2,
+                "candidate_count": 6,
+                "selection_policy": "nearest date among >=50% usable-cell candidates; otherwise highest usable coverage; no SAR agreement criterion",
+                "candidate_errors": [],
+                "source": {
+                  "source_family": "OPERA_DSWX_HLS",
+                  "source_id": "OPERA_L3_DSWx-HLS_T50JNL_20260830T020309Z_20260901T035051Z_S2B_30_v1.1",
+                  "source": "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-protected/OPERA_L3_DSWX-HLS_V1/OPERA_L3_DSWx-HLS_T50JNL_20260830T020309Z_20260901T035051Z_S2B_30_v1.1_B01_WTR.tif",
+                  "observation_time": "2026-08-30T02:16:20.29067Z",
+                  "crs": "EPSG:32650",
+                  "native_posting_m": 30.0,
+                  "tags": {
+                    "ACCODE": "LaSRC v3.5.1.0",
+                    "AEROSOL_CLASS_REMAPPING_ENABLED": "TRUE",
+                    "AEROSOL_NOT_WATER_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,160,96",
+                    "AEROSOL_PARTIAL_SURFACE_AGGRESSIVE_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,192,160,128,96",
+                    "AEROSOL_PARTIAL_SURFACE_WATER_CONSERVATIVE_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,192,160,128,96",
+                    "AEROSOL_WATER_MODERATE_CONF_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,160,96",
+                    "CLOUD_COVERAGE": "2",
+                    "DEM_COVERAGE": "NOT_TESTED",
+                    "DEM_SOURCE": "Copernicus DEM GLO-30 2021",
+                    "FOREST_MASK_LANDCOVER_CLASSES": "20,50,111,113,115,116,121,123,125,126",
+                    "HLS_DATASET": "HLS.S30.T50JNL.2026242T020309.v2.0",
+                    "INPUT_HLS_PRODUCT_CLOUD_COVERAGE": "1",
+                    "INPUT_HLS_PRODUCT_SPATIAL_COVERAGE": "99",
+                    "LANDCOVER_COVERAGE": "NOT_TESTED",
+                    "LANDCOVER_SOURCE": "Land Cover 100m - collection 3 - epoch 2019 discrete classification map",
+                    "LICENSE": "This OPERA DSWx-HLS product contains modified Copernicus Sentinel Earth Observation (EO) data. Sentinel EO data is provided under COPERNICUS by the European Union and ESA; all rights reserved. Users, including those who redistribute, adapt, modify, or combine the contents of this product, must comply with the terms of the Copernicus Sentinel Data License Agreement. This OPERA DSWx-HLS product contains modified Copernicus DEM data. The Copernicus DEM 30-m and Copernicus DEM 90-m were produced using Copernicus WorldDEM-30 \u00a9 DLR e.V. 2010-2014 and \u00a9 Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved. Users, including those who redistribute, adapt, modify, or combine the DEM layer (band 10) or derived SHAD layer (band 8), must comply with the terms of the Copernicus DEM License Agreement. For additional information, please refer to https://doi.org/10.5270/ESA-c5d3d65. The organizations in charge of the OPERA project and the Copernicus programme by law or by delegation do not assume any legal responsibility or liability, whether express or implied, arising from any use of this product.",
+                    "MASK_ADJACENT_TO_CLOUD_MODE": "mask",
+                    "MAX_SUN_LOCAL_INC_ANGLE": "40",
+                    "MEAN_SUN_AZIMUTH_ANGLE": "38.9078399798857",
+                    "MEAN_SUN_ZENITH_ANGLE": "48.6411857761827",
+                    "MEAN_VIEW_AZIMUTH_ANGLE": "98.0056103139858",
+                    "MEAN_VIEW_ZENITH_ANGLE": "5.09925220020718",
+                    "MIN_SLOPE_ANGLE": "-5",
+                    "NBAR_SOLAR_ZENITH": "49.6083150310374",
+                    "OCEAN_MASKING_ENABLED": "FALSE",
+                    "OCEAN_MASKING_SHORELINE_DISTANCE_KM": "NOT_USED",
+                    "PROCESSING_DATETIME": "2026-09-01T03:50:51Z",
+                    "PRODUCT_ID": "dswx_hls",
+                    "PRODUCT_LEVEL": "3",
+                    "PRODUCT_SOURCE": "HLS",
+                    "PRODUCT_TYPE": "DSWx-HLS",
+                    "PRODUCT_VERSION": "1.1",
+                    "PROJECT": "OPERA",
+                    "SENSING_TIME": "2026-08-30T02:16:20.29067Z",
+                    "SENSOR": "MSI",
+                    "SENSOR_PRODUCT_ID": "S2B_MSIL1C_20260830T020309_N0512_R017_T50JNL_20260830T051851.SAFE",
+                    "SHADOW_MASKING_ALGORITHM": "SUN_LOCAL_INC_ANGLE",
+                    "SHORELINE_SOURCE": "NOT_PROVIDED_OR_NOT_USED",
+                    "SOFTWARE_VERSION": "1.0.2",
+                    "SPACECRAFT_NAME": "Sentinel-2B",
+                    "SPATIAL_COVERAGE": "99",
+                    "SPATIAL_COVERAGE_EXCLUDING_MASKED_OCEAN": "99",
+                    "WORLDCOVER_COVERAGE": "NOT_TESTED",
+                    "WORLDCOVER_SOURCE": "ESA WorldCover 10m 2020 v1.0",
+                    "AREA_OR_POINT": "Area"
+                  },
+                  "reference_kind": "independent_optical_classification_product_not_ground_truth",
+                  "sha256": "290467ec3b7eff907e565e0f334cb0036677ea2bfed895d371b593310ef0ac57",
+                  "bytes": 730294
+                }
+              },
+              "post": {
+                "status": "selected",
+                "valid_analysis_cell_fraction": 0.981353759765625,
+                "absolute_date_offset_days": 0,
+                "candidate_count": 7,
+                "selection_policy": "nearest date among >=50% usable-cell candidates; otherwise highest usable coverage; no SAR agreement criterion",
+                "candidate_errors": [],
+                "source": {
+                  "source_family": "OPERA_DSWX_HLS",
+                  "source_id": "OPERA_L3_DSWx-HLS_T50JNL_20260909T015850Z_20260916T054618Z_L9_30_v1.1",
+                  "source": "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-protected/OPERA_L3_DSWX-HLS_V1/OPERA_L3_DSWx-HLS_T50JNL_20260909T015850Z_20260916T054618Z_L9_30_v1.1_B01_WTR.tif",
+                  "observation_time": "2026-09-09T01:58:50.6500950Z; 2026-09-09T01:59:14.6004150Z",
+                  "crs": "EPSG:32650",
+                  "native_posting_m": 30.0,
+                  "tags": {
+                    "ACCODE": "LaSRC v3.5.1.0; LaSRC v3.5.1.0",
+                    "AEROSOL_CLASS_REMAPPING_ENABLED": "TRUE",
+                    "AEROSOL_NOT_WATER_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,160,96",
+                    "AEROSOL_PARTIAL_SURFACE_AGGRESSIVE_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,192,160,128,96",
+                    "AEROSOL_PARTIAL_SURFACE_WATER_CONSERVATIVE_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,192,160,128,96",
+                    "AEROSOL_WATER_MODERATE_CONF_TO_HIGH_CONF_WATER_FMASK_VALUES": "224,160,96",
+                    "CLOUD_COVERAGE": "14",
+                    "DEM_COVERAGE": "NOT_TESTED",
+                    "DEM_SOURCE": "Copernicus DEM GLO-30 2021",
+                    "FOREST_MASK_LANDCOVER_CLASSES": "20,50,111,113,115,116,121,123,125,126",
+                    "HLS_DATASET": "HLS.L30.T50JNL.2026252T015850.v2.0",
+                    "INPUT_HLS_PRODUCT_CLOUD_COVERAGE": "9",
+                    "INPUT_HLS_PRODUCT_SPATIAL_COVERAGE": "75",
+                    "LANDCOVER_COVERAGE": "NOT_TESTED",
+                    "LANDCOVER_SOURCE": "Land Cover 100m - collection 3 - epoch 2019 discrete classification map",
+                    "LICENSE": "This OPERA DSWx-HLS product contains modified Copernicus DEM data. The Copernicus DEM 30-m and Copernicus DEM 90-m were produced using Copernicus WorldDEM-30 \u00a9 DLR e.V. 2010-2014 and \u00a9 Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved. Users, including those who redistribute, adapt, modify, or combine the DEM layer (band 10) or derived SHAD layer (band 8), must comply with the terms of the Copernicus DEM License Agreement. For additional information, please refer to https://doi.org/10.5270/ESA-c5d3d65. The organizations in charge of the OPERA project and the Copernicus programme by law or by delegation do not assume any legal responsibility or liability, whether express or implied, arising from any use of this product.",
+                    "MASK_ADJACENT_TO_CLOUD_MODE": "mask",
+                    "MAX_SUN_LOCAL_INC_ANGLE": "40",
+                    "MEAN_SUN_AZIMUTH_ANGLE": "45.394439441795",
+                    "MEAN_SUN_ZENITH_ANGLE": "47.5910112207269",
+                    "MEAN_VIEW_AZIMUTH_ANGLE": "101.003308649832",
+                    "MEAN_VIEW_ZENITH_ANGLE": "4.79277995860296",
+                    "MIN_SLOPE_ANGLE": "-5",
+                    "NBAR_SOLAR_ZENITH": "46.1253931515893",
+                    "OCEAN_MASKING_ENABLED": "FALSE",
+                    "OCEAN_MASKING_SHORELINE_DISTANCE_KM": "NOT_USED",
+                    "PROCESSING_DATETIME": "2026-09-16T05:46:18Z",
+                    "PRODUCT_ID": "dswx_hls",
+                    "PRODUCT_LEVEL": "3",
+                    "PRODUCT_SOURCE": "HLS",
+                    "PRODUCT_TYPE": "DSWx-HLS",
+                    "PRODUCT_VERSION": "1.1",
+                    "PROJECT": "OPERA",
+                    "SENSING_TIME": "2026-09-09T01:58:50.6500950Z; 2026-09-09T01:59:14.6004150Z",
+                    "SENSOR": "OLI",
+                    "SENSOR_PRODUCT_ID": "LC09_L1TP_111081_20260909_20260909_02_T1; LC09_L1TP_111082_20260909_20260909_02_T1",
+                    "SHADOW_MASKING_ALGORITHM": "SUN_LOCAL_INC_ANGLE",
+                    "SHORELINE_SOURCE": "NOT_PROVIDED_OR_NOT_USED",
+                    "SOFTWARE_VERSION": "1.0.2",
+                    "SPACECRAFT_NAME": "Landsat-9",
+                    "SPATIAL_COVERAGE": "75",
+                    "SPATIAL_COVERAGE_EXCLUDING_MASKED_OCEAN": "75",
+                    "WORLDCOVER_COVERAGE": "NOT_TESTED",
+                    "WORLDCOVER_SOURCE": "ESA WorldCover 10m 2020 v1.0",
+                    "AREA_OR_POINT": "Area"
+                  },
+                  "reference_kind": "independent_optical_classification_product_not_ground_truth",
+                  "sha256": "76101802e0f4176c24bfda1c1d3341ec6d858000a8ac4b5915fb5d16de52c64f",
+                  "bytes": 379927
+                }
+              }
+            },
+            "class_semantics": "Fractions of valid source cells assigned a class; partial water is not counted as full water and is excluded from strict binary comparison."
+          },
+          "reference_kind": "independent_optical_classification_product_not_ground_truth",
+          "comparison_supported_pixels": 62520,
+          "fraction_of_radar_support": 0.9539794921875,
+          "group_legend": {
+            "0": "reference-stable predominantly nonwater",
+            "1": "new strict open-water class",
+            "2": "stable strict open-water class",
+            "3": "strict open-water class loss",
+            "4": "mixed/partial or other ambiguous transition",
+            "255": "unsupported SAR/reference or temporally ineligible"
+          },
+          "group_counts": {
+            "reference-stable predominantly nonwater": 55293,
+            "new strict open-water class": 30,
+            "stable strict open-water class": 1026,
+            "strict open-water class loss": 2,
+            "mixed/partial or other ambiguous transition": 6169,
+            "unsupported SAR/reference or temporally ineligible": 3016
+          }
+        },
+        "proxy_comparison": {
+          "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+          "scored_pixels": 56351,
+          "true_positive_proxy_pixels": 1,
+          "false_positive_proxy_pixels": 1887,
+          "false_negative_proxy_pixels": 29,
+          "true_negative_proxy_pixels": 54434,
+          "precision_against_proxy": 0.0005296610169491525,
+          "recall_against_proxy": 0.03333333333333333,
+          "intersection_over_union_against_proxy": 0.0005216484089723526,
+          "reference_stable_nonwater_radar_flag_rate": 0.03324109742643734,
+          "reference_stable_open_water_radar_flag_rate": 0.04775828460038986,
+          "reference_water_loss_radar_flag_rate": 0.0,
+          "unscored_reference_or_mixed_pixels": 9185,
+          "radar_comparator": "first assessment minus median of declared baseline acquisitions",
+          "last_baseline_sensitivity": {
+            "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+            "scored_pixels": 56351,
+            "true_positive_proxy_pixels": 8,
+            "false_positive_proxy_pixels": 16015,
+            "false_negative_proxy_pixels": 22,
+            "true_negative_proxy_pixels": 40306,
+            "precision_against_proxy": 0.0004992822817200275,
+            "recall_against_proxy": 0.26666666666666666,
+            "intersection_over_union_against_proxy": 0.0004985976939856653,
+            "reference_stable_nonwater_radar_flag_rate": 0.2895664912375888,
+            "reference_stable_open_water_radar_flag_rate": 0.003898635477582846,
+            "reference_water_loss_radar_flag_rate": 0.0,
+            "unscored_reference_or_mixed_pixels": 9185,
+            "radar_comparator": "first assessment minus last baseline acquisition; same policy thresholds, not an optimized alternative"
+          }
+        },
+        "matched_controls": {
+          "positive_pixels": 30,
+          "matched_control_pixels": 30,
+          "matched_positive_pixels": 30,
+          "matched_fraction": 1.0,
+          "baseline_mean_positive_minus_control_db_by_channel": [
+            -0.0023667653401692706,
+            -0.0008281071980794271
+          ],
+          "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders",
+          "co_pol_contrast": {
+            "status": "descriptive_only",
+            "positive_pixels": 30,
+            "control_pixels": 30,
+            "positive_mean_db": -1.6061598459879558,
+            "control_mean_db": -0.5282875061035156,
+            "positive_median_db": -1.722825050354004,
+            "control_median_db": -0.6707925796508789,
+            "mean_contrast_db": -1.0778723398844403,
+            "spatial_resampling_95_interval_db": null,
+            "positive_blocks": 3,
+            "control_blocks": 26,
+            "reason": "Too few spatial blocks for the declared resampling interval"
+          }
+        }
+      }
+    ]
+  },
+  "methods": {
+    "physical": {
+      "status": "available",
+      "metadata": {
+        "common_support_fraction": 1.0,
+        "native_quality_scope": "focused sample support only",
+        "pod_variance_fraction": [
+          0.5854591727256775,
+          0.15685975551605225,
+          0.09907634556293488,
+          0.048395462334156036,
+          0.03053751401603222,
+          0.023467913269996643,
+          0.0208381749689579,
+          0.01828605681657791,
+          0.01707961969077587,
+          2.994622236816846e-13
+        ]
+      }
+    },
+    "spectral": {
+      "status": "experimental",
+      "metadata": {
+        "channels": [
+          {
+            "candidate_period_days": 30.000000000000007,
+            "normalized_power": 0.43670960527279706,
+            "max_statistic_permutation_p": 0.645,
+            "null": "exchangeable detrended residuals; not valid for arbitrary serial dependence",
+            "independent_frequency_resolution_cycles_day": 0.008333333333333333,
+            "tentative": true
+          },
+          {
+            "candidate_period_days": 30.000000000000007,
+            "normalized_power": 0.6022195029877184,
+            "max_statistic_permutation_p": 0.265,
+            "null": "exchangeable detrended residuals; not valid for arbitrary serial dependence",
+            "independent_frequency_resolution_cycles_day": 0.008333333333333333,
+            "tentative": true
+          }
+        ],
+        "local_time_frequency_status": "insufficient_temporal_support",
+        "frequency_search_policy": "2/span through 0.5/median_cadence; conservative display band, not a universal Nyquist theorem"
+      }
+    },
+    "stochastic": {
+      "status": "experimental",
+      "metadata": {
+        "parameters": [
+          {
+            "status": "fit_returned",
+            "optimizer_success": true,
+            "length_days": 10.708605697045876,
+            "signal_sd_db": 1.398449618115145,
+            "residual_sd_db": 1.1788785636301218,
+            "residual_at_lower_bound": false,
+            "fit_pixels": 64,
+            "kernel": "Matern32",
+            "covariance_min_eigenvalue": 0.4660533614716062
+          },
+          {
+            "status": "fit_returned",
+            "optimizer_success": true,
+            "length_days": 9.127160484891336,
+            "signal_sd_db": 1.0245151605720528,
+            "residual_sd_db": 1.2802792615079794,
+            "residual_at_lower_bound": false,
+            "fit_pixels": 64,
+            "kernel": "Matern32",
+            "covariance_min_eigenvalue": 0.37676019847031744
+          }
+        ],
+        "draws": 256,
+        "interval_type": "conditional_empirical_Bayes_GP_latent",
+        "calibrated": false
+      }
+    },
+    "transformer": {
+      "status": "not_requested"
+    }
+  },
+  "insights": [
+    {
+      "id": "measured_change",
+      "observation": "Median HH change is -0.62 dB on 65536 fixed-support cells; the spatial interquartile range is -1.62 to +0.49 dB.",
+      "interpretation_limit": "This is a radar response; alternative physical mechanisms and product effects remain.",
+      "evidence_artifacts": [
+        "target_change_db",
+        "behavior_arrays"
+      ]
+    },
+    {
+      "id": "observed_pattern",
+      "observation": "The regional observed pattern is no_observed_threshold_crossing.",
+      "interpretation_limit": "Pattern names follow a fixed descriptive policy; the spatial distribution can differ from the regional median.",
+      "evidence_artifacts": [
+        "pattern_code",
+        "fixed_support_trajectories"
+      ]
+    },
+    {
+      "id": "spatial_pattern_support",
+      "observation": "The most frequent cell pattern is no_observed_threshold_crossing: 33315 of 65536 fixed-support cells.",
+      "interpretation_limit": "A regional median can hide localized behavior; these are trajectory patterns rather than cause labels.",
+      "evidence_artifacts": [
+        "pattern_code",
+        "behavior_arrays"
+      ]
+    }
+  ],
+  "alternative_explanations": [
+    "Growth and canopy structure",
+    "Soil/vegetation moisture",
+    "Harvest or management",
+    "Geometry and product effects"
+  ],
+  "artifacts": [
+    {
+      "id": "behavior_arrays",
+      "href": "behavior_arrays.nc",
+      "role": "observed_behavior_arrays",
+      "media_type": "application/x-netcdf",
+      "sha256": "599f5e36532f812adebdf230424aed7bc56fbed8519bf009da6da81aa65d9be8"
+    },
+    {
+      "id": "pattern_code",
+      "href": "pattern_code.tif",
+      "role": "observed_behavior_map",
+      "media_type": "image/tiff",
+      "sha256": "72e61d28aed30a43a728060fd581d717fc54de92d272b4260ae1e3347086d8e3",
+      "units": "categorical observed pattern"
+    },
+    {
+      "id": "target_change_db",
+      "href": "target_change_db.tif",
+      "role": "observed_behavior_map",
+      "media_type": "image/tiff",
+      "sha256": "88ade9a983bbe08af77768d3de82bad720c3d8999b5b2884a3733861db9d306a",
+      "units": "dB"
+    },
+    {
+      "id": "observed_change_frequency",
+      "href": "observed_change_frequency.tif",
+      "role": "observed_behavior_map",
+      "media_type": "image/tiff",
+      "sha256": "bf5c9c1e62c9ccf98579286ed03c92f4c96b3254d0f068921403b06953dcca17",
+      "units": "fraction of supported assessment observations"
+    },
+    {
+      "id": "fixed_support_trajectories",
+      "href": "fixed_support_trajectories.csv",
+      "role": "observed_fixed_support_series",
+      "media_type": "text/csv",
+      "sha256": "3a9c5207975d993945f7a3416554933bded1d6df8b5a314e74e482924c022457",
+      "units": "dB"
+    },
+    {
+      "id": "methods.regional_timeseries",
+      "href": "methods/regional_timeseries.csv",
+      "media_type": "text/csv",
+      "sha256": "d0d2bbcfa42f69d70e284e43f28ec3461286d8ea66eef12904477db34f6322ce",
+      "role": "spatial_block_bootstrap_regional_series",
+      "units": "dB",
+      "dimensions": [
+        "time",
+        "polarization"
+      ]
+    },
+    {
+      "id": "methods.physical",
+      "href": "methods/physical.png",
+      "media_type": "image/png",
+      "sha256": "f995ed48ba424214b32b94d29b18466137a97a27e96923dd3ad4253f5508c3b3",
+      "role": "physical_descriptive_figure"
+    },
+    {
+      "id": "methods.median_db",
+      "href": "methods/median_db.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "6706e664cf9ee12a44694bf57d527d3ffe102e5908087314707804cb0156ab24",
+      "role": "physical_map",
+      "units": "dB",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.mad_db",
+      "href": "methods/mad_db.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "bbe24cbd8229ae4dea9e48cab9ad562d8aaf83fd72e272a046e671f3ef4ad1b4",
+      "role": "physical_map",
+      "units": "dB",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.slope_db_per_day",
+      "href": "methods/slope_db_per_day.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "9fd0c58fbd51655c2474376badc9b34b5f71319bfbaa0b57eac3340a5f5e3853",
+      "role": "physical_map",
+      "units": "dB/day",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.maximum_step_db",
+      "href": "methods/maximum_step_db.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "c067dd80d3c9e220eb9ed8775aad4292e01ce4008e519be8403c2c51bb2ac306",
+      "role": "physical_map",
+      "units": "dB",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.valid_date_count",
+      "href": "methods/valid_date_count.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "f073bf84347fb4a68dda3387ed8a4468116430ff50374c3063ea1550818e8bce",
+      "role": "physical_map",
+      "units": "count",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.observed_evolution",
+      "href": "methods/observed_evolution.gif",
+      "media_type": "image/gif",
+      "sha256": "3f9e4ac28f9728ab9c63c1ff827f5d40387ba068bf1e3944daa68a96faf95f8b",
+      "role": "observed_acquisition_animation",
+      "legend": {
+        "red": "co-pol dB [-25,0]",
+        "green": "cross-pol dB [-32,-5] when present",
+        "blue": "cross/co ratio dB [-18,-2] when present",
+        "time": "measured dates only; uniform playback is not uniform sampling"
+      }
+    },
+    {
+      "id": "methods.spectral",
+      "href": "methods/spectral.png",
+      "media_type": "image/png",
+      "sha256": "a271feeacb614a71da01711f0cf8bb8edd1b6075e40f045294710f06a9329883",
+      "role": "actual_time_spectral_figure"
+    },
+    {
+      "id": "methods.candidate_period_days",
+      "href": "methods/candidate_period_days.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "a7a478b93819134676ac985c2fdcf06432fb3f918a0410ae89ae46a6dd205a18",
+      "role": "tentative_spectral_map",
+      "units": "days",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.peak_normalized_power",
+      "href": "methods/peak_normalized_power.tif",
+      "media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "sha256": "8acafbe543796b9f97bc39303d8733e8b4d20b8c08cf5a759da5fa7fc4412943",
+      "role": "tentative_spectral_map",
+      "units": "normalized power",
+      "dimensions": [
+        "polarization",
+        "y",
+        "x"
+      ]
+    },
+    {
+      "id": "methods.spectral_arrays",
+      "href": "methods/spectral_arrays.npz",
+      "media_type": "application/x-npz",
+      "sha256": "1064bba34cf5b3781ee75842735a0c9510b5be0a4662b0137716cf0d22d90845",
+      "role": "spectral_and_spatial_frequency_arrays"
+    },
+    {
+      "id": "methods.stochastic_draws",
+      "href": "methods/stochastic_draws.npz",
+      "media_type": "application/x-npz",
+      "sha256": "f07260cfa3786214fc8c832546049b812b57c46d525102c3e0ccaa5c4a7515d2",
+      "role": "conditional_historical_GP_ensemble",
+      "units": "dB",
+      "dimensions": [
+        "draw",
+        "polarization",
+        "time"
+      ]
+    },
+    {
+      "id": "methods.stochastic",
+      "href": "methods/stochastic.png",
+      "media_type": "image/png",
+      "sha256": "7b47eb7e62e56644944de124004a6c9dc65f3681e4eb3306ba80e7854617c7cd",
+      "role": "stochastic_historical_state_figure"
+    },
+    {
+      "id": "methods.surface_dynamics",
+      "href": "methods/surface_dynamics.nc",
+      "media_type": "application/x-netcdf",
+      "sha256": "14c8cc45f2406cf50ee143f53a0f664b5620706335722cfd54b855a079b58d1a",
+      "role": "all_scientific_arrays_and_coordinates"
+    },
+    {
+      "id": "methods.modal_arrays",
+      "href": "methods/modal_arrays.npz",
+      "media_type": "application/x-npz",
+      "sha256": "2de25760e8df923da6dc519136a5ca4e72d1f0609faac61fe7e3498417605338",
+      "role": "proper_orthogonal_decomposition_modes"
+    },
+    {
+      "id": "result",
+      "href": "water_evidence/result.json",
+      "role": "independent_water_evidence_manifest",
+      "media_type": "application/json",
+      "sha256": "b94a3aeedc2fc9ab90b861ce3631ae28a199cdd8ef38119224393c4bba81283a"
+    },
+    {
+      "id": "water.characterization_arrays",
+      "href": "water_evidence/characterization_arrays.nc",
+      "role": "all_observed_signatures_and_reference_support",
+      "media_type": "application/x-netcdf",
+      "sha256": "09f0e904cd37f077440b9d6bba15700e8fa71752a339aa8ecf963988b1ca42ae"
+    },
+    {
+      "id": "water.target_change_db",
+      "href": "water_evidence/target_change_db.tif",
+      "role": "descriptive_map",
+      "media_type": "image/tiff",
+      "sha256": "88ade9a983bbe08af77768d3de82bad720c3d8999b5b2884a3733861db9d306a",
+      "units": "dB"
+    },
+    {
+      "id": "water.robust_scaled_target_change",
+      "href": "water_evidence/robust_scaled_target_change.tif",
+      "role": "descriptive_map",
+      "media_type": "image/tiff",
+      "sha256": "96bf746be9d0a990a2f7a917c37a2cfd46be2e36536b326dc827cb296bb4e767",
+      "units": "robust scaled deviation; not a Gaussian z-test"
+    },
+    {
+      "id": "water.reference_group",
+      "href": "water_evidence/reference_group.tif",
+      "role": "descriptive_map",
+      "media_type": "image/tiff",
+      "sha256": "99b14d193be9a0650e32683b16c9588d282999c7ba80210c8cd4a580c89d5fb7",
+      "units": "categorical support group"
+    },
+    {
+      "id": "water.matched_control_mask",
+      "href": "water_evidence/matched_control_mask.tif",
+      "role": "descriptive_map",
+      "media_type": "image/tiff",
+      "sha256": "1cce28e20169d11fc4b72d7e7aa07ee0934ec78b1efd095840b9f6f229544252",
+      "units": "mask"
+    },
+    {
+      "id": "water.darkening_observation_frequency",
+      "href": "water_evidence/darkening_observation_frequency.tif",
+      "role": "descriptive_map",
+      "media_type": "image/tiff",
+      "sha256": "1696d47d1a6e2b59518ac5743aae3aea7bb6cd5af40d32bc1a04ceffb775a7a9",
+      "units": "fraction of observed assessment acquisitions"
+    },
+    {
+      "id": "water.group_trajectories",
+      "href": "water_evidence/group_trajectories.csv",
+      "role": "measured_date_group_change_series",
+      "media_type": "text/csv",
+      "sha256": "3904ce8a41f265d304f09b3ce05326c636d6dda76787e1f979ad7a4cde8e2bc9",
+      "units": "dB"
+    },
+    {
+      "id": "water.signature_objects",
+      "href": "water_evidence/signature_objects.geojson",
+      "role": "radar_signature_objects_not_flood_polygons",
+      "media_type": "application/geo+json",
+      "sha256": "bb93bd1ddc6cf0c19bcf2e6e884cf0fdf3f5ca4056db6f4f8c2e5a34bce644b9"
+    },
+    {
+      "id": "water.flood_characterization",
+      "href": "water_evidence/flood_characterization.png",
+      "role": "evidence_linked_scientific_figure",
+      "media_type": "image/png",
+      "sha256": "4fcb8805b149100b7e38806623fe62ef782bf1b238c2edf9d2f35afe8375ab56"
+    },
+    {
+      "id": "characterization",
+      "href": "characterization.png",
+      "role": "observed_behavior_scientific_figure",
+      "media_type": "image/png",
+      "sha256": "a094fa91cb07598466dae7297be2f7400bd70e7a7c5f4f76791aa7172d228bf8"
+    }
+  ],
+  "phenomenon_probability": null,
+  "causal_attribution": null,
+  "displacement_cm": null,
+  "limitations": [
+    "Patterns name observed radar trajectories, not confirmed natural-phenomenon classes.",
+    "The same spatial cells contribute at all declared comparison dates; gaps do not establish continuous behavior.",
+    "A threshold crossing is a diagnostic policy, not a calibrated event probability.",
+    "Thermal-noise correction and complete terrain/SNR validation are not performed.",
+    "GP conditional bands and spatial resampling intervals answer different questions and omit important model/reference errors."
+  ]
+}

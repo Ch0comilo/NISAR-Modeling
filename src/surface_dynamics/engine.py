@@ -113,6 +113,8 @@ def analyze(request,output):
     if 'spatial_modes' in stat:
         data['pod_spatial_modes']=(('mode','polarization','y','x'),stat['spatial_modes']);data['pod_temporal_coefficients']=(('time','mode'),stat['temporal_coefficients'])
     if regional is not None:
+        result['observations']['regional_aggregation']={'supported_pixels':regional['supported_pixels'],
+            'support_scope':regional['support_scope'],'interval_type':regional['interval_type']}
         path=out/'regional_timeseries.csv'
         with path.open('w',newline='',encoding='utf8') as stream:
             writer=csv.writer(stream);writer.writerow(['date','polarization','mean_log_power_db','lower_50_db','upper_50_db','lower_80_db','upper_80_db','lower_95_db','upper_95_db','spatial_block_count'])

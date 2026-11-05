@@ -1,0 +1,77 @@
+{
+  "assessment": "Share with noted caveats; do not promote a phenomenon classifier",
+  "new_measured_cases": 5,
+  "new_gcov_acquisitions": 42,
+  "shared_characterization_jobs": 8,
+  "fresh_flood_policy_jobs": 4,
+  "new_insar_jobs": 2,
+  "registered_artifacts_verified": 291,
+  "frozen_protocol_and_predictor_hashes_verified": true,
+  "cases": [
+    {
+      "case_id": "chokwe",
+      "status": "partial",
+      "fixed_common_cells": 16384,
+      "artifacts": 28
+    },
+    {
+      "case_id": "qadirabad",
+      "status": "complete",
+      "fixed_common_cells": 16384,
+      "artifacts": 32
+    },
+    {
+      "case_id": "richmond",
+      "status": "complete",
+      "fixed_common_cells": 40326,
+      "artifacts": 32
+    },
+    {
+      "case_id": "rajshahi",
+      "status": "complete",
+      "fixed_common_cells": 2768,
+      "artifacts": 32
+    },
+    {
+      "case_id": "gimcheon",
+      "status": "partial",
+      "fixed_common_cells": 16383,
+      "artifacts": 32
+    },
+    {
+      "case_id": "benguerir",
+      "status": "complete",
+      "fixed_common_cells": 16384,
+      "artifacts": 32
+    },
+    {
+      "case_id": "wheatbelt",
+      "status": "complete",
+      "fixed_common_cells": 65536,
+      "artifacts": 32
+    },
+    {
+      "case_id": "rowe_creek",
+      "status": "complete",
+      "fixed_common_cells": 16383,
+      "artifacts": 27
+    }
+  ],
+  "checks": [
+    "independently recomputed measured dB changes and fixed populations",
+    "coordinates, COG centers and hashes",
+    "observed-frequency denominators and insufficient-support codes",
+    "proxy confusion counts and stable-nonwater flags",
+    "all component schemas, unique artifact IDs and explanation links",
+    "probe train/test support and absent-class denominators",
+    "new InSAR fill/uncertainty intersection and null displacement"
+  ],
+  "required_caveats": [
+    "Clouds and partial coverage leave no strict new-water positives at the two fresh flood-context sites; recall is unavailable.",
+    "The representation probe has only one new-water proxy cell across its four test scenes; no global or positive-class accuracy claim is supported.",
+    "The embedding kNN probe produces severe nonwater false flags in the Australian control; the encoder is not promoted to phenomenon labeling.",
+    "The Oregon scene has only nine strict confirmed optical vegetation-loss cells; no fire-perimeter validation or wildfire attribution is supplied.",
+    "The Venezuela stack has 17,311 common coherent cells but only two common eligible correction-input cells, no independent stable reference or geodetic validation.",
+    "Processing complete, radar pattern, independent-product agreement and validated physical cause remain distinct concepts."
+  ]
+}

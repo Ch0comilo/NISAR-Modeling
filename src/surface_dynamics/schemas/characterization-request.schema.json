@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "source",
+    "baseline",
+    "assessment"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "source": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "cube_path"
+          ],
+          "properties": {
+            "mode": {
+              "const": "local_cube"
+            },
+            "cube_path": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "longitude",
+            "latitude"
+          ],
+          "properties": {
+            "mode": {
+              "const": "catalog_point"
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "collection": {
+              "enum": [
+                "NISAR_L2_GCOV_BETA_V1",
+                "NISAR_L2_GCOV_PROVISIONAL_V1",
+                "NISAR_L2_GCOV_V1"
+              ]
+            },
+            "max_dates": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 12
+            },
+            "native_chip_pixels": {
+              "enum": [
+                256,
+                512
+              ]
+            },
+            "target_posting_m": {
+              "enum": [
+                40,
+                80,
+                160
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date",
+        "source_url",
+        "description"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "theme": {
+      "enum": [
+        "explore",
+        "floods",
+        "wildfires",
+        "agriculture",
+        "landslides",
+        "earthquakes",
+        "volcanoes",
+        "wetlands",
+        "ice",
+        "subsidence"
+      ]
+    },
+    "water_reference": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "path"
+          ],
+          "properties": {
+            "mode": {
+              "const": "local_optical_pair"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "longitude",
+            "latitude"
+          ],
+          "properties": {
+            "mode": {
+              "const": "discover_optical"
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            }
+          }
+        }
+      ]
+    },
+    "disturbance_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transformer_checkpoint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "include_methods": {
+      "type": "boolean"
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "longitude",
+        "latitude"
+      ],
+      "properties": {
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "radius_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 25000
+        }
+      }
+    }
+  }
+}

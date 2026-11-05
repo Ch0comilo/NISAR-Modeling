@@ -1,0 +1,70 @@
+{
+  "protocol": {
+    "id": "frozen_optical_transition_knn_v1",
+    "training_cases": [
+      "chokwe",
+      "qadirabad",
+      "richmond"
+    ],
+    "test_cases": [
+      "rajshahi",
+      "gimcheon",
+      "benguerir",
+      "wheatbelt"
+    ],
+    "posting_m": 160,
+    "label_groups": [
+      0,
+      1,
+      2
+    ],
+    "minimum_training_class_pixels": 8,
+    "maximum_pixels_per_case_class": 256,
+    "neighbors": 5,
+    "seed": 211,
+    "physical_features": [
+      "baseline_HH",
+      "baseline_HV",
+      "target_delta_HH",
+      "target_delta_HV",
+      "baseline_MAD_HH",
+      "baseline_MAD_HV",
+      "slope_HH",
+      "slope_HV"
+    ],
+    "learned_features": "frozen constant-control state at first assessment minus its state at last baseline; 48 coordinates",
+    "scaling": "training samples only, per-feature mean and standard deviation; SD floor 0.0001",
+    "scope": "optical-product transition retrieval proxy, not independent physical-behavior truth or a trained global flood classifier"
+  },
+  "scope": "Frozen before fresh optical transition labels, probe comparisons and scores are opened",
+  "files": {
+    "configs/characterization_v05.json": "8504e1335aeb27e703e28bb4671a99d5c9aeb35b1f313e7415bbbb534eac7e3a",
+    "src/surface_dynamics/representation_probe.py": "9d73c983354b0f536b82b52bf88c6be6cb37b03ff0f50e6734656e49ae7cb3a7",
+    "src/surface_dynamics/temporal_v2.py": "1fc041e975ac6beb5e4ba33340ff7fa0d8f5012a27fa8ffda98043ad393e7468",
+    "src/surface_dynamics/dynamic_view.py": "60dd061c3c6a053096b5fa68e47197bdd19d6559212cd9940e98e4ba9140174e",
+    "src/surface_dynamics/flood_signatures.py": "52c3b1aa11cdec3dfa3154aa5b7d267b722db155317825b2a278e89742a410ec",
+    "src/surface_dynamics/analysis.py": "7fffbe4c1dcd18f21006f2a553fc93a548479fb16302b5209f119b19daea813b",
+    "models/global_explorer_v2/masked_temporal_transformer.pt": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+    "products/flood_pilot/cases/chokwe/cube.npz": "455bcb0d47888aab24fde1ab52cd2bbbacef109a98e21718126d13adfe730be4",
+    "products/flood_pilot/cases/chokwe/reference_pair.npz": "d12e4035d8168a4ed115e6356676cd65a813e24f95f35f0736a5603ffa8c040e",
+    "products/flood_pilot/cases/chokwe/reference_pair.json": "2eb92a41fe7fb609eac5b87e45e788ba5a889499dbda68c406aab1fa367266b3",
+    "products/flood_pilot/cases/qadirabad/cube.npz": "2337041724bc9d755be0eb9ff4eb6d13609e97a5bd4c20f168c6cc835b62b7f9",
+    "products/flood_pilot/cases/qadirabad/reference_pair.npz": "505a13570a1fb9ad5feb884953f245d605aeecfc99d88eee09f7cf0f1d962c56",
+    "products/flood_pilot/cases/qadirabad/reference_pair.json": "478bca69c773ce76b5ee5d71535435f8bc0ae1f1fe3479549cf23b89a7569902",
+    "products/flood_pilot/cases/richmond/cube.npz": "47b8a71347a14e92b7d1d60c0da14dd38e2206d014baceafde00dc5b7c9bb8c6",
+    "products/flood_pilot/cases/richmond/reference_pair.npz": "0b00db59feef28aa7b459405a12f27b72b8fc524fb2c79f12e82fb6e9e1d71fa",
+    "products/flood_pilot/cases/richmond/reference_pair.json": "d57db90d328e6024751480e409cce06cb0122adbefc8b01a58cf9fe15fd75529",
+    "products/characterization_v05/cases/rajshahi/cube.npz": "0680e15eb86f4f479ac4775d99afc644bb3d766a5dfe89e8d7bcd3c614212b1b",
+    "products/characterization_v05/cases/rajshahi/reference_pair.npz": "329185e1ca0389b0551358233a9290f17af7c5c7cf0cd74a9e14fd7b265c1135",
+    "products/characterization_v05/cases/rajshahi/reference_pair.json": "c59b718812207e8f281d243165e76685587a43444f98f264d0c4ce6158e07fda",
+    "products/characterization_v05/cases/gimcheon/cube.npz": "4864316b3c2648aeb56363b8d5ff6d9e77a12718553c3535bb91a3afe5a8cd30",
+    "products/characterization_v05/cases/gimcheon/reference_pair.npz": "ef71814743c60a961405656b1684b6a9f87b7ae6ae0cfbc1feaba9f69a40538d",
+    "products/characterization_v05/cases/gimcheon/reference_pair.json": "40b575ab8bcb8aca71ba435fbee188c6035b124315e420b050ba6060ffd664d3",
+    "products/characterization_v05/cases/benguerir/cube.npz": "d00e05a68aaf430ab0888015e09fdb70d8878baeb9b179d0469f6d40c548550f",
+    "products/characterization_v05/cases/benguerir/reference_pair.npz": "d132615324ca0d6f1911da473258cf2fff1ec152ade3c2cfb4bdbbc1dc432192",
+    "products/characterization_v05/cases/benguerir/reference_pair.json": "d3eb1ede9301ed26692efdbf06e5f803f2eda530e3b8585fb3caefa07cbf6330",
+    "products/characterization_v05/cases/wheatbelt/cube.npz": "71ed73ad525279ac6f7803d869ad4313bfd3b46bbe5fdf155c5ce87d24009d83",
+    "products/characterization_v05/cases/wheatbelt/reference_pair.npz": "923c03b91678a72885c466003dc201f694a5389bffe2c0793169ba6976a6d961",
+    "products/characterization_v05/cases/wheatbelt/reference_pair.json": "ab72a33429c29a730079789a5d34bd762b77ffd0a89b27934e9ecdccf24ec6dc"
+  }
+}

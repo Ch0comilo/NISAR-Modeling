@@ -1,0 +1,131 @@
+{
+  "selection": {
+    "case_id": "venezuela_june2026",
+    "longitude": -68.32,
+    "latitude": 10.4,
+    "extent_km": 15,
+    "event_context_date": "2026-06-24",
+    "series_key": "162_A_007_4000_SH",
+    "coherence_threshold": 0.35,
+    "context_source": "https://www.paho.org/sites/default/files/2026/06/ven-earthquakessitrep124jun2026v2-1.pdf",
+    "selection_policy": "A priori epicentral candidate, 15 km window and three contiguous before/bracketing/after intervals; no phase-pattern or displacement-based selection",
+    "source_ids": [
+      "NISAR_L2_PR_GUNW_021_162_A_007_022_4000_SH_20260601T100657_20260601T100731_20260613T100656_20260613T100731_P05023_N_F_J_001",
+      "NISAR_L2_PR_GUNW_022_162_A_007_023_4000_SH_20260613T100656_20260613T100731_20260625T100655_20260625T100730_P05023_N_F_J_001",
+      "NISAR_L2_PR_GUNW_023_162_A_007_024_4000_SH_20260625T100655_20260625T100730_20260707T100655_20260707T100729_P05023_N_F_J_001"
+    ],
+    "catalog_sha256": "a027085219934db25ef0e324f6e4d7f753e5b956fac597396bd0f8e0ed50c98a"
+  },
+  "readiness_status": "not_displacement_ready",
+  "quality": {
+    "common_phase_support_fraction": 0.489786102308737,
+    "common_phase_support_pixels": 17311,
+    "common_coherence_support_fraction": 1.0,
+    "shared_reference": {
+      "pixel": [
+        129,
+        73
+      ],
+      "x": 572760.0,
+      "y": 1146920.0,
+      "epsg": 32619,
+      "selection": "maximum minimum coherence on common selected-component support",
+      "independently_stable": false,
+      "phase_datum_rad": [
+        -3.343005657196045,
+        16.53411293029785,
+        -17.95627212524414
+      ]
+    },
+    "phase_comparison_status": "common_pixel_uncorrected_phase",
+    "coherence_threshold": 0.35,
+    "coherence_histogram_bin_edges": [
+      0.0,
+      0.1,
+      0.2,
+      0.30000000000000004,
+      0.4,
+      0.5,
+      0.6000000000000001,
+      0.7000000000000001,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "common_correction_input_pixels": 2,
+    "common_correction_input_fraction_of_grid": 5.658669081032141e-05,
+    "common_correction_input_fraction_of_common_phase_support": 0.00011553347582462019,
+    "candidate_reference": null,
+    "eligibility_is_correction_validation": false
+  },
+  "pair_quality": [
+    {
+      "source_id": "NISAR_L2_PR_GUNW_021_162_A_007_022_4000_SH_20260601T100657_20260601T100731_20260613T100656_20260613T100731_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 28180,
+      "ionosphere_filled_coherent_pixels": 28116,
+      "finite_screen_coherent_pixels": 28180,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 64,
+      "eligible_fraction_of_grid": 0.0018107741059302852,
+      "eligible_fraction_of_coherent_support": 0.00227111426543648,
+      "eligible_screen_05_50_95_rad": [
+        16.499427223205565,
+        16.92321491241455,
+        17.241638565063475
+      ],
+      "eligible_reported_uncertainty_05_50_95_rad": [
+        1.3218338668346405,
+        1.4598559737205505,
+        1.6553935647010802
+      ]
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_022_162_A_007_023_4000_SH_20260613T100656_20260613T100731_20260625T100655_20260625T100730_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 27653,
+      "ionosphere_filled_coherent_pixels": 27572,
+      "finite_screen_coherent_pixels": 27653,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 81,
+      "eligible_fraction_of_grid": 0.0022917609778180174,
+      "eligible_fraction_of_coherent_support": 0.002929157776733085,
+      "eligible_screen_05_50_95_rad": [
+        29.929597854614258,
+        30.324504852294922,
+        30.91250991821289
+      ],
+      "eligible_reported_uncertainty_05_50_95_rad": [
+        1.4007222652435303,
+        1.6202212572097778,
+        1.7632559537887573
+      ]
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_023_162_A_007_024_4000_SH_20260625T100655_20260625T100730_20260707T100655_20260707T100729_P05023_N_F_J_001",
+      "coherent_selected_component_pixels": 18972,
+      "ionosphere_filled_coherent_pixels": 18562,
+      "finite_screen_coherent_pixels": 18972,
+      "missing_or_nonpositive_uncertainty_coherent_pixels": 0,
+      "unfilled_screen_and_positive_uncertainty_pixels": 410,
+      "eligible_fraction_of_grid": 0.01160027161611589,
+      "eligible_fraction_of_coherent_support": 0.02161079485557664,
+      "eligible_screen_05_50_95_rad": [
+        -50.98972053527832,
+        -49.985334396362305,
+        -49.3646858215332
+      ],
+      "eligible_reported_uncertainty_05_50_95_rad": [
+        1.7093039751052856,
+        1.933757722377777,
+        2.2900069475173948
+      ]
+    }
+  ],
+  "network_cycle_ranks": {
+    "054_D_083_4000_SH": 0,
+    "162_A_007_4000_SH": 0
+  },
+  "independent_stable_reference_supplied": false,
+  "independent_geodetic_validation_supplied": false,
+  "corrected_los_displacement_cm": null,
+  "stack_status": "complete"
+}

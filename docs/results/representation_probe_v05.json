@@ -1,0 +1,514 @@
+{
+  "protocol_id": "frozen_optical_transition_knn_v1",
+  "scope": "optical-product transition retrieval proxy, not independent physical-behavior truth or a trained global flood classifier",
+  "admission": [
+    {
+      "case_id": "chokwe",
+      "status": "evaluated",
+      "grid_cells": 1024,
+      "complete_measured_cells": 1024,
+      "joint_unambiguous_reference_cells": 146,
+      "class_counts": {
+        "0": 134,
+        "1": 12,
+        "2": 0
+      },
+      "baseline_dates": 4,
+      "assessment_dates": 1,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "qadirabad",
+      "status": "evaluated",
+      "grid_cells": 1024,
+      "complete_measured_cells": 1024,
+      "joint_unambiguous_reference_cells": 363,
+      "class_counts": {
+        "0": 160,
+        "1": 23,
+        "2": 180
+      },
+      "baseline_dates": 3,
+      "assessment_dates": 5,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "richmond",
+      "status": "evaluated",
+      "grid_cells": 4096,
+      "complete_measured_cells": 2487,
+      "joint_unambiguous_reference_cells": 284,
+      "class_counts": {
+        "0": 284,
+        "1": 0,
+        "2": 0
+      },
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "rajshahi",
+      "status": "evaluated",
+      "grid_cells": 1024,
+      "complete_measured_cells": 157,
+      "joint_unambiguous_reference_cells": 56,
+      "class_counts": {
+        "0": 56,
+        "1": 0,
+        "2": 0
+      },
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "gimcheon",
+      "status": "evaluated",
+      "grid_cells": 1024,
+      "complete_measured_cells": 1023,
+      "joint_unambiguous_reference_cells": 9,
+      "class_counts": {
+        "0": 9,
+        "1": 0,
+        "2": 0
+      },
+      "baseline_dates": 1,
+      "assessment_dates": 5,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "benguerir",
+      "status": "evaluated",
+      "grid_cells": 1024,
+      "complete_measured_cells": 1024,
+      "joint_unambiguous_reference_cells": 1024,
+      "class_counts": {
+        "0": 1024,
+        "1": 0,
+        "2": 0
+      },
+      "baseline_dates": 5,
+      "assessment_dates": 3,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    },
+    {
+      "case_id": "wheatbelt",
+      "status": "evaluated",
+      "grid_cells": 4096,
+      "complete_measured_cells": 4096,
+      "joint_unambiguous_reference_cells": 3380,
+      "class_counts": {
+        "0": 3330,
+        "1": 1,
+        "2": 49
+      },
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "posting_m": 160,
+      "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "rajshahi",
+      "support": {
+        "grid_cells": 1024,
+        "complete_measured_cells": 157,
+        "joint_unambiguous_reference_cells": 56,
+        "class_counts": {
+          "0": 56,
+          "1": 0,
+          "2": 0
+        },
+        "baseline_dates": 6,
+        "assessment_dates": 4,
+        "posting_m": 160,
+        "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+      },
+      "methods": {
+        "physical": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              56,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            1.0,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            null,
+            null
+          ],
+          "mean_recall_over_present_reference_classes": 1.0,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.0,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        },
+        "learned": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              55,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.9821428571428571,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            null,
+            0.0
+          ],
+          "mean_recall_over_present_reference_classes": 0.9821428571428571,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.0,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        }
+      }
+    },
+    {
+      "case_id": "gimcheon",
+      "support": {
+        "grid_cells": 1024,
+        "complete_measured_cells": 1023,
+        "joint_unambiguous_reference_cells": 9,
+        "class_counts": {
+          "0": 9,
+          "1": 0,
+          "2": 0
+        },
+        "baseline_dates": 1,
+        "assessment_dates": 5,
+        "posting_m": 160,
+        "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+      },
+      "methods": {
+        "physical": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            1.0,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            null,
+            null
+          ],
+          "mean_recall_over_present_reference_classes": 1.0,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.0,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        },
+        "learned": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              8,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.8888888888888888,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            null,
+            0.0
+          ],
+          "mean_recall_over_present_reference_classes": 0.8888888888888888,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.0,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        }
+      }
+    },
+    {
+      "case_id": "benguerir",
+      "support": {
+        "grid_cells": 1024,
+        "complete_measured_cells": 1024,
+        "joint_unambiguous_reference_cells": 1024,
+        "class_counts": {
+          "0": 1024,
+          "1": 0,
+          "2": 0
+        },
+        "baseline_dates": 5,
+        "assessment_dates": 3,
+        "posting_m": 160,
+        "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+      },
+      "methods": {
+        "physical": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              713,
+              284,
+              27
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.6962890625,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "mean_recall_over_present_reference_classes": 0.6962890625,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.27734375,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        },
+        "learned": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              699,
+              134,
+              191
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.6826171875,
+            null,
+            null
+          ],
+          "precision_by_class": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "mean_recall_over_present_reference_classes": 0.6826171875,
+          "present_reference_classes": 1,
+          "reference_nonwater_predicted_new_water_fraction": 0.130859375,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        }
+      }
+    },
+    {
+      "case_id": "wheatbelt",
+      "support": {
+        "grid_cells": 4096,
+        "complete_measured_cells": 4096,
+        "joint_unambiguous_reference_cells": 3380,
+        "class_counts": {
+          "0": 3330,
+          "1": 1,
+          "2": 49
+        },
+        "baseline_dates": 6,
+        "assessment_dates": 4,
+        "posting_m": 160,
+        "support_scope": "Identical complete HH/HV trajectories and strict optical transition groups for both methods"
+      },
+      "methods": {
+        "physical": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              868,
+              825,
+              1637
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              19,
+              13,
+              17
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.2606606606606607,
+            0.0,
+            0.3469387755102041
+          ],
+          "precision_by_class": [
+            0.9785794813979707,
+            0.0,
+            0.01027190332326284
+          ],
+          "mean_recall_over_present_reference_classes": 0.20253314539028824,
+          "present_reference_classes": 3,
+          "reference_nonwater_predicted_new_water_fraction": 0.24774774774774774,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        },
+        "learned": {
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              316,
+              3014,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              44,
+              5,
+              0
+            ]
+          ],
+          "classes": [
+            0,
+            1,
+            2
+          ],
+          "recall_by_class": [
+            0.0948948948948949,
+            1.0,
+            0.0
+          ],
+          "precision_by_class": [
+            0.8777777777777778,
+            0.00033112582781456954,
+            null
+          ],
+          "mean_recall_over_present_reference_classes": 0.36496496496496494,
+          "present_reference_classes": 3,
+          "reference_nonwater_predicted_new_water_fraction": 0.9051051051051051,
+          "limitation": "Optical-product transition agreement on selected complete support; not validated event accuracy, physical-behavior truth or a calibrated probability"
+        }
+      }
+    }
+  ],
+  "status": "completed_proxy_evaluation",
+  "training_class_counts": {
+    "0": 550,
+    "1": 35,
+    "2": 180
+  },
+  "limitations": [
+    "Three development scenes supply proxy examples; the four new scenes remain region-level evaluation units.",
+    "The frozen temporal encoder was trained on radar elsewhere, without these new scene labels. No new neural weights are fitted.",
+    "Complete-support and optical-class filtering can bias the evaluated population. Cloudy/mixed cells remain outside the scored set.",
+    "The learned feature uses bidirectional observed context; this is retrospective retrieval, not forecasting.",
+    "A weak or absent reference class cannot establish phenomenon absence or global accuracy."
+  ],
+  "training_scaling_scope": "Same development samples; feature center/SD fitted on development only; identical test support and fixed k=5"
+}

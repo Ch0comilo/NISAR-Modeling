@@ -1,0 +1,12 @@
+{
+  "id": "observed_behavior_v1",
+  "co_pol_change_db": 3.0,
+  "minimum_baseline_dates": 3,
+  "minimum_assessment_dates": 2,
+  "repeated_minimum_count": 2,
+  "repeated_fraction": 0.75,
+  "gradual_minimum_dates": 6,
+  "gradual_directional_fraction": 0.8,
+  "gradual_maximum_step_fraction": 0.6,
+  "minimum_comparison_pixels": 8
+}

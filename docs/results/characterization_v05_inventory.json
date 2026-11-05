@@ -1,0 +1,891 @@
+[
+  {
+    "case_id": "chokwe",
+    "role": "development",
+    "status": "partial",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 16384,
+      "fixed_fraction_of_selection": 1.0,
+      "per_date_channel_supported_cells": [
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "insufficient_temporal_support",
+      "spatial_pattern_counts": {
+        "insufficient_temporal_support": 16384
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "insufficient_temporal_support"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": -0.1601677437165563,
+            "median": 0.8683323860168457,
+            "p05": -8.773269128799438,
+            "p25": -1.6460556983947754,
+            "p75": 2.3409003019332886,
+            "p95": 4.430259394645691
+          },
+          "median_temporal_scaled_mad_db": 1.51922607421875,
+          "first_assessment_darkening_fraction": 0.18756103515625,
+          "first_assessment_brightening_fraction": 0.156005859375
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": -0.7203826973418472,
+            "median": -0.0879669189453125,
+            "p05": -6.687530136108398,
+            "p25": -1.9055490493774414,
+            "p75": 1.162661075592041,
+            "p95": 2.70779218673706
+          },
+          "median_temporal_scaled_mad_db": 0.9054932594299316,
+          "first_assessment_darkening_fraction": 0.177978515625,
+          "first_assessment_brightening_fraction": 0.03570556640625
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.560214953625291,
+        "median_db": -0.600085973739624,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "limited_independent_support",
+    "artifacts": 28
+  },
+  {
+    "case_id": "qadirabad",
+    "role": "development",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 16384,
+      "fixed_fraction_of_selection": 1.0,
+      "per_date_channel_supported_cells": [
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 9722,
+        "repeated_observed_darkening": 635,
+        "repeated_observed_brightening": 448,
+        "intermittent_observed_crossings": 5471,
+        "gradual_observed_darkening": 20,
+        "gradual_observed_brightening": 88
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": -0.6589878762979424,
+            "median": -0.5500192642211914,
+            "p05": -4.671367359161377,
+            "p25": -2.272646903991699,
+            "p75": 1.1054961681365967,
+            "p95": 3.0652474880218494
+          },
+          "median_temporal_scaled_mad_db": 1.3531423807144165,
+          "first_assessment_darkening_fraction": 0.1575927734375,
+          "first_assessment_brightening_fraction": 0.05377197265625
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": -0.3912366763688624,
+            "median": -0.3991870880126953,
+            "p05": -3.4881618499755858,
+            "p25": -1.6407995223999023,
+            "p75": 0.9636635780334473,
+            "p95": 2.7018287181854244
+          },
+          "median_temporal_scaled_mad_db": 1.053406000137329,
+          "first_assessment_darkening_fraction": 0.07244873046875,
+          "first_assessment_brightening_fraction": 0.0361328125
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": 0.26775119992908003,
+        "median_db": 0.2702641487121582,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "independent_product_comparison",
+    "artifacts": 32
+  },
+  {
+    "case_id": "richmond",
+    "role": "development",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 65536,
+      "fixed_common_support_cells": 40326,
+      "fixed_fraction_of_selection": 0.615325927734375,
+      "per_date_channel_supported_cells": [
+        [
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        [
+          40865,
+          40865,
+          40865,
+          40865
+        ],
+        [
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        [
+          40326,
+          40326,
+          40326,
+          40326
+        ],
+        [
+          40390,
+          40390,
+          40390,
+          40390
+        ],
+        [
+          65536,
+          65536,
+          65536,
+          65536
+        ],
+        [
+          40709,
+          40709,
+          40709,
+          40709
+        ],
+        [
+          65536,
+          65536,
+          65536,
+          65536
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 26271,
+        "repeated_observed_darkening": 40,
+        "repeated_observed_brightening": 5045,
+        "intermittent_observed_crossings": 8151,
+        "mixed_observed_change": 2,
+        "gradual_observed_darkening": 5,
+        "gradual_observed_brightening": 812
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": 1.7541546430179993,
+            "median": 1.4082354307174683,
+            "p05": -0.7817718386650085,
+            "p25": 0.46727705001831055,
+            "p75": 2.589339256286621,
+            "p95": 5.965148091316223
+          },
+          "median_temporal_scaled_mad_db": 1.070934772491455,
+          "first_assessment_darkening_fraction": 0.0023805981252789763,
+          "first_assessment_brightening_fraction": 0.19672171799831376
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": 1.3777378234997142,
+            "median": 1.0236310958862305,
+            "p05": -1.2397913932800293,
+            "p25": 0.06009650230407715,
+            "p75": 2.2077860832214355,
+            "p95": 5.780765056610107
+          },
+          "median_temporal_scaled_mad_db": 0.9845097064971924,
+          "first_assessment_darkening_fraction": 0.0038684719535783366,
+          "first_assessment_brightening_fraction": 0.15910330803947825
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.3764168195182851,
+        "median_db": -0.39777012169361115,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "limited_independent_support",
+    "artifacts": 32
+  },
+  {
+    "case_id": "rajshahi",
+    "role": "fresh_flood_context_test",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 2768,
+      "fixed_fraction_of_selection": 0.1689453125,
+      "per_date_channel_supported_cells": [
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          2768,
+          2768
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 2567,
+        "repeated_observed_darkening": 35,
+        "repeated_observed_brightening": 2,
+        "intermittent_observed_crossings": 164
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": -0.9425694354381843,
+            "median": -0.9001753330230713,
+            "p05": -2.438307726383209,
+            "p25": -1.4669716954231262,
+            "p75": -0.3782423585653305,
+            "p95": 0.4277652502059938
+          },
+          "median_temporal_scaled_mad_db": 0.9582653045654297,
+          "first_assessment_darkening_fraction": 0.019869942196531792,
+          "first_assessment_brightening_fraction": 0.000361271676300578
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": -0.30364163811022493,
+            "median": -0.31978368759155273,
+            "p05": -1.7388296127319336,
+            "p25": -0.8723092079162598,
+            "p75": 0.27515554428100586,
+            "p95": 1.1668429374694826
+          },
+          "median_temporal_scaled_mad_db": 0.8801285028457642,
+          "first_assessment_darkening_fraction": 0.0032514450867052024,
+          "first_assessment_brightening_fraction": 0.001083815028901734
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": 0.6389277973279593,
+        "median_db": 0.6187845170497894,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "limited_independent_support",
+    "artifacts": 32
+  },
+  {
+    "case_id": "gimcheon",
+    "role": "fresh_flood_context_test",
+    "status": "partial",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 16383,
+      "fixed_fraction_of_selection": 0.99993896484375,
+      "per_date_channel_supported_cells": [
+        [
+          16384,
+          16384
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "insufficient_temporal_support",
+      "spatial_pattern_counts": {
+        "insufficient_temporal_support": 16383
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "insufficient_temporal_support"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": 0.8450816342219829,
+            "median": 0.7764987945556641,
+            "p05": -0.7924205303192139,
+            "p25": 0.15174150466918945,
+            "p75": 1.4843766689300537,
+            "p95": 2.751370726525783
+          },
+          "median_temporal_scaled_mad_db": 0.5937569737434387,
+          "first_assessment_darkening_fraction": 0.0028688274430812427,
+          "first_assessment_brightening_fraction": 0.03460904596227797
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": 0.28094259663860466,
+            "median": 0.24697017669677734,
+            "p05": -1.4279348373413085,
+            "p25": -0.41781091690063477,
+            "p75": 0.9633419513702393,
+            "p95": 2.0668727874755857
+          },
+          "median_temporal_scaled_mad_db": 0.5686599612236023,
+          "first_assessment_darkening_fraction": 0.003357138497222731,
+          "first_assessment_brightening_fraction": 0.010132454373435879
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.5641390375833782,
+        "median_db": -0.5461821556091309,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "limited_independent_support",
+    "artifacts": 32
+  },
+  {
+    "case_id": "benguerir",
+    "role": "candidate_nonwater_control",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 16384,
+      "fixed_fraction_of_selection": 1.0,
+      "per_date_channel_supported_cells": [
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ],
+        [
+          16384,
+          16384
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 15344,
+        "repeated_observed_darkening": 6,
+        "repeated_observed_brightening": 17,
+        "intermittent_observed_crossings": 957,
+        "mixed_observed_change": 1,
+        "gradual_observed_darkening": 8,
+        "gradual_observed_brightening": 51
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": 0.12860930039551022,
+            "median": 0.10365581512451172,
+            "p05": -1.0451443672180176,
+            "p25": -0.343578577041626,
+            "p75": 0.5594487190246582,
+            "p95": 1.285526037216186
+          },
+          "median_temporal_scaled_mad_db": 0.5443242788314819,
+          "first_assessment_darkening_fraction": 0.0013427734375,
+          "first_assessment_brightening_fraction": 0.005859375
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": 0.006010097320540808,
+            "median": -0.0059719085693359375,
+            "p05": -1.1862587928771973,
+            "p25": -0.4841799736022949,
+            "p75": 0.45374345779418945,
+            "p95": 1.177726793289183
+          },
+          "median_temporal_scaled_mad_db": 0.540153980255127,
+          "first_assessment_darkening_fraction": 0.0006103515625,
+          "first_assessment_brightening_fraction": 0.00360107421875
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.12259920307496941,
+        "median_db": -0.1114797592163086,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "independent_product_comparison",
+    "artifacts": 32
+  },
+  {
+    "case_id": "wheatbelt",
+    "role": "candidate_nonwater_control",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 65536,
+      "fixed_common_support_cells": 65536,
+      "fixed_fraction_of_selection": 1.0,
+      "per_date_channel_supported_cells": [
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ],
+        [
+          65536,
+          65536
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 33315,
+        "repeated_observed_darkening": 10296,
+        "repeated_observed_brightening": 654,
+        "intermittent_observed_crossings": 21152,
+        "mixed_observed_change": 19,
+        "gradual_observed_darkening": 99,
+        "gradual_observed_brightening": 1
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": -0.4518861566573378,
+            "median": -0.6222176551818848,
+            "p05": -3.007314443588257,
+            "p25": -1.6235146522521973,
+            "p75": 0.48885250091552734,
+            "p95": 2.8030965328216553
+          },
+          "median_temporal_scaled_mad_db": 1.6282504796981812,
+          "first_assessment_darkening_fraction": 0.0504608154296875,
+          "first_assessment_brightening_fraction": 0.0441436767578125
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": -0.5878063326526899,
+            "median": -0.6885166168212891,
+            "p05": -3.1039633750915527,
+            "p25": -1.6483986377716064,
+            "p75": 0.26964235305786133,
+            "p95": 2.467092514038086
+          },
+          "median_temporal_scaled_mad_db": 1.3497340679168701,
+          "first_assessment_darkening_fraction": 0.05792236328125,
+          "first_assessment_brightening_fraction": 0.0387725830078125
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.1359201759953521,
+        "median_db": -0.10802078247070312,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "independent_product_comparison",
+    "artifacts": 32
+  },
+  {
+    "case_id": "rowe_creek",
+    "role": "wildfire_development",
+    "status": "complete",
+    "quality": {
+      "selected_grid_cells": 16384,
+      "fixed_common_support_cells": 16383,
+      "fixed_fraction_of_selection": 0.99993896484375,
+      "per_date_channel_supported_cells": [
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ],
+        [
+          16383,
+          16383
+        ]
+      ],
+      "support_policy": "Same cells observed in every chosen baseline/assessment date and selected co-/cross-pol channel; no changing-population trajectory"
+    },
+    "behavior": {
+      "regional_pattern": "no_observed_threshold_crossing",
+      "spatial_pattern_counts": {
+        "no_observed_threshold_crossing": 15312,
+        "repeated_observed_brightening": 1,
+        "intermittent_observed_crossings": 1023,
+        "gradual_observed_brightening": 47
+      },
+      "legend": {
+        "0": "insufficient_temporal_support",
+        "1": "no_observed_threshold_crossing",
+        "2": "repeated_observed_darkening",
+        "3": "repeated_observed_brightening",
+        "4": "intermittent_observed_crossings",
+        "5": "mixed_observed_change",
+        "6": "gradual_observed_darkening",
+        "7": "gradual_observed_brightening",
+        "255": "unsupported"
+      },
+      "spatial_pattern_unit": "analysis cells",
+      "persistence_semantics": "Fraction/count of observed assessment acquisitions; no continuous duration or ecosystem recovery inferred",
+      "most_frequent_cell_pattern": "no_observed_threshold_crossing"
+    },
+    "what_changed": {
+      "channels": [
+        {
+          "polarization": "HH",
+          "first_assessment_change_db": {
+            "mean": 0.10324358378386297,
+            "median": 0.10913658142089844,
+            "p05": -0.9059865951538086,
+            "p25": -0.2986416816711426,
+            "p75": 0.5002923011779785,
+            "p95": 1.1090941429138181
+          },
+          "median_temporal_scaled_mad_db": 0.6341130137443542,
+          "first_assessment_darkening_fraction": 6.103888176768602e-05,
+          "first_assessment_brightening_fraction": 6.103888176768602e-05
+        },
+        {
+          "polarization": "HV",
+          "first_assessment_change_db": {
+            "mean": -0.025387033746478715,
+            "median": -0.019834518432617188,
+            "p05": -1.1497167587280273,
+            "p25": -0.47814321517944336,
+            "p75": 0.4263343811035156,
+            "p95": 1.077288246154785
+          },
+          "median_temporal_scaled_mad_db": 0.5637176036834717,
+          "first_assessment_darkening_fraction": 0.00012207776353537203,
+          "first_assessment_brightening_fraction": 0.0
+        }
+      ],
+      "polarization_ratio_change": {
+        "definition": "HV minus HH dB change, equivalent to change in log power ratio",
+        "mean_db": -0.1286306175303417,
+        "median_db": -0.1170949935913086,
+        "independent_measurement": false
+      },
+      "statistic_scope": "Cellwise dB relative to per-cell baseline median, summarized across fixed common support"
+    },
+    "evidence": "independent_product_comparison",
+    "artifacts": 27
+  }
+]

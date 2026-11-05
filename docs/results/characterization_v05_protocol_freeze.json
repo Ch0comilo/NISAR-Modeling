@@ -1,0 +1,11 @@
+{
+  "protocol_id": "surface_characterization_v05_fixed_v1",
+  "scope": "freeze before fresh radar/reference agreement is inspected",
+  "files": {
+    "configs/characterization_v05.json": "8504e1335aeb27e703e28bb4671a99d5c9aeb35b1f313e7415bbbb534eac7e3a",
+    "src/surface_dynamics/flood_signatures.py": "52c3b1aa11cdec3dfa3154aa5b7d267b722db155317825b2a278e89742a410ec",
+    "contracts/flood-policy.json": "bc8e7116e3c4defcdcd6a9e1377394ed96274e8d024ec8dcbc83f28b6ed3b15f",
+    "models/global_explorer_v2/masked_temporal_transformer.pt": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+    "src/surface_dynamics/temporal_v2.py": "1fc041e975ac6beb5e4ba33340ff7fa0d8f5012a27fa8ffda98043ad393e7468"
+  }
+}

@@ -159,6 +159,13 @@
       "result_schema": "insar-readiness-result.schema.json",
       "status": "correction_input_audit_only",
       "displacement_available": false
+    },
+    "shared": {
+      "command": "characterize",
+      "request_schema": "characterization-request.schema.json",
+      "result_schema": "characterization-result.schema.json",
+      "status": "observed_behavior_and_evidence_report",
+      "phenomenon_classifier": false
     }
   }
 }

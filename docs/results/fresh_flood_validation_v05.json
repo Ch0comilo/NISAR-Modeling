@@ -1,0 +1,369 @@
+[
+  {
+    "case_id": "rajshahi",
+    "role": "fresh_flood_context_test",
+    "status": "partial",
+    "signature_summary": {
+      "interpretation_status": "no_resolved_new_open_water_group_in_reference_snapshots",
+      "co_polarization": "HH",
+      "cross_polarization": "HV",
+      "radar_supported_pixels": 16384,
+      "darkening_pixels": 410,
+      "brightening_pixels": 19,
+      "darkening_signature_analysis_cell_area_ha": 65.6,
+      "new_open_water_reference_analysis_cell_area_ha": 0.0,
+      "area_semantics": "Nominal analysis-cell area of the specified mask, not independently retrieved inundation extent or water volume",
+      "signature_objects_total": 17,
+      "reported_objects": 17
+    },
+    "reference_evidence": {
+      "status": "temporally_eligible",
+      "pre_date": "2026-09-07",
+      "post_date": "2026-09-10",
+      "pre_offset_days": 2,
+      "post_offset_days": 7,
+      "source_family": "OPERA_DSWX_HLS",
+      "sha256": "329185e1ca0389b0551358233a9290f17af7c5c7cf0cd74a9e14fd7b265c1135",
+      "reference_kind": "independent_optical_classification_product_not_ground_truth",
+      "comparison_supported_pixels": 5259,
+      "fraction_of_radar_support": 0.32098388671875,
+      "group_legend": {
+        "0": "reference-stable predominantly nonwater",
+        "1": "new strict open-water class",
+        "2": "stable strict open-water class",
+        "3": "strict open-water class loss",
+        "4": "mixed/partial or other ambiguous transition",
+        "255": "unsupported SAR/reference or temporally ineligible"
+      },
+      "group_counts": {
+        "reference-stable predominantly nonwater": 5063,
+        "new strict open-water class": 0,
+        "stable strict open-water class": 0,
+        "strict open-water class loss": 0,
+        "mixed/partial or other ambiguous transition": 196,
+        "unsupported SAR/reference or temporally ineligible": 11125
+      }
+    },
+    "proxy_comparison": {
+      "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+      "scored_pixels": 5063,
+      "true_positive_proxy_pixels": 0,
+      "false_positive_proxy_pixels": 13,
+      "false_negative_proxy_pixels": 0,
+      "true_negative_proxy_pixels": 5050,
+      "precision_against_proxy": 0.0,
+      "recall_against_proxy": null,
+      "intersection_over_union_against_proxy": 0.0,
+      "reference_stable_nonwater_radar_flag_rate": 0.002567647639739285,
+      "reference_stable_open_water_radar_flag_rate": null,
+      "reference_water_loss_radar_flag_rate": null,
+      "unscored_reference_or_mixed_pixels": 11321,
+      "radar_comparator": "first assessment minus median of declared baseline acquisitions",
+      "last_baseline_sensitivity": {
+        "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+        "scored_pixels": 5063,
+        "true_positive_proxy_pixels": 0,
+        "false_positive_proxy_pixels": 92,
+        "false_negative_proxy_pixels": 0,
+        "true_negative_proxy_pixels": 4971,
+        "precision_against_proxy": 0.0,
+        "recall_against_proxy": null,
+        "intersection_over_union_against_proxy": 0.0,
+        "reference_stable_nonwater_radar_flag_rate": 0.018171044835078018,
+        "reference_stable_open_water_radar_flag_rate": null,
+        "reference_water_loss_radar_flag_rate": null,
+        "unscored_reference_or_mixed_pixels": 11321,
+        "radar_comparator": "first assessment minus last baseline acquisition; same policy thresholds, not an optimized alternative"
+      }
+    },
+    "matched_controls": {
+      "positive_pixels": 0,
+      "matched_control_pixels": 0,
+      "matched_positive_pixels": 0,
+      "matched_fraction": null,
+      "co_pol_contrast": {
+        "status": "unavailable",
+        "reason": "Both comparison groups require measured support"
+      }
+    }
+  },
+  {
+    "case_id": "gimcheon",
+    "role": "fresh_flood_context_test",
+    "status": "partial",
+    "signature_summary": {
+      "interpretation_status": "no_resolved_new_open_water_group_in_reference_snapshots",
+      "co_polarization": "HH",
+      "cross_polarization": "HV",
+      "radar_supported_pixels": 16383,
+      "darkening_pixels": 28,
+      "brightening_pixels": 567,
+      "darkening_signature_analysis_cell_area_ha": 4.48,
+      "new_open_water_reference_analysis_cell_area_ha": 0.0,
+      "area_semantics": "Nominal analysis-cell area of the specified mask, not independently retrieved inundation extent or water volume",
+      "signature_objects_total": 1,
+      "reported_objects": 1
+    },
+    "reference_evidence": {
+      "status": "temporally_eligible",
+      "pre_date": "2026-06-27",
+      "post_date": "2026-07-11",
+      "pre_offset_days": 1,
+      "post_offset_days": 1,
+      "source_family": "OPERA_DSWX_HLS",
+      "sha256": "ef71814743c60a961405656b1684b6a9f87b7ae6ae0cfbc1feaba9f69a40538d",
+      "reference_kind": "independent_optical_classification_product_not_ground_truth",
+      "comparison_supported_pixels": 260,
+      "fraction_of_radar_support": 0.015870109259598364,
+      "group_legend": {
+        "0": "reference-stable predominantly nonwater",
+        "1": "new strict open-water class",
+        "2": "stable strict open-water class",
+        "3": "strict open-water class loss",
+        "4": "mixed/partial or other ambiguous transition",
+        "255": "unsupported SAR/reference or temporally ineligible"
+      },
+      "group_counts": {
+        "reference-stable predominantly nonwater": 228,
+        "new strict open-water class": 0,
+        "stable strict open-water class": 0,
+        "strict open-water class loss": 0,
+        "mixed/partial or other ambiguous transition": 32,
+        "unsupported SAR/reference or temporally ineligible": 16123
+      }
+    },
+    "proxy_comparison": {
+      "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+      "scored_pixels": 228,
+      "true_positive_proxy_pixels": 0,
+      "false_positive_proxy_pixels": 0,
+      "false_negative_proxy_pixels": 0,
+      "true_negative_proxy_pixels": 228,
+      "precision_against_proxy": null,
+      "recall_against_proxy": null,
+      "intersection_over_union_against_proxy": null,
+      "reference_stable_nonwater_radar_flag_rate": 0.0,
+      "reference_stable_open_water_radar_flag_rate": null,
+      "reference_water_loss_radar_flag_rate": null,
+      "unscored_reference_or_mixed_pixels": 16155,
+      "radar_comparator": "first assessment minus median of declared baseline acquisitions",
+      "last_baseline_sensitivity": {
+        "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+        "scored_pixels": 228,
+        "true_positive_proxy_pixels": 0,
+        "false_positive_proxy_pixels": 0,
+        "false_negative_proxy_pixels": 0,
+        "true_negative_proxy_pixels": 228,
+        "precision_against_proxy": null,
+        "recall_against_proxy": null,
+        "intersection_over_union_against_proxy": null,
+        "reference_stable_nonwater_radar_flag_rate": 0.0,
+        "reference_stable_open_water_radar_flag_rate": null,
+        "reference_water_loss_radar_flag_rate": null,
+        "unscored_reference_or_mixed_pixels": 16155,
+        "radar_comparator": "first assessment minus last baseline acquisition; same policy thresholds, not an optimized alternative"
+      }
+    },
+    "matched_controls": {
+      "positive_pixels": 0,
+      "matched_control_pixels": 0,
+      "matched_positive_pixels": 0,
+      "matched_fraction": null,
+      "co_pol_contrast": {
+        "status": "unavailable",
+        "reason": "Both comparison groups require measured support"
+      }
+    }
+  },
+  {
+    "case_id": "benguerir",
+    "role": "candidate_nonwater_control",
+    "status": "complete",
+    "signature_summary": {
+      "interpretation_status": "no_resolved_new_open_water_group_in_reference_snapshots",
+      "co_polarization": "HH",
+      "cross_polarization": "HV",
+      "radar_supported_pixels": 16384,
+      "darkening_pixels": 10,
+      "brightening_pixels": 96,
+      "darkening_signature_analysis_cell_area_ha": 1.6,
+      "new_open_water_reference_analysis_cell_area_ha": 0.0,
+      "area_semantics": "Nominal analysis-cell area of the specified mask, not independently retrieved inundation extent or water volume",
+      "signature_objects_total": 0,
+      "reported_objects": 0
+    },
+    "reference_evidence": {
+      "status": "temporally_eligible",
+      "pre_date": "2026-08-25",
+      "post_date": "2026-09-17",
+      "pre_offset_days": 1,
+      "post_offset_days": 2,
+      "source_family": "OPERA_DSWX_HLS",
+      "sha256": "d132615324ca0d6f1911da473258cf2fff1ec152ade3c2cfb4bdbbc1dc432192",
+      "reference_kind": "independent_optical_classification_product_not_ground_truth",
+      "comparison_supported_pixels": 16384,
+      "fraction_of_radar_support": 1.0,
+      "group_legend": {
+        "0": "reference-stable predominantly nonwater",
+        "1": "new strict open-water class",
+        "2": "stable strict open-water class",
+        "3": "strict open-water class loss",
+        "4": "mixed/partial or other ambiguous transition",
+        "255": "unsupported SAR/reference or temporally ineligible"
+      },
+      "group_counts": {
+        "reference-stable predominantly nonwater": 16382,
+        "new strict open-water class": 0,
+        "stable strict open-water class": 0,
+        "strict open-water class loss": 0,
+        "mixed/partial or other ambiguous transition": 2,
+        "unsupported SAR/reference or temporally ineligible": 0
+      }
+    },
+    "proxy_comparison": {
+      "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+      "scored_pixels": 16382,
+      "true_positive_proxy_pixels": 0,
+      "false_positive_proxy_pixels": 10,
+      "false_negative_proxy_pixels": 0,
+      "true_negative_proxy_pixels": 16372,
+      "precision_against_proxy": 0.0,
+      "recall_against_proxy": null,
+      "intersection_over_union_against_proxy": 0.0,
+      "reference_stable_nonwater_radar_flag_rate": 0.0006104260774020266,
+      "reference_stable_open_water_radar_flag_rate": null,
+      "reference_water_loss_radar_flag_rate": null,
+      "unscored_reference_or_mixed_pixels": 2,
+      "radar_comparator": "first assessment minus median of declared baseline acquisitions",
+      "last_baseline_sensitivity": {
+        "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+        "scored_pixels": 16382,
+        "true_positive_proxy_pixels": 0,
+        "false_positive_proxy_pixels": 46,
+        "false_negative_proxy_pixels": 0,
+        "true_negative_proxy_pixels": 16336,
+        "precision_against_proxy": 0.0,
+        "recall_against_proxy": null,
+        "intersection_over_union_against_proxy": 0.0,
+        "reference_stable_nonwater_radar_flag_rate": 0.0028079599560493222,
+        "reference_stable_open_water_radar_flag_rate": null,
+        "reference_water_loss_radar_flag_rate": null,
+        "unscored_reference_or_mixed_pixels": 2,
+        "radar_comparator": "first assessment minus last baseline acquisition; same policy thresholds, not an optimized alternative"
+      }
+    },
+    "matched_controls": {
+      "positive_pixels": 0,
+      "matched_control_pixels": 0,
+      "matched_positive_pixels": 0,
+      "matched_fraction": null,
+      "co_pol_contrast": {
+        "status": "unavailable",
+        "reason": "Both comparison groups require measured support"
+      }
+    }
+  },
+  {
+    "case_id": "wheatbelt",
+    "role": "candidate_nonwater_control",
+    "status": "complete",
+    "signature_summary": {
+      "interpretation_status": "optical_open_water_change_with_weak_or_mixed_radar_response",
+      "co_polarization": "HH",
+      "cross_polarization": "HV",
+      "radar_supported_pixels": 65536,
+      "darkening_pixels": 2216,
+      "brightening_pixels": 2893,
+      "darkening_signature_analysis_cell_area_ha": 354.56,
+      "new_open_water_reference_analysis_cell_area_ha": 4.8,
+      "area_semantics": "Nominal analysis-cell area of the specified mask, not independently retrieved inundation extent or water volume",
+      "signature_objects_total": 72,
+      "reported_objects": 72
+    },
+    "reference_evidence": {
+      "status": "temporally_eligible",
+      "pre_date": "2026-08-30",
+      "post_date": "2026-09-09",
+      "pre_offset_days": 2,
+      "post_offset_days": 0,
+      "source_family": "OPERA_DSWX_HLS",
+      "sha256": "923c03b91678a72885c466003dc201f694a5389bffe2c0793169ba6976a6d961",
+      "reference_kind": "independent_optical_classification_product_not_ground_truth",
+      "comparison_supported_pixels": 62520,
+      "fraction_of_radar_support": 0.9539794921875,
+      "group_legend": {
+        "0": "reference-stable predominantly nonwater",
+        "1": "new strict open-water class",
+        "2": "stable strict open-water class",
+        "3": "strict open-water class loss",
+        "4": "mixed/partial or other ambiguous transition",
+        "255": "unsupported SAR/reference or temporally ineligible"
+      },
+      "group_counts": {
+        "reference-stable predominantly nonwater": 55293,
+        "new strict open-water class": 30,
+        "stable strict open-water class": 1026,
+        "strict open-water class loss": 2,
+        "mixed/partial or other ambiguous transition": 6169,
+        "unsupported SAR/reference or temporally ineligible": 3016
+      }
+    },
+    "proxy_comparison": {
+      "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+      "scored_pixels": 56351,
+      "true_positive_proxy_pixels": 1,
+      "false_positive_proxy_pixels": 1887,
+      "false_negative_proxy_pixels": 29,
+      "true_negative_proxy_pixels": 54434,
+      "precision_against_proxy": 0.0005296610169491525,
+      "recall_against_proxy": 0.03333333333333333,
+      "intersection_over_union_against_proxy": 0.0005216484089723526,
+      "reference_stable_nonwater_radar_flag_rate": 0.03324109742643734,
+      "reference_stable_open_water_radar_flag_rate": 0.04775828460038986,
+      "reference_water_loss_radar_flag_rate": 0.0,
+      "unscored_reference_or_mixed_pixels": 9185,
+      "radar_comparator": "first assessment minus median of declared baseline acquisitions",
+      "last_baseline_sensitivity": {
+        "comparison_kind": "independent_optical_product_agreement_not_ground_truth_accuracy",
+        "scored_pixels": 56351,
+        "true_positive_proxy_pixels": 8,
+        "false_positive_proxy_pixels": 16015,
+        "false_negative_proxy_pixels": 22,
+        "true_negative_proxy_pixels": 40306,
+        "precision_against_proxy": 0.0004992822817200275,
+        "recall_against_proxy": 0.26666666666666666,
+        "intersection_over_union_against_proxy": 0.0004985976939856653,
+        "reference_stable_nonwater_radar_flag_rate": 0.2895664912375888,
+        "reference_stable_open_water_radar_flag_rate": 0.003898635477582846,
+        "reference_water_loss_radar_flag_rate": 0.0,
+        "unscored_reference_or_mixed_pixels": 9185,
+        "radar_comparator": "first assessment minus last baseline acquisition; same policy thresholds, not an optimized alternative"
+      }
+    },
+    "matched_controls": {
+      "positive_pixels": 30,
+      "matched_control_pixels": 30,
+      "matched_positive_pixels": 30,
+      "matched_fraction": 1.0,
+      "baseline_mean_positive_minus_control_db_by_channel": [
+        -0.0023667653401692706,
+        -0.0008281071980794271
+      ],
+      "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders",
+      "co_pol_contrast": {
+        "status": "descriptive_only",
+        "positive_pixels": 30,
+        "control_pixels": 30,
+        "positive_mean_db": -1.6061598459879558,
+        "control_mean_db": -0.5282875061035156,
+        "positive_median_db": -1.722825050354004,
+        "control_median_db": -0.6707925796508789,
+        "mean_contrast_db": -1.0778723398844403,
+        "spatial_resampling_95_interval_db": null,
+        "positive_blocks": 3,
+        "control_blocks": 26,
+        "reason": "Too few spatial blocks for the declared resampling interval"
+      }
+    }
+  }
+]

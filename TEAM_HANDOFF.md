@@ -2,7 +2,15 @@
 
 Current direction approved 4 November 2026: **exploration, teaching and entertainment through measured radar dynamics**. No forecasting or automatic phenomenon classification is part of this implementation. The mockup supplies case-study context only; its methods and design did not determine this model. Neither the mockup nor application frontend is modified.
 
-## Current additions: version 0.4
+## Current additions: version 0.5
+
+Use [CHARACTERIZATION_V05_CONTRACTS.md](docs/CHARACTERIZATION_V05_CONTRACTS.md) for the new shared `characterize` worker and sixteen request/result schemas. [The scientific results](docs/CHARACTERIZATION_V05.md) and [validation report](docs/CHARACTERIZATION_V05_VALIDATION.md) explain eight shared reports, five new measured scenes, fresh flood/control comparisons, an optical disturbance adapter, a frozen representation probe and a new earthquake-context InSAR stack. No frontend or mockup changes are included.
+
+The report separates `what_changed`, `when`, `behavior`, `evidence`, alternative explanations and linked method artifacts. Processing status, observed pattern and independent evidence are separate concepts. Fixed common cells prevent a changing footprint from creating an apparent regional trajectory. Spatial bootstrap means are now cell-weighted; GP bands, spatial quantiles and resampling intervals retain separate meanings. Null cause/probability/displacement fields must remain unavailable to clients.
+
+No globally validated phenomenon classifier is delivered: the fresh flood-context sites lack qualified new-water positives, and the learned-feature kNN probe fails strongly on an Australian nonwater control. The frozen temporal Transformer remains an exploratory representation. Oregon vegetation loss is not attributed to wildfire, and the Venezuela stack remains correction/reference limited. Read the complete evidence status before presenting a phenomenon interpretation.
+
+## Previous additions: version 0.4
 
 Use [CHARACTERIZATION_CONTRACTS.md](docs/CHARACTERIZATION_CONTRACTS.md) for the new flood and InSAR-readiness worker inputs, result fields, dimensions, units and offline commands. [FLOOD_CHARACTERIZATION.md](docs/FLOOD_CHARACTERIZATION.md) describes three real development cases; [FLOOD_VALIDATION.md](docs/FLOOD_VALIDATION.md) gives the evidence limits. Four new schemas bring the request/result count to fourteen. Flood depth/probability/causal attribution and InSAR displacement remain null.
 

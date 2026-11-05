@@ -1,0 +1,24 @@
+{
+  "contract_version": "1.0",
+  "request_id": "rowe_creek-surface-behavior",
+  "theme": "wildfires",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/characterization_v05/cases/rowe_creek/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-07-14"
+  },
+  "assessment": {
+    "start_date": "2026-07-15",
+    "end_date": "2026-09-30"
+  },
+  "context": {
+    "start_date": "2026-07-15",
+    "end_date": "2026-07-31",
+    "source_url": "https://www.usgs.gov/media/images/rowe-creek-complex-fire-oregon-2026",
+    "description": "USGS documents the Rowe Creek Complex near Fossil in July 2026. The selected point is an a priori scene candidate; overlap with a burned perimeter is not assumed."
+  },
+  "disturbance_reference": "products/characterization_v05/cases/rowe_creek/disturbance_reference.npz"
+}
