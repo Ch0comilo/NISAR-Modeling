@@ -8,6 +8,12 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 [Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.5.0)
 
+## New exploration: 2D maps of the frozen representations
+
+The [UMAP atlas](docs/REPRESENTATION_UMAP.md) projects **3,764 measured HH/HV histories across 21 existing scene windows** into 2D, plus a separate **1,388-history change map**. Clickable standalone plots connect each point to its measured radar history. Original-space density groups, representative examples, physical-descriptor comparisons and declared sensitivity runs show both shared behavior and strong scene/sampling dependence. The encoder is unchanged; groups are exploratory, with no event-class validation. **75 offline tests pass.**
+
+Install `.[exploration]`, restore the existing release fixtures, then run `scripts/explore_representations.py` and `scripts/verify_representation_umap.py`. Complete plots, vectors, histories and provenance are generated under `products/representation_umap`; the [exploration report](docs/REPRESENTATION_UMAP.md) describes their contracts and limits.
+
 ## Current release: v0.5.0
 
 The new **shared characterization report** answers what changed, when it was observed, how its trajectory behaved, which independent evidence is usable and which alternative explanations remain. It exports fixed-support trajectories, physical summaries, observed-pattern maps, linked spectra/GP results and explicit evidence states under one teammate contract. Five new measured scenes add **42 GCOV acquisitions**; eight shared reports, four fresh flood-policy comparisons and two new InSAR jobs have **291 independently checked artifacts**.

@@ -1,0 +1,16 @@
+{
+  "experiment_id": "frozen_v2_umap_exploration_v1",
+  "posting_m": 160,
+  "maximum_pixels_per_scene": 192,
+  "sampling_block_pixels": 2,
+  "sampling_seed": 313,
+  "trajectory_feature": "Temporal mean of 48D frozen actual states minus constant-trajectory control states",
+  "change_feature": "48D controlled state at first assessment minus last baseline, identical to the existing probe definition",
+  "scaling": "Per-coordinate mean/SD on the label-blind sampled atlas; SD floor 0.0001; transductive exploration",
+  "umap": {"n_neighbors": 30, "min_dist": 0.25, "n_components": 2, "metric": "euclidean", "random_state": 37, "n_epochs": 400, "n_jobs": 1},
+  "sensitivity": [{"n_neighbors": 15, "random_state": 37}, {"n_neighbors": 60, "random_state": 37}, {"n_neighbors": 30, "random_state": 73}],
+  "clustering": {"method": "HDBSCAN on standardized original 48D, never on the 2D layout", "min_cluster_size": 40, "min_samples": 10, "cluster_selection_method": "eom", "allow_single_cluster": false},
+  "neighborhood_k": 15,
+  "cluster_examples": 4,
+  "scope": "Existing observed data only; unsupervised transductive exploration, no neural retraining, held-out validation or phenomenon classification. Context themes and optical labels never fit UMAP or clusters. InSAR phase is a different measurement domain and is excluded."
+}

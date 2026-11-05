@@ -1,0 +1,376 @@
+{
+  "experiment_id": "frozen_v2_umap_exploration_v1",
+  "point_unit": "One complete measured 160 m HH/HV trajectory",
+  "case_count": 21,
+  "points": 3764,
+  "maps": {
+    "trajectory": {
+      "point_count": 3764,
+      "neighborhood_k": 15,
+      "original_neighbor_recall_in_2d": 0.4302515054906128,
+      "trustworthiness_sampled_anchors": 0.9736850733426892,
+      "trustworthiness_anchor_count": 512,
+      "original_same_scene_neighbor_fraction": 0.7177825008855827,
+      "umap_same_scene_neighbor_fraction": 0.5993623804463337,
+      "random_other_point_same_scene_fraction": 0.0496876149927859,
+      "neighbor_feature_differences": {
+        "date_count": {
+          "original_mean_absolute_difference": 0.4526036131774708,
+          "umap_mean_absolute_difference": 0.6979277364505845,
+          "all_pairs_mean_absolute_difference": 2.3707014645324125
+        },
+        "span_days": {
+          "original_mean_absolute_difference": 12.825717321997875,
+          "umap_mean_absolute_difference": 20.351965993623804,
+          "all_pairs_mean_absolute_difference": 61.73696532943677
+        },
+        "median_gap_days": {
+          "original_mean_absolute_difference": 0.6184909670563231,
+          "umap_mean_absolute_difference": 0.9993623804463337,
+          "all_pairs_mean_absolute_difference": 2.362206097236982
+        },
+        "mad_hh_db": {
+          "original_mean_absolute_difference": 0.5818805547768935,
+          "umap_mean_absolute_difference": 0.6395470776155081,
+          "all_pairs_mean_absolute_difference": 1.0560747862721178
+        },
+        "net_hh_db": {
+          "original_mean_absolute_difference": 1.485593607833822,
+          "umap_mean_absolute_difference": 1.6423547165168781,
+          "all_pairs_mean_absolute_difference": 3.4407865529725616
+        },
+        "median_hh_db": {
+          "original_mean_absolute_difference": 3.376623145663359,
+          "umap_mean_absolute_difference": 3.8133688951115046,
+          "all_pairs_mean_absolute_difference": 5.392337773980097
+        }
+      },
+      "pca_neighbor_recall_in_2d": 0.1650371944739639,
+      "clustering": {
+        "clusters": [
+          {
+            "cluster_id": 0,
+            "points": 3585,
+            "scene_count": 20,
+            "scene_counts": {
+              "amazon": 179,
+              "benguerir": 187,
+              "california": 185,
+              "chenab": 181,
+              "chokwe": 181,
+              "deliblato": 185,
+              "forest_river": 192,
+              "gimcheon": 155,
+              "hokkaido": 190,
+              "iceland": 190,
+              "kafue": 190,
+              "mekong": 70,
+              "murray": 189,
+              "niscemi": 190,
+              "okavango": 187,
+              "pantanal": 176,
+              "qadirabad": 185,
+              "richmond": 191,
+              "rowe_creek": 192,
+              "wheatbelt": 190
+            },
+            "largest_scene_fraction": 0.05355648535564853,
+            "median_descriptors": {
+              "median_hh_db": -9.715110778808594,
+              "median_hv_db": -17.55587387084961,
+              "mad_hh_db": 0.7993087768554688,
+              "mad_hv_db": 0.5705764889717102,
+              "net_hh_db": 0.1399996280670166,
+              "date_count": 8.0,
+              "span_days": 120.0
+            }
+          },
+          {
+            "cluster_id": 1,
+            "points": 45,
+            "scene_count": 2,
+            "scene_counts": {
+              "california": 1,
+              "rajshahi": 44
+            },
+            "largest_scene_fraction": 0.9777777777777777,
+            "median_descriptors": {
+              "median_hh_db": -4.062363624572754,
+              "median_hv_db": -10.148069381713867,
+              "mad_hh_db": 0.4919057786464691,
+              "mad_hv_db": 0.3740744888782501,
+              "net_hh_db": -13.68934440612793,
+              "date_count": 10.0,
+              "span_days": 120.0
+            }
+          }
+        ],
+        "cluster_count": 2,
+        "unassigned_points": 134,
+        "unassigned_fraction": 0.035600425079702444,
+        "original_space_silhouette_assigned_only": 0.15281422024007452,
+        "interpretation": "Exploratory density groups in standardized original 48D. Noise is retained; group IDs carry no natural-phenomenon meaning."
+      },
+      "clustering_sensitivity": [
+        {
+          "min_samples": 5,
+          "cluster_count": 2,
+          "unassigned_fraction": 0.01354941551540914,
+          "adjusted_rand_including_noise": 0.6730427904594102,
+          "both_assigned_points": 3630,
+          "adjusted_rand_both_assigned": 0.9883454248746091
+        },
+        {
+          "min_samples": 20,
+          "cluster_count": 2,
+          "unassigned_fraction": 0.052337938363443144,
+          "adjusted_rand_including_noise": 0.8030499375356732,
+          "both_assigned_points": 3562,
+          "adjusted_rand_both_assigned": 1.0
+        }
+      ],
+      "umap_sensitivity": [
+        {
+          "parameters": {
+            "n_neighbors": 15,
+            "random_state": 37
+          },
+          "original_neighbor_recall_in_2d": 0.4523379383634431,
+          "trustworthiness_sampled_anchors": 0.9747701427871336,
+          "primary_2d_neighbor_recall_in_alternative": 0.6635848388239463
+        },
+        {
+          "parameters": {
+            "n_neighbors": 60,
+            "random_state": 37
+          },
+          "original_neighbor_recall_in_2d": 0.41376195536663124,
+          "trustworthiness_sampled_anchors": 0.9731505961529894,
+          "primary_2d_neighbor_recall_in_alternative": 0.6026213248317392
+        },
+        {
+          "parameters": {
+            "n_neighbors": 30,
+            "random_state": 73
+          },
+          "original_neighbor_recall_in_2d": 0.43212894084307474,
+          "trustworthiness_sampled_anchors": 0.9743041981310702,
+          "primary_2d_neighbor_recall_in_alternative": 0.7198193411264613
+        }
+      ]
+    },
+    "change": {
+      "point_count": 1388,
+      "neighborhood_k": 15,
+      "original_neighbor_recall_in_2d": 0.602449567723343,
+      "trustworthiness_sampled_anchors": 0.9863845963064714,
+      "trustworthiness_anchor_count": 512,
+      "original_same_scene_neighbor_fraction": 0.844092219020173,
+      "umap_same_scene_neighbor_fraction": 0.7818443804034582,
+      "random_other_point_same_scene_fraction": 0.1343246988815452,
+      "neighbor_feature_differences": {
+        "date_count": {
+          "original_mean_absolute_difference": 0.1898174831892411,
+          "umap_mean_absolute_difference": 0.2756003842459174,
+          "all_pairs_mean_absolute_difference": 1.6154257474783862
+        },
+        "span_days": {
+          "original_mean_absolute_difference": 2.188472622478386,
+          "umap_mean_absolute_difference": 3.3585014409221903,
+          "all_pairs_mean_absolute_difference": 22.09082312680115
+        },
+        "median_gap_days": {
+          "original_mean_absolute_difference": 0.0,
+          "umap_mean_absolute_difference": 0.0,
+          "all_pairs_mean_absolute_difference": 0.0
+        },
+        "mad_hh_db": {
+          "original_mean_absolute_difference": 0.5013431629405771,
+          "umap_mean_absolute_difference": 0.5472734826497061,
+          "all_pairs_mean_absolute_difference": 0.8497635714868865
+        },
+        "net_hh_db": {
+          "original_mean_absolute_difference": 1.5111027161147907,
+          "umap_mean_absolute_difference": 1.7757946914002858,
+          "all_pairs_mean_absolute_difference": 4.0717505611423315
+        },
+        "median_hh_db": {
+          "original_mean_absolute_difference": 3.3296125725053045,
+          "umap_mean_absolute_difference": 3.649602553744574,
+          "all_pairs_mean_absolute_difference": 5.9729061233697855
+        }
+      },
+      "pca_neighbor_recall_in_2d": 0.38808837656099904,
+      "clustering": {
+        "clusters": [
+          {
+            "cluster_id": 0,
+            "points": 83,
+            "scene_count": 1,
+            "scene_counts": {
+              "chokwe": 83
+            },
+            "largest_scene_fraction": 1.0,
+            "median_descriptors": {
+              "median_hh_db": -7.597092628479004,
+              "median_hv_db": -15.78676986694336,
+              "mad_hh_db": 1.9088529348373413,
+              "mad_hv_db": 0.8813202381134033,
+              "net_hh_db": 0.5566513538360596,
+              "date_count": 5.0,
+              "span_days": 48.0
+            }
+          },
+          {
+            "cluster_id": 1,
+            "points": 82,
+            "scene_count": 1,
+            "scene_counts": {
+              "wheatbelt": 82
+            },
+            "largest_scene_fraction": 1.0,
+            "median_descriptors": {
+              "median_hh_db": -15.311872482299805,
+              "median_hv_db": -22.633068084716797,
+              "mad_hh_db": 1.5483934879302979,
+              "mad_hv_db": 1.2891746163368225,
+              "net_hh_db": -2.3595643043518066,
+              "date_count": 10.0,
+              "span_days": 120.0
+            }
+          },
+          {
+            "cluster_id": 2,
+            "points": 753,
+            "scene_count": 8,
+            "scene_counts": {
+              "benguerir": 148,
+              "chokwe": 21,
+              "gimcheon": 74,
+              "qadirabad": 157,
+              "rajshahi": 44,
+              "richmond": 116,
+              "rowe_creek": 192,
+              "wheatbelt": 1
+            },
+            "largest_scene_fraction": 0.2549800796812749,
+            "median_descriptors": {
+              "median_hh_db": -9.707033157348633,
+              "median_hv_db": -17.12579345703125,
+              "mad_hh_db": 0.3980101943016052,
+              "mad_hv_db": 0.3218606412410736,
+              "net_hh_db": 0.8278617858886719,
+              "date_count": 8.0,
+              "span_days": 96.0
+            }
+          },
+          {
+            "cluster_id": 3,
+            "points": 41,
+            "scene_count": 1,
+            "scene_counts": {
+              "chokwe": 41
+            },
+            "largest_scene_fraction": 1.0,
+            "median_descriptors": {
+              "median_hh_db": -10.142888069152832,
+              "median_hv_db": -18.2091064453125,
+              "mad_hh_db": 1.8710087537765503,
+              "mad_hv_db": 1.1221754550933838,
+              "net_hh_db": -7.109797477722168,
+              "date_count": 5.0,
+              "span_days": 48.0
+            }
+          }
+        ],
+        "cluster_count": 4,
+        "unassigned_points": 429,
+        "unassigned_fraction": 0.3090778097982709,
+        "original_space_silhouette_assigned_only": 0.42555670805584317,
+        "interpretation": "Exploratory density groups in standardized original 48D. Noise is retained; group IDs carry no natural-phenomenon meaning."
+      },
+      "clustering_sensitivity": [
+        {
+          "min_samples": 5,
+          "cluster_count": 5,
+          "unassigned_fraction": 0.4899135446685879,
+          "adjusted_rand_including_noise": 0.390802870621219,
+          "both_assigned_points": 682,
+          "adjusted_rand_both_assigned": 0.840071475325835
+        },
+        {
+          "min_samples": 20,
+          "cluster_count": 3,
+          "unassigned_fraction": 0.29394812680115273,
+          "adjusted_rand_including_noise": 0.7489031296268458,
+          "both_assigned_points": 922,
+          "adjusted_rand_both_assigned": 0.8572367125370705
+        }
+      ]
+    },
+    "physical": {
+      "point_count": 3764,
+      "neighborhood_k": 15,
+      "original_neighbor_recall_in_2d": 0.39661707403471486,
+      "trustworthiness_sampled_anchors": 0.9690111475875435,
+      "trustworthiness_anchor_count": 512,
+      "original_same_scene_neighbor_fraction": 0.5546758767268863,
+      "umap_same_scene_neighbor_fraction": 0.4447750619907899,
+      "random_other_point_same_scene_fraction": 0.0496876149927859,
+      "neighbor_feature_differences": {
+        "date_count": {
+          "original_mean_absolute_difference": 0.9330145235565002,
+          "umap_mean_absolute_difference": 1.151877435352462,
+          "all_pairs_mean_absolute_difference": 2.3707014645324125
+        },
+        "span_days": {
+          "original_mean_absolute_difference": 27.67056323060574,
+          "umap_mean_absolute_difference": 33.03995749202976,
+          "all_pairs_mean_absolute_difference": 61.73696532943677
+        },
+        "median_gap_days": {
+          "original_mean_absolute_difference": 1.1434643995749203,
+          "umap_mean_absolute_difference": 1.3475026567481403,
+          "all_pairs_mean_absolute_difference": 2.362206097236982
+        },
+        "mad_hh_db": {
+          "original_mean_absolute_difference": 0.24145401919998288,
+          "umap_mean_absolute_difference": 0.35083878195547347,
+          "all_pairs_mean_absolute_difference": 1.0560747862721178
+        },
+        "net_hh_db": {
+          "original_mean_absolute_difference": 0.7248424267322432,
+          "umap_mean_absolute_difference": 1.2371871825335319,
+          "all_pairs_mean_absolute_difference": 3.4407865529725616
+        },
+        "median_hh_db": {
+          "original_mean_absolute_difference": 0.9523239759065862,
+          "umap_mean_absolute_difference": 1.1596553106939078,
+          "all_pairs_mean_absolute_difference": 5.392337773980097
+        }
+      },
+      "pca_neighbor_recall_in_2d": 0.18177470775770457
+    }
+  },
+  "scope": "Existing observed data only; unsupervised transductive exploration, no neural retraining, held-out validation or phenomenon classification. Context themes and optical labels never fit UMAP or clusters. InSAR phase is a different measurement domain and is excluded.",
+  "neural_training_performed": false,
+  "reference_labels_used_for_fit": false,
+  "water_reference_counts_after_unsupervised_fit": {
+    "0": 448,
+    "1": 8,
+    "2": 40,
+    "3": 0,
+    "4": 144,
+    "255": 3124
+  },
+  "limitations": [
+    "All existing scenes are consumed exploratory data. Joint UMAP/scaling fits include former geographic tests; there is no new held-out evaluation.",
+    "One point per selected spatial block reduces dense local duplication but does not remove spatial dependence; scenes, not pixels, are the geographic replication units.",
+    "Complete-trajectory selection excludes missing support and can bias the atlas. Scene caps are not global area weights.",
+    "UMAP axes, orientation, gaps and apparent island sizes have no physical units; 2D density/separation does not prove original-space clusters.",
+    "Temporal mean pooling loses ordering; full contextual states still depend on record duration and acquisition sampling. The separate change map uses a different summary.",
+    "Per-trajectory normalization removes absolute backscatter levels. Nearby learned vectors can have different measured levels or causes.",
+    "HDBSCAN groups and optical reference colors are exploratory metadata, not trained or validated flood, fire, agriculture, landslide or earthquake labels.",
+    "InSAR phase/coherence are excluded from the power-trained encoder. No deformation or earthquake separation is implied."
+  ]
+}

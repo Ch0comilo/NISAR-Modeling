@@ -1,0 +1,32 @@
+{
+  "status": "share_with_caveats",
+  "scenes_spot_checked": [
+    "forest_river",
+    "deliblato",
+    "chenab",
+    "niscemi",
+    "okavango",
+    "california",
+    "mekong",
+    "kafue",
+    "iceland",
+    "amazon",
+    "murray",
+    "hokkaido",
+    "pantanal",
+    "chokwe",
+    "qadirabad",
+    "richmond",
+    "rajshahi",
+    "gimcheon",
+    "benguerir",
+    "wheatbelt",
+    "rowe_creek"
+  ],
+  "points": 3764,
+  "artifacts_verified": 27,
+  "frozen_experiments_unchanged": true,
+  "original_space_clustering_reproduced": true,
+  "primary_umap_exact_reproduction": true,
+  "scope": "Independent physical/source/state spot checks per scene, all sampling IDs and artifact hashes; no event accuracy claim"
+}

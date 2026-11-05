@@ -1,0 +1,424 @@
+[
+  {
+    "case_id": "forest_river",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-21",
+      "2026-07-03",
+      "2026-07-15",
+      "2026-07-27",
+      "2026-08-20",
+      "2026-09-01",
+      "2026-09-13",
+      "2026-09-25",
+      "2026-10-07",
+      "2026-10-19"
+    ],
+    "posting_m": 160,
+    "source_sha256": "57763a7df7ec4935322bfb61025c47d5b58cdcebe6d07ecf7b9351ac4e2815bb"
+  },
+  {
+    "case_id": "deliblato",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-18",
+      "2026-06-30",
+      "2026-07-12",
+      "2026-07-24",
+      "2026-08-17",
+      "2026-09-10",
+      "2026-10-04",
+      "2026-10-16"
+    ],
+    "posting_m": 160,
+    "source_sha256": "164f581dc0902c3f73d2c421693e15104a4fca031c931810d7f1a9517578fcd7"
+  },
+  {
+    "case_id": "chenab",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-20",
+      "2026-07-02",
+      "2026-07-14",
+      "2026-07-26",
+      "2026-08-19",
+      "2026-08-31",
+      "2026-09-12",
+      "2026-10-18"
+    ],
+    "posting_m": 160,
+    "source_sha256": "1198c4f029b57a9c99362dc74674fa1091c1180cc6c6e9e86ae210b200665dfa"
+  },
+  {
+    "case_id": "niscemi",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-24",
+      "2026-07-06",
+      "2026-07-18",
+      "2026-08-11",
+      "2026-08-23",
+      "2026-09-04",
+      "2026-09-16",
+      "2026-10-22"
+    ],
+    "posting_m": 160,
+    "source_sha256": "05ee55d8e3055ceeaf55299cdd25b6dc9478a07e625b25f0777fb3ef2517b2c4"
+  },
+  {
+    "case_id": "okavango",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-26",
+      "2026-07-08",
+      "2026-07-20",
+      "2026-08-13",
+      "2026-08-25",
+      "2026-09-06",
+      "2026-09-18",
+      "2026-10-12"
+    ],
+    "posting_m": 160,
+    "source_sha256": "2f5c9850142ac74daffa285d60342b8d8aa0d2723bc588bfb7b1f497c722ec55"
+  },
+  {
+    "case_id": "california",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-01-06",
+      "2026-01-30",
+      "2026-02-23",
+      "2026-03-19",
+      "2026-04-24",
+      "2026-05-18",
+      "2026-06-11",
+      "2026-07-05",
+      "2026-08-10",
+      "2026-09-03",
+      "2026-09-27",
+      "2026-10-21"
+    ],
+    "posting_m": 160,
+    "source_sha256": "ff94010e69f8b115817b582c16a268921e304ec28c8a51609a8e816c605d6551"
+  },
+  {
+    "case_id": "mekong",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 268,
+    "sampled_cells": 72,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23",
+      "2026-10-05",
+      "2026-10-17"
+    ],
+    "posting_m": 160,
+    "source_sha256": "0c2b1dcec42c8462a947e2df63811589be711aac4ec902cd304c04562231afb3"
+  },
+  {
+    "case_id": "kafue",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-24",
+      "2026-07-06",
+      "2026-07-18",
+      "2026-08-11",
+      "2026-08-23",
+      "2026-09-04",
+      "2026-09-16",
+      "2026-09-28",
+      "2026-10-10",
+      "2026-10-22"
+    ],
+    "posting_m": 160,
+    "source_sha256": "86acfd19cfc274a9dc4c5e850d5ccc26e6d04e295cc39182b5af14ddc5693756"
+  },
+  {
+    "case_id": "iceland",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-01-08",
+      "2026-01-20",
+      "2026-02-25",
+      "2026-03-21",
+      "2026-04-26",
+      "2026-05-20",
+      "2026-06-13",
+      "2026-07-07",
+      "2026-08-12",
+      "2026-09-05",
+      "2026-09-29",
+      "2026-10-23"
+    ],
+    "posting_m": 160,
+    "source_sha256": "b8d54618623e31433abd163641362c1ab29dad9c7136dca4e1e08e804f87b8bb"
+  },
+  {
+    "case_id": "amazon",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-23",
+      "2026-07-05",
+      "2026-07-17",
+      "2026-08-10",
+      "2026-09-03",
+      "2026-09-15",
+      "2026-09-27",
+      "2026-10-21"
+    ],
+    "posting_m": 160,
+    "source_sha256": "c8dc4b69b25ff912e43308bd70234d9787922cfc5bf19786632fef8e8d94dcb0"
+  },
+  {
+    "case_id": "murray",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-01-12",
+      "2026-01-24",
+      "2026-02-05",
+      "2026-03-01",
+      "2026-03-13",
+      "2026-04-06",
+      "2026-04-18",
+      "2026-04-30",
+      "2026-05-24",
+      "2026-06-05",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-15"
+    ],
+    "posting_m": 160,
+    "source_sha256": "24636555d50b8270ed376339f74af418ad37c2522d0c078856653504211b1d60"
+  },
+  {
+    "case_id": "hokkaido",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1023,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23",
+      "2026-10-05",
+      "2026-10-17"
+    ],
+    "posting_m": 160,
+    "source_sha256": "3897e625a1222d68b1eb8f29eacd721562d1b6ab64c4ef3c76c64ea6845a1cf8"
+  },
+  {
+    "case_id": "pantanal",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 3458,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-07-17",
+      "2026-08-10",
+      "2026-08-22",
+      "2026-09-03",
+      "2026-09-15",
+      "2026-09-27",
+      "2026-10-09",
+      "2026-10-21"
+    ],
+    "posting_m": 160,
+    "source_sha256": "f0121526177c2da238bd181655912b60ee74b1ec2e1c11ffc5c31aa3beae86f8"
+  },
+  {
+    "case_id": "chokwe",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2025-11-30",
+      "2025-12-12",
+      "2025-12-24",
+      "2026-01-05",
+      "2026-01-17"
+    ],
+    "posting_m": 160,
+    "source_sha256": "455bcb0d47888aab24fde1ab52cd2bbbacef109a98e21718126d13adfe730be4"
+  },
+  {
+    "case_id": "qadirabad",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-20",
+      "2026-07-02",
+      "2026-07-14",
+      "2026-07-26",
+      "2026-08-19",
+      "2026-08-31",
+      "2026-09-12",
+      "2026-09-24"
+    ],
+    "posting_m": 160,
+    "source_sha256": "2337041724bc9d755be0eb9ff4eb6d13609e97a5bd4c20f168c6cc835b62b7f9"
+  },
+  {
+    "case_id": "richmond",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 2487,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-17",
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09",
+      "2026-09-21"
+    ],
+    "posting_m": 160,
+    "source_sha256": "47b8a71347a14e92b7d1d60c0da14dd38e2206d014baceafde00dc5b7c9bb8c6"
+  },
+  {
+    "case_id": "rajshahi",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 157,
+    "sampled_cells": 44,
+    "dates": [
+      "2026-06-25",
+      "2026-07-07",
+      "2026-07-19",
+      "2026-08-12",
+      "2026-08-24",
+      "2026-09-05",
+      "2026-09-17",
+      "2026-09-29",
+      "2026-10-11",
+      "2026-10-23"
+    ],
+    "posting_m": 160,
+    "source_sha256": "0680e15eb86f4f479ac4775d99afc644bb3d766a5dfe89e8d7bcd3c614212b1b"
+  },
+  {
+    "case_id": "gimcheon",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1023,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-28",
+      "2026-07-10",
+      "2026-08-15",
+      "2026-08-27",
+      "2026-09-08",
+      "2026-09-20"
+    ],
+    "posting_m": 160,
+    "source_sha256": "4864316b3c2648aeb56363b8d5ff6d9e77a12718553c3535bb91a3afe5a8cd30"
+  },
+  {
+    "case_id": "benguerir",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1024,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-27",
+      "2026-07-09",
+      "2026-07-21",
+      "2026-08-14",
+      "2026-08-26",
+      "2026-09-19",
+      "2026-10-01",
+      "2026-10-13"
+    ],
+    "posting_m": 160,
+    "source_sha256": "d00e05a68aaf430ab0888015e09fdb70d8878baeb9b179d0469f6d40c548550f"
+  },
+  {
+    "case_id": "wheatbelt",
+    "status": "included",
+    "grid_cells": 4096,
+    "complete_cells": 4096,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-17",
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-03",
+      "2026-10-15"
+    ],
+    "posting_m": 160,
+    "source_sha256": "71ed73ad525279ac6f7803d869ad4313bfd3b46bbe5fdf155c5ce87d24009d83"
+  },
+  {
+    "case_id": "rowe_creek",
+    "status": "included",
+    "grid_cells": 1024,
+    "complete_cells": 1023,
+    "sampled_cells": 192,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "posting_m": 160,
+    "source_sha256": "70e64a46a8efcbf7a257d507fd0eae4680979066dcc93b0ab4b9c9b6bde44bc2"
+  }
+]

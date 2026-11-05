@@ -44,13 +44,13 @@ New offline examples are `contracts/examples/hokkaido-v2.json`, `hokkaido-v2-pro
 
 `observations.input_quality` gives valid fraction per date and complete channel/pixel support. `observations.processing` preserves aggregation/excluded-empty-acquisition provenance. `observations.query_point_quality` distinguishes the selected query pixel from the broader chip: it lists measured polarizations per date and observed-date count. A geometric catalog/grid hit is not proof that the center pixel was observed. NoData texture remains masked; gradient-axis orientation is radians counterclockwise from east toward north, modulo pi, with actual x/y posting.
 
-Map probes optionally return `dynamic_latent_at_observed_dates`, and the two state-rate arrays in `descriptors_at_selected_pixel`. Their lengths are T−1 and correspond to adjacent unique acquisition dates. The new `no_valid_observations` outcome means the selection lies inside the grid but contains no supported measurements; `outside_observed_footprint` remains distinct. Do not replace either outcome with zero change.
+Map probes optionally return `dynamic_latent_at_observed_dates`, and the two state-rate arrays in `descriptors_at_selected_pixel`. Their lengths are Tâˆ’1 and correspond to adjacent unique acquisition dates. The new `no_valid_observations` outcome means the selection lies inside the grid but contains no supported measurements; `outside_observed_footprint` remains distinct. Do not replace either outcome with zero change.
 
 ### InSAR interval contract
 
 The new `insar-stack-request.schema.json` and `insar-stack-result.schema.json` bring the request/result schema count to ten. Python entrypoint: `surface_dynamics.insar_stack.process_stack(request, output_directory)`; CLI: `surface-dynamics insar-stack request.json --output directory`.
 
-`source.mode=local_pairs` accepts `pair_paths` (2–6 trusted backend NPZ paths with checksum sidecars). `catalog_point` accepts longitude/latitude, UTC start/end dates, optional `series_key`, `max_pairs` (2–6) and `extent_km` (2–15). Both dates of every selected pair must be inside the window. One compatible track/pass/frame/bandwidth/polarization series is retained. Native unwrapped grids must share posting/CRS and exact common pixel centers; no implicit phase resampling occurs. The common reference uses at least eight jointly supported pixels; stability is never presumed.
+`source.mode=local_pairs` accepts `pair_paths` (2â€“6 trusted backend NPZ paths with checksum sidecars). `catalog_point` accepts longitude/latitude, UTC start/end dates, optional `series_key`, `max_pairs` (2â€“6) and `extent_km` (2â€“15). Both dates of every selected pair must be inside the window. One compatible track/pass/frame/bandwidth/polarization series is retained. Native unwrapped grids must share posting/CRS and exact common pixel centers; no implicit phase resampling occurs. The common reference uses at least eight jointly supported pixels; stability is never presumed.
 
 The result has `complete`, `partial` or `no_data` status, explicit pair intervals, coherent-component fractions, common-spatial-support coherence medians/histograms, common-phase reference/support quality, null displacement and artifact hashes. `partial` can still provide measured coherence when no phase reference is available.
 
@@ -62,7 +62,7 @@ No phase integration, corrections, SBAS inversion, LOS/vertical motion or earthq
 
 The Python package `surface_dynamics` accepts a measured cube or arbitrary WGS84 point/date window and emits science artifacts plus a validated result manifest. It selects a compatible NISAR geometry/mode rather than mixing orbit directions, frames or polarizations. It can return `no_data` or partial capabilities instead of inventing observations.
 
-The shared analysis includes physical temporal descriptors; spatial Fourier/structure-tensor texture; actual-time generalized Lomb–Scargle spectra and permutation diagnostics; locally weighted time-frequency fits when support permits; proper orthogonal decomposition; empirical-Bayes Matérn-3/2 Gaussian-process smoothing and Monte Carlo historical draws; and a trained masked bidirectional temporal Transformer with fixed global embedding colors and MC-dropout sensitivity. These are descriptive outputs at measured dates, not forecasts.
+The shared analysis includes physical temporal descriptors; spatial Fourier/structure-tensor texture; actual-time generalized Lombâ€“Scargle spectra and permutation diagnostics; locally weighted time-frequency fits when support permits; proper orthogonal decomposition; empirical-Bayes MatÃ©rn-3/2 Gaussian-process smoothing and Monte Carlo historical draws; and a trained masked bidirectional temporal Transformer with fixed global embedding colors and MC-dropout sensitivity. These are descriptive outputs at measured dates, not forecasts.
 
 The panel themes are **agriculture, wildfires, floods and landslides**. The same engine also supports exploration under earthquake, volcano, wetland, ice and subsidence themes. A theme supplies questions/context; it does not change a measurement into a predicted event class.
 
@@ -146,7 +146,7 @@ NPZ arrays, `allow_pickle=False`:
 | `radar_band` | scalar `L` or `S` | Actual instrument band; A/B under LSAR are not L/S |
 | `source_metadata_json` | scalar JSON string | Granule URLs, versions, flags, checksums and acquisition provenance |
 
-Array limits are T≤128, C≤4, H/W≤1024 and at most 16,777,216 measured channel/pixel/date values. The learned-state branch additionally permits at most one million pixel/date vectors; exceeding that budget returns a partial result with a reason to coarsen the grid. At least three acquisitions and sufficient measured support are required. Package chip acquisition uses a stricter 3–32 selected-date request limit and ≤512 native pixels. Interpolation for diagnostics never overwrites the observed cube.
+Array limits are Tâ‰¤128, Câ‰¤4, H/Wâ‰¤1024 and at most 16,777,216 measured channel/pixel/date values. The learned-state branch additionally permits at most one million pixel/date vectors; exceeding that budget returns a partial result with a reason to coarsen the grid. At least three acquisitions and sufficient measured support are required. Package chip acquisition uses a stricter 3â€“32 selected-date request limit and â‰¤512 native pixels. Interpolation for diagnostics never overwrites the observed cube.
 
 ## What the frontend/backend team receives
 
@@ -190,7 +190,7 @@ The InSAR branch selects a real pair bracketing a supplied event date or reads a
 
 `los_displacement_cm` and `deformation_attribution` are explicitly `null`: atmospheric/ionospheric/tide signals have not been removed and a stable geodetic reference/sign has not been validated. Phase-equivalent cm is a wavelength teaching scale, not a deformation estimate. A single selected component does not reference other disconnected islands. Coherence is not a confidence probability.
 
-The Kumamoto demonstration uses the real **21 July→14 August 2026** NISAR pair around the independently documented 28 July earthquake. The interval can contain coseismic, postseismic and atmospheric changes together. The separately retained GSI vertical raster is a credited **external ALOS-2/ALOS-4/NISAR multi-mission analysis**, not a result of our model. Its downloaded file lacks unit/nodata metadata; it is not exposed as a quantitative worker result until those definitions are verified. [GSI source/DOI](https://www.gsi.go.jp/uchusokuchi/20260728kumamoto-e.html)
+The Kumamoto demonstration uses the real **21 Julyâ†’14 August 2026** NISAR pair around the independently documented 28 July earthquake. The interval can contain coseismic, postseismic and atmospheric changes together. The separately retained GSI vertical raster is a credited **external ALOS-2/ALOS-4/NISAR multi-mission analysis**, not a result of our model. Its downloaded file lacks unit/nodata metadata; it is not exposed as a quantitative worker result until those definitions are verified. [GSI source/DOI](https://www.gsi.go.jp/uchusokuchi/20260728kumamoto-e.html)
 
 ## Domain support and honest failure behavior
 
@@ -206,3 +206,7 @@ Sparse records, no complete trajectories, unsupported learned channels, missing 
 - **Landslides:** Are there localized scattering/coherence changes? Do measurements actually bracket the event? Terrain visibility, DEM/offset/geodetic evidence are needed for movement interpretation. The Niscemi example is aftermath-only.
 
 Do not present stochastic draws or embedding colors as a classification result. The model comparison, actual validation numbers, references and remaining limits are in `SCIENCE_IMPLEMENTATION.md` and the model card.
+
+## UMAP exploration addendum
+
+The [frozen-representation UMAP report](docs/REPRESENTATION_UMAP.md) adds standalone scientific plots and traceable per-point data, without changing characterization responses or neural weights. Run `scripts/explore_representations.py` after installing `.[exploration]` and restoring the existing measured fixtures. `products/representation_umap/trajectory_interactive.html` and `change_interactive.html` link clicked points to actual HH/HV histories. `points.json/.csv`, `features.npz`, `positions.npz`, examples, scaling, provenance and checksums support teammate reuse. UMAP coordinates and density-group IDs are specific to this joint exploratory fit; they are not stable worldwide classes or an inference API. See the report's artifact table for masks, row ordering and the separate behavior/reference/group legends.
