@@ -1,0 +1,17 @@
+{
+  "contract_version": "1.0",
+  "request_id": "wheatbelt-fingerprint",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/characterization_v05/cases/wheatbelt/cube.npz"
+  },
+  "baseline": {
+    "start_date": "2026-06-01",
+    "end_date": "2026-08-31"
+  },
+  "assessment": {
+    "start_date": "2026-09-01",
+    "end_date": "2026-10-31"
+  },
+  "maximum_points": 32
+}

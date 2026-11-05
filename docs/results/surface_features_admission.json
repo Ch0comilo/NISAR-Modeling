@@ -1,0 +1,702 @@
+[
+  {
+    "case_id": "forest_river",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-21",
+      "end_date": "2026-09-01"
+    },
+    "assessment": {
+      "start_date": "2026-09-13",
+      "end_date": "2026-10-19"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-15",
+      "2026-07-27",
+      "2026-08-20",
+      "2026-09-01",
+      "2026-09-13",
+      "2026-09-25"
+    ]
+  },
+  {
+    "case_id": "deliblato",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-18",
+      "end_date": "2026-07-24"
+    },
+    "assessment": {
+      "start_date": "2026-08-17",
+      "end_date": "2026-10-16"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 36,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-06-30",
+      "2026-07-12",
+      "2026-07-24",
+      "2026-08-17",
+      "2026-09-10",
+      "2026-10-04"
+    ]
+  },
+  {
+    "case_id": "chenab",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-20",
+      "end_date": "2026-07-26"
+    },
+    "assessment": {
+      "start_date": "2026-08-19",
+      "end_date": "2026-10-18"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 36,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-02",
+      "2026-07-14",
+      "2026-07-26",
+      "2026-08-19",
+      "2026-08-31",
+      "2026-09-12"
+    ]
+  },
+  {
+    "case_id": "niscemi",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-24",
+      "end_date": "2026-08-11"
+    },
+    "assessment": {
+      "start_date": "2026-08-23",
+      "end_date": "2026-10-22"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 48,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-06",
+      "2026-07-18",
+      "2026-08-11",
+      "2026-08-23",
+      "2026-09-04",
+      "2026-09-16"
+    ]
+  },
+  {
+    "case_id": "okavango",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-26",
+      "end_date": "2026-08-13"
+    },
+    "assessment": {
+      "start_date": "2026-08-25",
+      "end_date": "2026-10-12"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 48,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-08",
+      "2026-07-20",
+      "2026-08-13",
+      "2026-08-25",
+      "2026-09-06",
+      "2026-09-18"
+    ]
+  },
+  {
+    "case_id": "california",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-01-06",
+      "end_date": "2026-06-11"
+    },
+    "assessment": {
+      "start_date": "2026-07-05",
+      "end_date": "2026-10-21"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 7,
+      "assessment_dates": 5,
+      "baseline_span_days": 156,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-03-19",
+      "2026-04-24",
+      "2026-05-18",
+      "2026-06-11",
+      "2026-07-05",
+      "2026-08-10"
+    ]
+  },
+  {
+    "case_id": "mekong",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-19",
+      "end_date": "2026-08-30"
+    },
+    "assessment": {
+      "start_date": "2026-09-11",
+      "end_date": "2026-10-17"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 268,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 72,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ]
+  },
+  {
+    "case_id": "kafue",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-24",
+      "end_date": "2026-09-04"
+    },
+    "assessment": {
+      "start_date": "2026-09-16",
+      "end_date": "2026-10-22"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-18",
+      "2026-08-11",
+      "2026-08-23",
+      "2026-09-04",
+      "2026-09-16",
+      "2026-09-28"
+    ]
+  },
+  {
+    "case_id": "iceland",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-01-08",
+      "end_date": "2026-06-13"
+    },
+    "assessment": {
+      "start_date": "2026-07-07",
+      "end_date": "2026-10-23"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 7,
+      "assessment_dates": 5,
+      "baseline_span_days": 156,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-03-21",
+      "2026-04-26",
+      "2026-05-20",
+      "2026-06-13",
+      "2026-07-07",
+      "2026-08-12"
+    ]
+  },
+  {
+    "case_id": "amazon",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-23",
+      "end_date": "2026-08-10"
+    },
+    "assessment": {
+      "start_date": "2026-09-03",
+      "end_date": "2026-10-21"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 48,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-05",
+      "2026-07-17",
+      "2026-08-10",
+      "2026-09-03",
+      "2026-09-15",
+      "2026-09-27"
+    ]
+  },
+  {
+    "case_id": "murray",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-01-12",
+      "end_date": "2026-05-24"
+    },
+    "assessment": {
+      "start_date": "2026-06-05",
+      "end_date": "2026-10-15"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 9,
+      "assessment_dates": 7,
+      "baseline_span_days": 132,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-04-06",
+      "2026-04-18",
+      "2026-04-30",
+      "2026-05-24",
+      "2026-06-05",
+      "2026-07-11"
+    ]
+  },
+  {
+    "case_id": "hokkaido",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-06-19",
+      "end_date": "2026-08-30"
+    },
+    "assessment": {
+      "start_date": "2026-09-11",
+      "end_date": "2026-10-17"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1023,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ]
+  },
+  {
+    "case_id": "pantanal",
+    "comparison_scope": "Generic historical prefix comparison; not an independently verified pre-event baseline",
+    "baseline": {
+      "start_date": "2026-07-17",
+      "end_date": "2026-09-03"
+    },
+    "assessment": {
+      "start_date": "2026-09-15",
+      "end_date": "2026-10-21"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 3458,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 48,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-08-10",
+      "2026-08-22",
+      "2026-09-03",
+      "2026-09-15",
+      "2026-09-27",
+      "2026-10-09"
+    ]
+  },
+  {
+    "case_id": "chokwe",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2025-11-01",
+      "end_date": "2026-01-05"
+    },
+    "assessment": {
+      "start_date": "2026-01-12",
+      "end_date": "2026-02-01"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 4,
+      "assessment_dates": 1,
+      "baseline_span_days": 36,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "insufficient_three_before_three_after",
+    "analog_dates": null
+  },
+  {
+    "case_id": "qadirabad",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-07-21"
+    },
+    "assessment": {
+      "start_date": "2026-07-22",
+      "end_date": "2026-09-30"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 3,
+      "assessment_dates": 5,
+      "baseline_span_days": 24,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-06-20",
+      "2026-07-02",
+      "2026-07-14",
+      "2026-07-26",
+      "2026-08-19",
+      "2026-08-31"
+    ]
+  },
+  {
+    "case_id": "richmond",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-08-11"
+    },
+    "assessment": {
+      "start_date": "2026-08-12",
+      "end_date": "2026-09-30"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 2487,
+      "baseline_dates": 4,
+      "assessment_dates": 4,
+      "baseline_span_days": 36,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-06-29",
+      "2026-07-11",
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09"
+    ]
+  },
+  {
+    "case_id": "rajshahi",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-09-09"
+    },
+    "assessment": {
+      "start_date": "2026-09-10",
+      "end_date": "2026-10-31"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 157,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 44,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-08-12",
+      "2026-08-24",
+      "2026-09-05",
+      "2026-09-17",
+      "2026-09-29",
+      "2026-10-11"
+    ]
+  },
+  {
+    "case_id": "gimcheon",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-07-06"
+    },
+    "assessment": {
+      "start_date": "2026-07-07",
+      "end_date": "2026-09-30"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1023,
+      "baseline_dates": 1,
+      "assessment_dates": 5,
+      "baseline_span_days": 0,
+      "diagnostic_available": false,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "insufficient_three_before_three_after",
+    "analog_dates": null
+  },
+  {
+    "case_id": "benguerir",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-08-31"
+    },
+    "assessment": {
+      "start_date": "2026-09-01",
+      "end_date": "2026-10-31"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1024,
+      "baseline_dates": 5,
+      "assessment_dates": 3,
+      "baseline_span_days": 60,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-21",
+      "2026-08-14",
+      "2026-08-26",
+      "2026-09-19",
+      "2026-10-01",
+      "2026-10-13"
+    ]
+  },
+  {
+    "case_id": "wheatbelt",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-08-31"
+    },
+    "assessment": {
+      "start_date": "2026-09-01",
+      "end_date": "2026-10-31"
+    },
+    "quality": {
+      "grid_cells": 4096,
+      "fixed_common_cells": 4096,
+      "baseline_dates": 6,
+      "assessment_dates": 4,
+      "baseline_span_days": 72,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-07-23",
+      "2026-08-16",
+      "2026-08-28",
+      "2026-09-09",
+      "2026-09-21",
+      "2026-10-03"
+    ]
+  },
+  {
+    "case_id": "rowe_creek",
+    "comparison_scope": "Declared existing characterization windows; context does not supply an event label",
+    "baseline": {
+      "start_date": "2026-06-01",
+      "end_date": "2026-07-14"
+    },
+    "assessment": {
+      "start_date": "2026-07-15",
+      "end_date": "2026-09-30"
+    },
+    "quality": {
+      "grid_cells": 1024,
+      "fixed_common_cells": 1023,
+      "baseline_dates": 3,
+      "assessment_dates": 5,
+      "baseline_span_days": 24,
+      "diagnostic_available": true,
+      "seasonal_normality_established": false,
+      "bounds": "Baseline median plus/minus max(3 dB, 3 times max(scaled MAD, 1 dB)) under the recorded policy; not a confidence interval",
+      "neighborhood_width_m": 480.0,
+      "neighborhood_height_m": 480.0
+    },
+    "sampled_points": 192,
+    "analog_status": "six_date_window_available",
+    "analog_dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30"
+    ]
+  }
+]

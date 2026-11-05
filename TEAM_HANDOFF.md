@@ -210,3 +210,9 @@ Do not present stochastic draws or embedding colors as a classification result. 
 ## UMAP exploration addendum
 
 The [frozen-representation UMAP report](docs/REPRESENTATION_UMAP.md) adds standalone scientific plots and traceable per-point data, without changing characterization responses or neural weights. Run `scripts/explore_representations.py` after installing `.[exploration]` and restoring the existing measured fixtures. `products/representation_umap/trajectory_interactive.html` and `change_interactive.html` link clicked points to actual HH/HV histories. `points.json/.csv`, `features.npz`, `positions.npz`, examples, scaling, provenance and checksums support teammate reuse. UMAP coordinates and density-group IDs are specific to this joint exploratory fit; they are not stable worldwide classes or an inference API. See the report's artifact table for masks, row ordering and the separate behavior/reference/group legends.
+
+## Baseline fingerprint and feature exploration
+
+Use [`fingerprint`](docs/SURFACE_FEATURES.md#reusable-worldwide-inputoutput-contract) for baseline median/MAD, diagnostic bands, measured changes, counts and spatial/ratio features. It returns `complete`, `partial` or `no_data`, with explicit point states and eight feature artifacts on supported input. The null probability/class/cause fields are contract requirements. “Within bounds” means within the selected observed record's diagnostic band; it must never be shown as verified normal conditions.
+
+The separate [feature discovery report](docs/SURFACE_FEATURES.md) contains standalone clickable plots, measured examples, independent optical comparison groups and a controlled physical/learned/combined analog experiment. Use the recorded six dates, dimensions, reference-distance status and feature contributions when presenting an analog. The runtime worker does not automatically retrieve analogs or classify events. The frontend and mockup are excluded.

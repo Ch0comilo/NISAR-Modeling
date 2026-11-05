@@ -5,7 +5,7 @@ def main():
     parser=argparse.ArgumentParser(description='Descriptive radar surface dynamics; science/data artifacts only')
     sub=parser.add_subparsers(dest='command',required=True)
     sub.add_parser('capabilities')
-    for name in ['analyze','insar','flood-characterize','insar-readiness','characterize']:
+    for name in ['analyze','insar','flood-characterize','insar-readiness','characterize','fingerprint']:
         p=sub.add_parser(name);p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('insar-network');p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('insar-stack');p.add_argument('request');p.add_argument('--output',required=True)
@@ -21,11 +21,13 @@ def main():
         from .engine import analyze,analyze_insar
         request=json.loads(Path(args.request).read_text(encoding='utf8'));result=(analyze if args.command=='analyze' else analyze_insar)(request,args.output)
         print(json.dumps({'request_id':result['request_id'],'status':result['status'],'result':str(Path(args.output)/'result.json'),'artifacts':len(result['artifacts'])}))
-    elif args.command in ['flood-characterize','insar-readiness','characterize']:
+    elif args.command in ['flood-characterize','insar-readiness','characterize','fingerprint']:
         if args.command=='flood-characterize':
             from .flood import process_flood as worker
         elif args.command=='insar-readiness':
             from .insar_readiness import process_readiness as worker
+        elif args.command=='fingerprint':
+            from .fingerprint_worker import process_fingerprint as worker
         else:
             from .characterization import process_characterization as worker
         result=worker(json.loads(Path(args.request).read_text(encoding='utf8')),args.output)

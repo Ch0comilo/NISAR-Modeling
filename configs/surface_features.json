@@ -1,0 +1,21 @@
+{
+  "experiment_id": "observed_surface_features_v1",
+  "scope": "Retrospective baseline departures and cross-region analogs on existing consumed scenes; no verified normal class, event classifier, neural retraining or forecasting",
+  "baseline": {"minimum_dates": 3, "scale_floor_db": 1.0, "departure_scale_multiple": 3.0, "minimum_departure_db": 3.0, "neighborhood_pixels": 3, "minimum_neighbors": 4},
+  "global_prefix_fraction": 0.6,
+  "analog": {
+    "baseline_dates": 3, "assessment_dates": 3,
+    "maximum_span_ratio": 1.3, "maximum_phase_span_ratio": 1.5,
+    "maximum_boundary_gap_ratio": 2.0, "maximum_normalized_gap_l1": 0.4,
+    "minimum_region_distance_km": 200, "minimum_candidate_regions": 3,
+    "reference_regions": ["forest_river", "deliblato", "chenab", "niscemi", "okavango", "california", "mekong", "kafue", "iceland"],
+    "physical_weight": 0.5, "learned_weight": 0.5,
+    "distance_envelope_quantile": 0.95,
+    "physical_features": ["baseline_co_db", "baseline_cross_db", "baseline_co_mad_db", "baseline_cross_mad_db", "assessment_co_change_db", "assessment_cross_change_db", "assessment_ratio_change_db", "boundary_co_step_db", "co_step_concentration", "departure_frequency", "assessment_co_mad_db", "co_net_change_db"],
+    "physical_scale_floors": [1,1,0.5,0.5,1,1,1,1,0.05,0.1,0.5,1],
+    "learned_feature": "48D constant-control state difference at first assessment minus last baseline, re-encoded using only the six actual selected dates",
+    "learned_scale_floor": 0.0001
+  },
+  "reference_comparison": {"control_tolerance_db": 2.0, "bootstrap_block_pixels": 2, "bootstrap_draws": 400, "bootstrap_seed": 419, "minimum_blocks_per_group": 4},
+  "example_count": 4
+}

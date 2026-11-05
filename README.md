@@ -8,6 +8,12 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 [Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.5.0)
 
+## New exploration: measurable features and departures from baseline
+
+The [surface-feature report](docs/SURFACE_FEATURES.md) compares **3,764 measured histories in 21 scenes** with their own observed baselines. It shows raw/standardized HH and HV change, observed departure counts, polarization balance and local spatial contrast. Independent optical water groups and real measured curves expose both useful differences and overlap. A separate **3,380-history** experiment compares physical, learned and combined cross-region analogs after matching actual acquisition sampling.
+
+The new `fingerprint` worker accepts worldwide catalog point/date requests or measured local cubes and exports checksummed feature maps and point summaries. See its [input/output contract](docs/SURFACE_FEATURES.md#reusable-worldwide-inputoutput-contract). Diagnostic departures are not verified normality or phenomenon classes. **91 offline tests pass.**
+
 ## New exploration: 2D maps of the frozen representations
 
 The [UMAP atlas](docs/REPRESENTATION_UMAP.md) projects **3,764 measured HH/HV histories across 21 existing scene windows** into 2D, plus a separate **1,388-history change map**. Clickable standalone plots connect each point to its measured radar history. Original-space density groups, representative examples, physical-descriptor comparisons and declared sensitivity runs show both shared behavior and strong scene/sampling dependence. The encoder is unchanged; groups are exploratory, with no event-class validation. **75 offline tests pass.**

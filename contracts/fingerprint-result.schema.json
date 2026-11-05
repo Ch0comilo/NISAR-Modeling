@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "analysis",
+    "status",
+    "policy",
+    "observations",
+    "quality",
+    "features",
+    "points",
+    "normal_probability",
+    "phenomenon_class",
+    "causal_attribution",
+    "artifacts",
+    "limitations"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "analysis": {
+      "const": "observed_surface_fingerprint"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "no_data"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "policy": {
+      "type": "object"
+    },
+    "observations": {
+      "type": "object"
+    },
+    "quality": {
+      "type": "object"
+    },
+    "features": {
+      "type": "object"
+    },
+    "points": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "row",
+          "column",
+          "longitude",
+          "latitude",
+          "state",
+          "baseline_reference",
+          "baseline_dates",
+          "assessment_dates",
+          "baseline_db",
+          "baseline_scaled_mad_db",
+          "diagnostic_half_width_db",
+          "first_change_db",
+          "assessment_median_change_db",
+          "first_scaled_departure",
+          "maximum_scaled_departure",
+          "outside_baseline_observations",
+          "supported_assessment_observations",
+          "observed_departure_fraction",
+          "first_departure_interval",
+          "continuous_duration_inferred",
+          "cross_minus_co_ratio_change_db",
+          "cross_minus_co_ratio_first_change_db",
+          "co_step_concentration",
+          "local_co_contrast_db",
+          "local_co_spatial_mad_change_db",
+          "normal_probability",
+          "phenomenon_class",
+          "causal_attribution"
+        ],
+        "properties": {
+          "row": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "state": {
+            "enum": [
+              "insufficient_baseline",
+              "within_observed_baseline_bounds",
+              "outside_observed_baseline_bounds"
+            ]
+          },
+          "baseline_reference": {
+            "type": "string"
+          },
+          "baseline_dates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "minItems": 1
+          },
+          "assessment_dates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "minItems": 1
+          },
+          "baseline_db": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "description": "Named co/cross polarization order from observations.polarizations"
+          },
+          "baseline_scaled_mad_db": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "description": "Named co/cross polarization order from observations.polarizations"
+          },
+          "diagnostic_half_width_db": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "description": "Named co/cross polarization order from observations.polarizations"
+          },
+          "first_change_db": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "description": "Named co/cross polarization order from observations.polarizations"
+          },
+          "assessment_median_change_db": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "description": "Named co/cross polarization order from observations.polarizations"
+          },
+          "first_scaled_departure": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "maximum_scaled_departure": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "outside_baseline_observations": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "supported_assessment_observations": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "observed_departure_fraction": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "first_departure_interval": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "after",
+                  "by",
+                  "exact_onset_inferred"
+                ],
+                "properties": {
+                  "after": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date"
+                  },
+                  "by": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "exact_onset_inferred": {
+                    "const": false
+                  }
+                }
+              }
+            ]
+          },
+          "continuous_duration_inferred": {
+            "const": false
+          },
+          "cross_minus_co_ratio_change_db": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cross_minus_co_ratio_first_change_db": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "co_step_concentration": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "local_co_contrast_db": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "local_co_spatial_mad_change_db": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "normal_probability": {
+            "type": "null"
+          },
+          "phenomenon_class": {
+            "type": "null"
+          },
+          "causal_attribution": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "normal_probability": {
+      "type": "null"
+    },
+    "phenomenon_class": {
+      "type": "null"
+    },
+    "causal_attribution": {
+      "type": "null"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "href",
+          "role",
+          "units",
+          "sha256",
+          "media_type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "units": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "media_type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

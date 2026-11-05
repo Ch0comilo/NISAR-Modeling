@@ -1,0 +1,790 @@
+{
+  "experiment_id": "observed_surface_features_v1",
+  "scene_count": 21,
+  "sampled_histories": 3764,
+  "six_date_analog_histories": 3380,
+  "six_date_analog_scenes": 19,
+  "baseline_states": {
+    "within_observed_baseline_bounds": 2802,
+    "outside_observed_baseline_bounds": 770,
+    "insufficient_baseline": 192,
+    "unsupported": 0
+  },
+  "methods": {
+    "physical": {
+      "states": {
+        "within_development_distance_envelope": 2298,
+        "no_close_cross_region_analog": 122,
+        "insufficient_sampling_matched_regions": 960
+      },
+      "median_unrestricted_nearest_span_difference_days": 0.0,
+      "median_matched_nearest_span_difference_days": 0.0,
+      "calibration": {
+        "distance_envelope": 0.9615283006229423,
+        "quantile": 0.95,
+        "development_cells": 1032,
+        "development_scenes": [
+          "chenab",
+          "forest_river",
+          "kafue",
+          "mekong",
+          "niscemi",
+          "okavango"
+        ],
+        "scope": "Leave-own-region-out nearest distances in the development library; scene-balanced descriptive envelope, not a calibrated normality probability"
+      }
+    },
+    "learned": {
+      "states": {
+        "within_development_distance_envelope": 2157,
+        "no_close_cross_region_analog": 263,
+        "insufficient_sampling_matched_regions": 960
+      },
+      "median_unrestricted_nearest_span_difference_days": 0.0,
+      "median_matched_nearest_span_difference_days": 0.0,
+      "calibration": {
+        "distance_envelope": 0.7132705684094244,
+        "quantile": 0.95,
+        "development_cells": 1032,
+        "development_scenes": [
+          "chenab",
+          "forest_river",
+          "kafue",
+          "mekong",
+          "niscemi",
+          "okavango"
+        ],
+        "scope": "Leave-own-region-out nearest distances in the development library; scene-balanced descriptive envelope, not a calibrated normality probability"
+      }
+    },
+    "hybrid": {
+      "states": {
+        "within_development_distance_envelope": 2235,
+        "no_close_cross_region_analog": 185,
+        "insufficient_sampling_matched_regions": 960
+      },
+      "median_unrestricted_nearest_span_difference_days": 0.0,
+      "median_matched_nearest_span_difference_days": 0.0,
+      "calibration": {
+        "distance_envelope": 1.009625063122291,
+        "quantile": 0.95,
+        "development_cells": 1032,
+        "development_scenes": [
+          "chenab",
+          "forest_river",
+          "kafue",
+          "mekong",
+          "niscemi",
+          "okavango"
+        ],
+        "scope": "Leave-own-region-out nearest distances in the development library; scene-balanced descriptive envelope, not a calibrated normality probability"
+      }
+    }
+  },
+  "reference_comparisons": {
+    "forest_river": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "deliblato": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "chenab": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "niscemi": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "okavango": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "california": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "mekong": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "kafue": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "iceland": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "amazon": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "murray": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "hokkaido": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "pantanal": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    },
+    "chokwe": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 134,
+          "first_co_change_median_db": 2.3099210262298584,
+          "first_cross_change_median_db": 1.150254487991333,
+          "first_baseline_departure_fraction": 0.16417910447761194
+        },
+        "1": {
+          "cells": 12,
+          "first_co_change_median_db": -2.263137102127075,
+          "first_cross_change_median_db": -2.9963059425354004,
+          "first_baseline_departure_fraction": 0.5
+        },
+        "2": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 18,
+          "first_co_change_median_db": 2.299573302268982,
+          "first_cross_change_median_db": 0.4620814323425293,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "255": {
+          "cells": 860,
+          "first_co_change_median_db": 1.184039831161499,
+          "first_cross_change_median_db": 0.05637168884277344,
+          "first_baseline_departure_fraction": 0.22790697674418606
+        }
+      },
+      "matching": {
+        "positive_pixels": 12,
+        "matched_control_pixels": 11,
+        "matched_positive_pixels": 11,
+        "matched_fraction": 0.9166666666666666,
+        "baseline_mean_positive_minus_control_db_by_channel": [
+          -0.34346805919300427,
+          -0.19367547468705612
+        ],
+        "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders"
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 11,
+          "control_pixels": 11,
+          "positive_mean_db": -1.9584149447354404,
+          "control_mean_db": 2.276830629868941,
+          "positive_median_db": -2.4723076820373535,
+          "control_median_db": 2.339838981628418,
+          "mean_contrast_db": -4.235245574604381,
+          "spatial_resampling_95_interval_db": [
+            -5.485238469044367,
+            -2.890670136104932
+          ],
+          "positive_blocks": 6,
+          "control_blocks": 10,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "cross_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 11,
+          "control_pixels": 11,
+          "positive_mean_db": -2.959223747253418,
+          "control_mean_db": 1.2396223761818626,
+          "positive_median_db": -3.1059513092041016,
+          "control_median_db": 1.284078598022461,
+          "mean_contrast_db": -4.19884612343528,
+          "spatial_resampling_95_interval_db": [
+            -5.5518968482451,
+            -2.7851523951328163
+          ],
+          "positive_blocks": 6,
+          "control_blocks": 10,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "first_ratio_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 11,
+          "control_pixels": 11,
+          "positive_mean_db": -0.9274279421026056,
+          "control_mean_db": -0.9558093547821045,
+          "positive_median_db": -1.229142189025879,
+          "control_median_db": -1.0064644813537598,
+          "mean_contrast_db": 0.028381412679498896,
+          "spatial_resampling_95_interval_db": [
+            -0.520113667890881,
+            0.8555977812409397
+          ],
+          "positive_blocks": 6,
+          "control_blocks": 10,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "local_co_contrast_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 11,
+          "control_pixels": 11,
+          "positive_mean_db": -1.0906650803305886,
+          "control_mean_db": -0.46130161664702674,
+          "positive_median_db": -1.2220447063446045,
+          "control_median_db": -0.15210819244384766,
+          "mean_contrast_db": -0.6293634636835619,
+          "spatial_resampling_95_interval_db": [
+            -1.8168951974933347,
+            0.30298806572953835
+          ],
+          "positive_blocks": 6,
+          "control_blocks": 10,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "qadirabad": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 160,
+          "first_co_change_median_db": 1.0960471630096436,
+          "first_cross_change_median_db": 1.0667576789855957,
+          "first_baseline_departure_fraction": 0.01875
+        },
+        "1": {
+          "cells": 23,
+          "first_co_change_median_db": -4.621400833129883,
+          "first_cross_change_median_db": -2.7657318115234375,
+          "first_baseline_departure_fraction": 0.391304347826087
+        },
+        "2": {
+          "cells": 180,
+          "first_co_change_median_db": -2.0159716606140137,
+          "first_cross_change_median_db": -1.4088048934936523,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 661,
+          "first_co_change_median_db": 0.30080223083496094,
+          "first_cross_change_median_db": 0.3926219940185547,
+          "first_baseline_departure_fraction": 0.05143721633888049
+        },
+        "255": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        }
+      },
+      "matching": {
+        "positive_pixels": 23,
+        "matched_control_pixels": 18,
+        "matched_positive_pixels": 18,
+        "matched_fraction": 0.782608695652174,
+        "baseline_mean_positive_minus_control_db_by_channel": [
+          -0.18046797646416557,
+          -0.43208132849799263
+        ],
+        "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders"
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 18,
+          "control_pixels": 18,
+          "positive_mean_db": -4.920215023888482,
+          "control_mean_db": 0.7428734567430284,
+          "positive_median_db": -4.687046527862549,
+          "control_median_db": 0.44022274017333984,
+          "mean_contrast_db": -5.663088480631511,
+          "spatial_resampling_95_interval_db": [
+            -6.452911216433883,
+            -4.712841366931282
+          ],
+          "positive_blocks": 9,
+          "control_blocks": 15,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "cross_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 18,
+          "control_pixels": 18,
+          "positive_mean_db": -3.5268272823757596,
+          "control_mean_db": 0.8974822362263998,
+          "positive_median_db": -3.5680084228515625,
+          "control_median_db": 0.7777328491210938,
+          "mean_contrast_db": -4.4243095186021595,
+          "spatial_resampling_95_interval_db": [
+            -5.078830720851949,
+            -3.6642119886828404
+          ],
+          "positive_blocks": 9,
+          "control_blocks": 15,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "first_ratio_change_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 18,
+          "control_pixels": 18,
+          "positive_mean_db": 1.267083141538832,
+          "control_mean_db": -0.12060970730251735,
+          "positive_median_db": 1.276756763458252,
+          "control_median_db": -0.06695938110351562,
+          "mean_contrast_db": 1.3876928488413494,
+          "spatial_resampling_95_interval_db": [
+            0.8702613390575755,
+            1.8534656839906882
+          ],
+          "positive_blocks": 9,
+          "control_blocks": 15,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        },
+        "local_co_contrast_db": {
+          "status": "conditional_spatial_resampling",
+          "positive_pixels": 18,
+          "control_pixels": 18,
+          "positive_mean_db": -1.4721501933203802,
+          "control_mean_db": -0.2022251155641344,
+          "positive_median_db": -1.2813262939453125,
+          "control_median_db": 0.06774508953094482,
+          "mean_contrast_db": -1.2699250777562459,
+          "spatial_resampling_95_interval_db": [
+            -2.318430783603655,
+            -0.42368642170639714
+          ],
+          "positive_blocks": 9,
+          "control_blocks": 15,
+          "valid_resampling_draws": 400,
+          "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "richmond": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 284,
+          "first_co_change_median_db": 0.9853733777999878,
+          "first_cross_change_median_db": 0.6578841209411621,
+          "first_baseline_departure_fraction": 0.04225352112676056
+        },
+        "1": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "2": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 3,
+          "first_co_change_median_db": 1.139423131942749,
+          "first_cross_change_median_db": 1.450897216796875,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "255": {
+          "cells": 2200,
+          "first_co_change_median_db": 1.2316761016845703,
+          "first_cross_change_median_db": 0.8669660091400146,
+          "first_baseline_departure_fraction": 0.1340909090909091
+        }
+      },
+      "matching": {
+        "positive_pixels": 0,
+        "matched_control_pixels": 0,
+        "matched_positive_pixels": 0,
+        "matched_fraction": null
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "cross_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "first_ratio_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "local_co_contrast_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "rajshahi": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 56,
+          "first_co_change_median_db": -0.7954492568969727,
+          "first_cross_change_median_db": -0.4277684688568115,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "1": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "2": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 1,
+          "first_co_change_median_db": -1.5335686206817627,
+          "first_cross_change_median_db": -0.14043760299682617,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "255": {
+          "cells": 100,
+          "first_co_change_median_db": -0.7444624900817871,
+          "first_cross_change_median_db": -0.22395801544189453,
+          "first_baseline_departure_fraction": 0.0
+        }
+      },
+      "matching": {
+        "positive_pixels": 0,
+        "matched_control_pixels": 0,
+        "matched_positive_pixels": 0,
+        "matched_fraction": null
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "cross_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "first_ratio_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "local_co_contrast_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "gimcheon": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 9,
+          "first_co_change_median_db": 0.6406542658805847,
+          "first_cross_change_median_db": -0.06943798065185547,
+          "first_baseline_departure_fraction": null
+        },
+        "1": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "2": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 2,
+          "first_co_change_median_db": 2.3432775735855103,
+          "first_cross_change_median_db": 0.4148244857788086,
+          "first_baseline_departure_fraction": null
+        },
+        "255": {
+          "cells": 1012,
+          "first_co_change_median_db": 0.7859851121902466,
+          "first_cross_change_median_db": 0.27791404724121094,
+          "first_baseline_departure_fraction": null
+        }
+      },
+      "matching": {
+        "positive_pixels": 0,
+        "matched_control_pixels": 0,
+        "matched_positive_pixels": 0,
+        "matched_fraction": null
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "cross_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "first_ratio_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "local_co_contrast_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "benguerir": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 1024,
+          "first_co_change_median_db": 0.10093975067138672,
+          "first_cross_change_median_db": 0.005007743835449219,
+          "first_baseline_departure_fraction": 0.0029296875
+        },
+        "1": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "2": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "255": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        }
+      },
+      "matching": {
+        "positive_pixels": 0,
+        "matched_control_pixels": 0,
+        "matched_positive_pixels": 0,
+        "matched_fraction": null
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "cross_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "first_ratio_change_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        },
+        "local_co_contrast_db": {
+          "status": "unavailable",
+          "reason": "Both comparison groups require measured support"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "wheatbelt": {
+      "status": "independent_optical_product_comparison",
+      "groups": {
+        "0": {
+          "cells": 3330,
+          "first_co_change_median_db": -0.6973781585693359,
+          "first_cross_change_median_db": -0.6990561485290527,
+          "first_baseline_departure_fraction": 0.04264264264264264
+        },
+        "1": {
+          "cells": 1,
+          "first_co_change_median_db": -1.4498920440673828,
+          "first_cross_change_median_db": -0.4751911163330078,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "2": {
+          "cells": 49,
+          "first_co_change_median_db": -0.30774593353271484,
+          "first_cross_change_median_db": -0.061989784240722656,
+          "first_baseline_departure_fraction": 0.0
+        },
+        "3": {
+          "cells": 0,
+          "first_co_change_median_db": null,
+          "first_cross_change_median_db": null,
+          "first_baseline_departure_fraction": null
+        },
+        "4": {
+          "cells": 486,
+          "first_co_change_median_db": -0.576148509979248,
+          "first_cross_change_median_db": -0.31890344619750977,
+          "first_baseline_departure_fraction": 0.00205761316872428
+        },
+        "255": {
+          "cells": 230,
+          "first_co_change_median_db": -0.14695167541503906,
+          "first_cross_change_median_db": -0.08416223526000977,
+          "first_baseline_departure_fraction": 0.02608695652173913
+        }
+      },
+      "matching": {
+        "positive_pixels": 1,
+        "matched_control_pixels": 1,
+        "matched_positive_pixels": 1,
+        "matched_fraction": 1.0,
+        "baseline_mean_positive_minus_control_db_by_channel": [
+          0.05903434753417969,
+          0.015333175659179688
+        ],
+        "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders"
+      },
+      "matched_feature_contrasts": {
+        "co_change_db": {
+          "status": "descriptive_only",
+          "positive_pixels": 1,
+          "control_pixels": 1,
+          "positive_mean_db": -1.4498920440673828,
+          "control_mean_db": 2.486058235168457,
+          "positive_median_db": -1.4498920440673828,
+          "control_median_db": 2.486058235168457,
+          "mean_contrast_db": -3.93595027923584,
+          "spatial_resampling_95_interval_db": null,
+          "positive_blocks": 1,
+          "control_blocks": 1,
+          "reason": "Too few spatial blocks for the declared resampling interval"
+        },
+        "cross_change_db": {
+          "status": "descriptive_only",
+          "positive_pixels": 1,
+          "control_pixels": 1,
+          "positive_mean_db": -0.4751911163330078,
+          "control_mean_db": 0.8765010833740234,
+          "positive_median_db": -0.4751911163330078,
+          "control_median_db": 0.8765010833740234,
+          "mean_contrast_db": -1.3516921997070312,
+          "spatial_resampling_95_interval_db": null,
+          "positive_blocks": 1,
+          "control_blocks": 1,
+          "reason": "Too few spatial blocks for the declared resampling interval"
+        },
+        "first_ratio_change_db": {
+          "status": "descriptive_only",
+          "positive_pixels": 1,
+          "control_pixels": 1,
+          "positive_mean_db": 1.254868507385254,
+          "control_mean_db": -1.4809112548828125,
+          "positive_median_db": 1.254868507385254,
+          "control_median_db": -1.4809112548828125,
+          "mean_contrast_db": 2.7357797622680664,
+          "spatial_resampling_95_interval_db": null,
+          "positive_blocks": 1,
+          "control_blocks": 1,
+          "reason": "Too few spatial blocks for the declared resampling interval"
+        },
+        "local_co_contrast_db": {
+          "status": "descriptive_only",
+          "positive_pixels": 1,
+          "control_pixels": 1,
+          "positive_mean_db": 0.10777783393859863,
+          "control_mean_db": 2.2417149543762207,
+          "positive_median_db": 0.10777783393859863,
+          "control_median_db": 2.2417149543762207,
+          "mean_contrast_db": -2.133937120437622,
+          "spatial_resampling_95_interval_db": null,
+          "positive_blocks": 1,
+          "control_blocks": 1,
+          "reason": "Too few spatial blocks for the declared resampling interval"
+        }
+      },
+      "phenomenon_accuracy": null,
+      "limitation": "Water product transitions are imperfect independent evidence. Reference-stable nonwater is not verified normal surface dynamics. Contrasts use all eligible 160 m common cells, not the sparse analog sample."
+    },
+    "rowe_creek": {
+      "status": "no_water_reference",
+      "phenomenon_accuracy": null
+    }
+  },
+  "phenomenon_classifier_trained": false,
+  "normal_probability": null,
+  "checkpoint_unchanged": true,
+  "limits": [
+    "All scenes were consumed earlier. No new held-out accuracy claim.",
+    "Observed baselines and the nine-region reference library are not verified normal or event-free.",
+    "Median/MAD bands are transparent diagnostics, not calibrated confidence intervals.",
+    "Fixed common cells and old label-blind sparse sampling restrict the population. Pixel counts are correlated.",
+    "Six-date learned context is retrospective and includes assessment dates. It never defines the local baseline band.",
+    "Geographic, seasonal, terrain/incidence and land-cover differences can remain after timing matching.",
+    "Optical-water stability is not all-purpose normality; no fire, landslide, crop or earthquake truth is supplied."
+  ]
+}
