@@ -10,6 +10,8 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 ## Flood evidence in new regions
 
+The [held-out Pursat experiment](docs/FLOOD_SIMILARITY.md) scores resemblance to earlier flood observations and retrieves example radar histories. The score separated new water from stable nonwater in this chip. Existing open water often scored just as highly.
+
 The [fresh flood evaluation](docs/FLOOD_EVIDENCE.md) connects observed HH/HV changes with dated OPERA optical-water transitions. Three sites in Senegal and India met the evaluation gates out of 16 screened. The baseline departure flagged **17.8%** of strict new-water reference cells at Matam and **87.5%** at Barh, where it also flagged **32.6%** of stable open water. Reports include acquisition curves, signed dB layers, optical transitions, agreement maps and spatially resampled contrasts. The [output contract](docs/FLOOD_EVIDENCE.md#teammate-output-contract) describes the artifacts and coverage statuses.
 
 ## New exploration: measurable features and departures from baseline

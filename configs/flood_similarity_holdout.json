@@ -1,0 +1,28 @@
+{
+  "protocol_id": "flood_similarity_holdout_v1",
+  "archive_cutoff": "2026-11-05",
+  "posting_m": 80,
+  "chip_width_m": 10240,
+  "max_recent_dates": 4,
+  "recent_history_days": 120,
+  "seasonal_window_days": 30,
+  "max_seasonal_dates": 4,
+  "optical_offset_days": 4,
+  "optical_candidates_per_date": 5,
+  "min_common_fraction": 0.5,
+  "min_joint_optical_fraction": 0.25,
+  "min_new_water_cells": 20,
+  "min_stable_nonwater_cells": 40,
+  "min_new_water_blocks": 4,
+  "spatial_block_pixels": 8,
+  "cases": [
+    {"id":"pursat_lake","region":"tonle_sap","place":"Tonlé Sap floodplain near Kampong Luong, Cambodia","point":[104.203,12.551],"onset":"2026-08-28","target_start":"2026-09-15","target_end":"2026-10-04","event_source":"https://data.gdacs.org/Floods/report.aspx?episodeid=10&eventid=1104132&eventtype=FL"},
+    {"id":"pursat_west","region":"tonle_sap","place":"Western Pursat floodplain, Cambodia","point":[103.951,12.745],"onset":"2026-08-28","target_start":"2026-09-15","target_end":"2026-10-04","event_source":"https://data.gdacs.org/Floods/report.aspx?episodeid=10&eventid=1104132&eventtype=FL"},
+    {"id":"stung_sen","region":"tonle_sap","place":"Stung Sen floodplain near Kampong Thom, Cambodia","point":[104.869,12.684],"onset":"2026-09-20","target_start":"2026-09-23","target_end":"2026-10-06","event_source":"https://data.gdacs.org/report.aspx?episodeid=10&eventid=1104132&eventtype=FL"},
+    {"id":"pego","region":"valencia_alicante","place":"Pego–Oliva marsh, Spain","point":[-0.059,38.880],"onset":"2026-10-18","target_start":"2026-10-19","target_end":"2026-10-26","event_source":"https://mapping.emergency.copernicus.eu/news/flood-in-alicante-valencia-regions-spain-emsr935/"},
+    {"id":"gandia","region":"valencia_alicante","place":"Serpis floodplain near Gandia, Spain","point":[-0.185,38.966],"onset":"2026-10-18","target_start":"2026-10-19","target_end":"2026-10-26","event_source":"https://mapping.emergency.copernicus.eu/news/flood-in-alicante-valencia-regions-spain-emsr935/"},
+    {"id":"srikakulam","region":"arnab_coast","place":"Nagavali floodplain near Srikakulam, India","point":[83.899,18.262],"onset":"2026-10-28","target_start":"2026-10-29","target_end":"2026-11-05","event_source":"https://download.disasterscharter.org/activations/flood-in-india-activation-1056-"},
+    {"id":"narasannapeta","region":"arnab_coast","place":"Vamsadhara floodplain near Narasannapeta, India","point":[84.051,18.413],"onset":"2026-10-28","target_start":"2026-10-29","target_end":"2026-11-05","event_source":"https://download.disasterscharter.org/activations/flood-in-india-activation-1056-"},
+    {"id":"vizianagaram","region":"arnab_coast","place":"Coastal floodplain in Vizianagaram district, India","point":[83.507,18.061],"onset":"2026-10-28","target_start":"2026-10-29","target_end":"2026-11-05","event_source":"https://download.disasterscharter.org/activations/flood-in-india-activation-1056-"}
+  ]
+}
