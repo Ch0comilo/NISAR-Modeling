@@ -1,0 +1,26 @@
+{
+  "protocol_id": "fresh_flood_evidence_followup_v1",
+  "archive_cutoff": "2026-11-05",
+  "posting_m": 80,
+  "chip_width_m": 10240,
+  "max_recent_dates": 6,
+  "recent_history_days": 120,
+  "seasonal_window_days": 30,
+  "max_seasonal_dates": 6,
+  "optical_offset_days": 4,
+  "optical_candidates_per_date": 5,
+  "min_common_fraction": 0.5,
+  "min_joint_optical_fraction": 0.25,
+  "min_new_water_cells": 20,
+  "min_stable_nonwater_cells": 40,
+  "min_new_water_blocks": 4,
+  "spatial_block_pixels": 8,
+  "cases": [
+    {"id":"patna","region":"bihar_ganga","place":"Ganga floodplain at Patna, India","point":[85.176,25.637],"onset":"2026-08-09","target_start":"2026-09-04","target_end":"2026-09-20","event_source":"https://data.gdacs.org/report.aspx?episodeid=20&eventid=1104121&eventtype=FL"},
+    {"id":"barh","region":"bihar_ganga","place":"Ganga floodplain at Barh, India","point":[85.710,25.495],"onset":"2026-08-09","target_start":"2026-09-04","target_end":"2026-09-20","event_source":"https://fmiscwrdbihar.gov.in/fmis/inundation26.aspx"},
+    {"id":"bang_ban","region":"chao_phraya","place":"Chao Phraya floodplain at Bang Ban, Thailand","point":[100.339,14.386],"onset":"2026-08-18","target_start":"2026-09-15","target_end":"2026-09-29","event_source":"https://data.gdacs.org/Floods/report.aspx?detail=true&episodeid=55&eventid=1104122&eventtype=FL"},
+    {"id":"ayutthaya","region":"chao_phraya","place":"Chao Phraya floodplain south of Ayutthaya, Thailand","point":[100.535,14.297],"onset":"2026-08-18","target_start":"2026-09-15","target_end":"2026-09-29","event_source":"https://data.gdacs.org/Floods/report.aspx?detail=true&episodeid=55&eventid=1104122&eventtype=FL"},
+    {"id":"cabiao","region":"nueva_ecija","place":"Pampanga River floodplain near Cabiao, Philippines","point":[120.856,15.246],"onset":"2026-09-19","target_start":"2026-09-19","target_end":"2026-09-28","event_source":"https://gdacs.org/report.aspx?episodeid=2&eventid=1104176&eventtype=FL"},
+    {"id":"osogbo","region":"osun","place":"Osun River at Osogbo, Nigeria","point":[4.549,7.758],"onset":"2026-09-21","target_start":"2026-09-24","target_end":"2026-10-07","event_source":"https://data.gdacs.org/report.aspx?episodeid=8&eventid=1104186&eventtype=FL"}
+  ]
+}

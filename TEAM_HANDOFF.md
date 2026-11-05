@@ -2,6 +2,10 @@
 
 Current direction approved 4 November 2026: **exploration, teaching and entertainment through measured radar dynamics**. No forecasting or automatic phenomenon classification is part of this implementation. The mockup supplies case-study context only; its methods and design did not determine this model. Neither the mockup nor application frontend is modified.
 
+## Fresh flood evidence
+
+The [flood evidence contract](docs/FLOOD_EVIDENCE.md#teammate-output-contract) starts from a case index with relative artifact URLs and checksums. Use the dated radar and optical observations, signed HH/HV changes, comparison counts, and acquisition and coverage statuses together. An unadmitted case can still have a measured illustration. A null seasonal result means the prior-season comparison lacks support. Read the [evaluation and methods](docs/FLOOD_EVIDENCE.md) for the Matam, Ndioum and Barh comparisons.
+
 ## Current additions: version 0.5
 
 Use [CHARACTERIZATION_V05_CONTRACTS.md](docs/CHARACTERIZATION_V05_CONTRACTS.md) for the new shared `characterize` worker and sixteen request/result schemas. [The scientific results](docs/CHARACTERIZATION_V05.md) and [validation report](docs/CHARACTERIZATION_V05_VALIDATION.md) explain eight shared reports, five new measured scenes, fresh flood/control comparisons, an optical disturbance adapter, a frozen representation probe and a new earthquake-context InSAR stack. No frontend or mockup changes are included.
