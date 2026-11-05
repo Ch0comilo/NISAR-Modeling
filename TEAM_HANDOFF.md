@@ -2,6 +2,44 @@
 
 Current direction approved 4 November 2026: **exploration, teaching and entertainment through measured radar dynamics**. No forecasting or automatic phenomenon classification is part of this implementation. The mockup supplies case-study context only; its methods and design did not determine this model. Neither the mockup nor application frontend is modified.
 
+## Current additions: version 0.3
+
+The [v2 experiment report](docs/MODELING_V2.md) and [model card](models/global_explorer_v2/MODEL_CARD.md) cover the new frozen candidate and InSAR interval worker. There are thirteen 160 m regional cubes, nine training regions, two older development cases and two new geographic tests. The new model improves over v1 but remains slightly worse than interpolation on both new tests. Reconstruction results, latent colors and GP conditional coverage do not establish global physical accuracy.
+
+For v2, use `models/global_explorer_v2/masked_temporal_transformer.pt` explicitly. Native point requests can specify `target_posting_m: 160`; it is mutually exclusive with `aggregate_pixels`. Aggregation must be an integer native block, in linear power before dB. This checkpoint declines other posting/band/polarization semantics instead of silently resampling them. The legacy checkpoint remains available for existing explicit requests.
+
+New offline examples are `contracts/examples/hokkaido-v2.json`, `hokkaido-v2-probe.json`, and `kumamoto-stack-offline-wide.json`. `global-v2.json` and `kumamoto-stack.json` exercise live catalogs/quantitative reads. Public catalog search needs no login; archive reads use credentials only from the backend process environment. Model weights and all three fixed projection files travel together.
+
+### Additional analysis arrays and quality
+
+| Field | Shape | Meaning |
+|---|---|---|
+| `learned_state`, `learned_embedding` | `[time,y,x,48]`, `[y,x,48]` | Raw contextual representation; includes time/mask response and all selected observed context |
+| `contextual_state_change_per_day` | `[transition_time,y,x]` | RMS raw-state difference divided by actual days; not physical motion |
+| `dynamic_state` | `[time,y,x,48]` | Frozen actual state minus a constant-trajectory control at identical dates/masks; no causal interpretation |
+| `dynamic_rgb_time` | `[time,y,x,3]` | Fixed training-only PCA of the control contrast; no class colors |
+| `dynamic_context_change_per_day` | `[transition_time,y,x]` | RMS control-contrast coordinate change/day; not speed, event severity or calibrated anomaly likelihood |
+| `maximum_controlled_state_change.tif` | `[y,x]` | Largest supported contrast rate across adjacent observed dates |
+| `controlled_dynamics.gif` | measured-date frames | Measured power beside the model control contrast, with fixed colors and uniform playback |
+
+`transition_time` uses each interval's **end acquisition date**; the interval starts at the preceding member of `time`. Zero contrast is a vector property; it need not display as black after PCA. Black pixels in the scientific previews denote unavailable support. Learned quantities use latent units, not calibrated physical units. Raw and controlled RGB projections have separate files; their SHA-256 fingerprints are included in model metadata.
+
+`observations.input_quality` gives valid fraction per date and complete channel/pixel support. `observations.processing` preserves aggregation/excluded-empty-acquisition provenance. `observations.query_point_quality` distinguishes the selected query pixel from the broader chip: it lists measured polarizations per date and observed-date count. A geometric catalog/grid hit is not proof that the center pixel was observed. NoData texture remains masked; gradient-axis orientation is radians counterclockwise from east toward north, modulo pi, with actual x/y posting.
+
+Map probes optionally return `dynamic_latent_at_observed_dates`, and the two state-rate arrays in `descriptors_at_selected_pixel`. Their lengths are T−1 and correspond to adjacent unique acquisition dates. The new `no_valid_observations` outcome means the selection lies inside the grid but contains no supported measurements; `outside_observed_footprint` remains distinct. Do not replace either outcome with zero change.
+
+### InSAR interval contract
+
+The new `insar-stack-request.schema.json` and `insar-stack-result.schema.json` bring the request/result schema count to ten. Python entrypoint: `surface_dynamics.insar_stack.process_stack(request, output_directory)`; CLI: `surface-dynamics insar-stack request.json --output directory`.
+
+`source.mode=local_pairs` accepts `pair_paths` (2–6 trusted backend NPZ paths with checksum sidecars). `catalog_point` accepts longitude/latitude, UTC start/end dates, optional `series_key`, `max_pairs` (2–6) and `extent_km` (2–15). Both dates of every selected pair must be inside the window. One compatible track/pass/frame/bandwidth/polarization series is retained. Native unwrapped grids must share posting/CRS and exact common pixel centers; no implicit phase resampling occurs. The common reference uses at least eight jointly supported pixels; stability is never presumed.
+
+The result has `complete`, `partial` or `no_data` status, explicit pair intervals, coherent-component fractions, common-spatial-support coherence medians/histograms, common-phase reference/support quality, null displacement and artifact hashes. `partial` can still provide measured coherence when no phase reference is available.
+
+The NetCDF contains `coherence[pair,y,x]`, `coherence_interval_contrast[pair_transition,y,x]` (later pair minus earlier), `selected_component_support`, `ionosphere_filled`, `phase_relative_to_shared_pixel_rad`, common-support masks, and separate reference/secondary timestamps. `pair_transition` connects adjacent rows of the pair list; it is **not** a physical time derivative. COGs include minimum coherence, pair-contrast bands and common phase support. The same pixel is used as phase datum in each supported component; component IDs themselves are local and are not compared across pairs.
+
+No phase integration, corrections, SBAS inversion, LOS/vertical motion or earthquake attribution is provided. Different interval durations confound coherence contrast. The real 5 km example is partial with no phase reference; the separately documented 15 km example has 4.57% common support and an unverified reference. These outcomes are useful teaching observations rather than hazard classifications.
+
 ## What is implemented
 
 The Python package `surface_dynamics` accepts a measured cube or arbitrary WGS84 point/date window and emits science artifacts plus a validated result manifest. It selects a compatible NISAR geometry/mode rather than mixing orbit directions, frames or polarizations. It can return `no_data` or partial capabilities instead of inventing observations.

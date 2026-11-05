@@ -1,0 +1,16 @@
+{
+  "contract_version": "1.0",
+  "request_id": "hokkaido-v2",
+  "theme": "explore",
+  "source": {
+    "mode": "local_cube",
+    "cube_path": "products/global_v2/cubes/hokkaido.npz"
+  },
+  "analyses": [
+    "physical",
+    "spectral",
+    "stochastic",
+    "transformer"
+  ],
+  "transformer_checkpoint": "models/global_explorer_v2/masked_temporal_transformer.pt"
+}

@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,
+  "required":["contract_version","request_id","analysis","status","observations","quality","grid","artifacts","los_displacement_cm","limitations"],
+  "properties":{
+    "contract_version":{"const":"1.0"},"request_id":{"type":"string"},"analysis":{"const":"interferometric_interval_dynamics"},
+    "status":{"enum":["complete","partial","no_data"]},"reason":{"type":"string"},"los_displacement_cm":{"type":"null"},
+    "observations":{"type":"array","items":{"type":"object","required":["source_id","reference_date","secondary_date","interval_days","selected_component","coherent_component_fraction","ionosphere_filled_fraction","source_sha256","common_spatial_support_median_coherence","common_spatial_support_coherence_histogram"],"properties":{
+      "source_id":{"type":"string"},"reference_date":{"type":"string","format":"date"},"secondary_date":{"type":"string","format":"date"},"interval_days":{"type":"integer","minimum":1},"selected_component":{"type":["integer","null"]},"coherent_component_fraction":{"type":"number","minimum":0,"maximum":1},"ionosphere_filled_fraction":{"type":"number","minimum":0,"maximum":1},"source_sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"common_spatial_support_median_coherence":{"type":["number","null"],"minimum":0,"maximum":1.00001},"common_spatial_support_coherence_histogram":{"type":"array","minItems":10,"maxItems":10,"items":{"type":"integer","minimum":0}}
+    }}},
+    "quality":{"type":"object","properties":{"common_phase_support_fraction":{"type":"number","minimum":0,"maximum":1},"common_phase_support_pixels":{"type":"integer","minimum":0},"common_coherence_support_fraction":{"type":"number","minimum":0,"maximum":1},"shared_reference":{"type":["object","null"]},"phase_comparison_status":{"enum":["common_pixel_uncorrected_phase","insufficient_common_component_support"]},"coherence_threshold":{"type":"number"},"coherence_histogram_bin_edges":{"type":"array","minItems":11,"maxItems":11,"items":{"type":"number"}}}},
+    "grid":{"type":"object"},"limitations":{"type":"array","items":{"type":"string"}},
+    "artifacts":{"type":"array","items":{"type":"object","required":["id","href","role","media_type","sha256"],"properties":{"id":{"type":"string"},"href":{"type":"string"},"role":{"type":"string"},"media_type":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"}}}}
+  },
+  "allOf":[{"if":{"properties":{"status":{"const":"no_data"}}},"then":{"required":["reason"]}}]
+}

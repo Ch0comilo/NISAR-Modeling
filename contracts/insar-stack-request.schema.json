@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,
+  "required":["contract_version","request_id","source"],
+  "properties":{
+    "contract_version":{"const":"1.0"},"request_id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},
+    "coherence_threshold":{"type":"number","minimum":0.1,"maximum":0.9},
+    "source":{"oneOf":[
+      {"type":"object","additionalProperties":false,"required":["mode","pair_paths"],"properties":{"mode":{"const":"local_pairs"},"pair_paths":{"type":"array","minItems":2,"maxItems":6,"uniqueItems":true,"items":{"type":"string","minLength":1}}}},
+      {"type":"object","additionalProperties":false,"required":["mode","longitude","latitude","start_date","end_date"],"properties":{"mode":{"const":"catalog_point"},"longitude":{"type":"number","minimum":-180,"maximum":180},"latitude":{"type":"number","minimum":-90,"maximum":90},"start_date":{"type":"string","format":"date"},"end_date":{"type":"string","format":"date"},"series_key":{"type":"string"},"max_pairs":{"type":"integer","minimum":2,"maximum":6},"extent_km":{"type":"number","minimum":2,"maximum":15}}}
+    ]}
+  }
+}

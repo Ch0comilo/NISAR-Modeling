@@ -1,0 +1,214 @@
+[
+  {
+    "case_id": "forest_river",
+    "dates": 10,
+    "shape": [
+      10,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "deliblato",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "chenab",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "niscemi",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "okavango",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "amazon",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "murray",
+    "dates": 16,
+    "shape": [
+      16,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160
+  },
+  {
+    "case_id": "california",
+    "series_key": "135_A_021_4005_DHDH",
+    "dates": 12,
+    "shape": [
+      12,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 12,
+    "complete_spatial_support_fraction": 1.0,
+    "excluded_empty_acquisitions": []
+  },
+  {
+    "case_id": "mekong",
+    "series_key": "083_A_007_4005_DHDH",
+    "dates": 10,
+    "shape": [
+      10,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 0,
+    "complete_spatial_support_fraction": 0.26171875,
+    "excluded_empty_acquisitions": []
+  },
+  {
+    "case_id": "kafue",
+    "series_key": "143_A_170_2005_DHDH",
+    "dates": 10,
+    "shape": [
+      10,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 10,
+    "complete_spatial_support_fraction": 1.0,
+    "excluded_empty_acquisitions": []
+  },
+  {
+    "case_id": "iceland",
+    "series_key": "159_A_034_4005_DHDH",
+    "dates": 12,
+    "shape": [
+      12,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 12,
+    "complete_spatial_support_fraction": 1.0,
+    "excluded_empty_acquisitions": []
+  },
+  {
+    "case_id": "hokkaido",
+    "series_key": "081_A_024_4005_DHDH",
+    "dates": 10,
+    "shape": [
+      10,
+      2,
+      32,
+      32
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 10,
+    "complete_spatial_support_fraction": 0.9990234375,
+    "excluded_empty_acquisitions": []
+  },
+  {
+    "case_id": "pantanal",
+    "series_key": "132_A_168_2005_DHDH",
+    "dates": 8,
+    "shape": [
+      8,
+      2,
+      64,
+      64
+    ],
+    "posting_m": 160,
+    "center_point_verified": true,
+    "center_observed_date_count": 8,
+    "complete_spatial_support_fraction": 0.84423828125,
+    "excluded_empty_acquisitions": [
+      {
+        "date": "2026-07-05",
+        "reason": "zero supported finite positive channel/pixels",
+        "source": {
+          "date": "2026-07-05",
+          "title": "NISAR_L2_PR_GCOV_024_132_A_168_2005_DHDH_A_20260705T094154_20260705T094228_P05023_N_F_J_001",
+          "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_024_132_A_168_2005_DHDH_A_20260705T094154_20260705T094228_P05023_N_F_J_001/NISAR_L2_PR_GCOV_024_132_A_168_2005_DHDH_A_20260705T094154_20260705T094228_P05023_N_F_J_001.h5",
+          "epsg": 32721,
+          "slice": [
+            1468,
+            1980,
+            12915,
+            13427
+          ],
+          "pols": [
+            "HH",
+            "HV"
+          ],
+          "center_frequency_hz": null,
+          "flags": {
+            "productVersion": "1.0.11",
+            "compositeReleaseId": "P05023",
+            "radarBand": "L",
+            "instrumentName": "LSAR",
+            "hasInputDataException": 0,
+            "noiseCorrectionApplied": "False",
+            "isFullCovariance": "False"
+          },
+          "transfer_bytes": 15728656,
+          "query_point": [
+            -56.8,
+            -17.9
+          ],
+          "requested_pixels": 512,
+          "crop_policy": "point_centered",
+          "sha256": "f1836cb60d81296c5dd5c68468f71ef550647a407b6a488fa7de4ed1891860de"
+        }
+      }
+    ]
+  }
+]

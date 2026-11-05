@@ -1,0 +1,165 @@
+{
+  "contract_version": "1.0",
+  "request_id": "kumamoto-wider-reference-sensitivity",
+  "analysis": "interferometric_interval_dynamics",
+  "status": "complete",
+  "observations": [
+    {
+      "source_id": "NISAR_L2_PR_GUNW_025_024_A_018_026_4000_SH_20260709T202900_20260709T202935_20260721T202900_20260721T202934_P05023_N_F_J_001",
+      "reference_date": "2026-07-09",
+      "secondary_date": "2026-07-21",
+      "interval_days": 12,
+      "selected_component": 2,
+      "coherent_component_fraction": 0.7122283838841105,
+      "ionosphere_filled_fraction": 0.8451222272521502,
+      "source_sha256": "93f0c9ecc24533fd5a555e6f38e7302c156da908e6cf69aaab1874f948b9ccd6",
+      "common_spatial_support_median_coherence": 0.5546420812606812,
+      "common_spatial_support_coherence_histogram": [
+        3525,
+        3115,
+        2051,
+        2600,
+        3716,
+        5317,
+        6689,
+        5634,
+        2382,
+        315
+      ]
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_026_024_A_018_028_4000_SH_20260721T202900_20260721T202934_20260814T202858_20260814T202933_P05023_N_F_J_001",
+      "reference_date": "2026-07-21",
+      "secondary_date": "2026-08-14",
+      "interval_days": 24,
+      "selected_component": 2,
+      "coherent_component_fraction": 0.05242756903576279,
+      "ionosphere_filled_fraction": 0.7827071072883658,
+      "source_sha256": "ce3c1cbf1963b505ed2263512f68c3f18be12dc0037acd20d65939b6d50fd783",
+      "common_spatial_support_median_coherence": 0.3842726945877075,
+      "common_spatial_support_coherence_histogram": [
+        3942,
+        4484,
+        4356,
+        5943,
+        6625,
+        4993,
+        3023,
+        1473,
+        431,
+        74
+      ]
+    },
+    {
+      "source_id": "NISAR_L2_PR_GUNW_028_024_A_018_029_4000_SH_20260814T202858_20260814T202933_20260826T202858_20260826T202933_P05023_N_F_J_001",
+      "reference_date": "2026-08-14",
+      "secondary_date": "2026-08-26",
+      "interval_days": 12,
+      "selected_component": 1,
+      "coherent_component_fraction": 0.6730703938433681,
+      "ionosphere_filled_fraction": 0.8472442281575373,
+      "source_sha256": "5026165a14e38d29a787c19535bb161e0f1660cd911d22c5574b1da9519d6875",
+      "common_spatial_support_median_coherence": 0.47299423813819885,
+      "common_spatial_support_coherence_histogram": [
+        3621,
+        2998,
+        2880,
+        4233,
+        5480,
+        5612,
+        5012,
+        3636,
+        1647,
+        225
+      ]
+    }
+  ],
+  "quality": {
+    "common_phase_support_fraction": 0.04566545948392938,
+    "common_phase_support_pixels": 1614,
+    "common_coherence_support_fraction": 1.0,
+    "shared_reference": {
+      "pixel": [
+        3,
+        69
+      ],
+      "x": 652760.0,
+      "y": 3621000.0,
+      "epsg": 32652,
+      "selection": "maximum minimum coherence on common selected-component support",
+      "independently_stable": false,
+      "phase_datum_rad": [
+        3.361053466796875,
+        16.32560920715332,
+        -6.869686126708984
+      ]
+    },
+    "phase_comparison_status": "common_pixel_uncorrected_phase",
+    "coherence_threshold": 0.35,
+    "coherence_histogram_bin_edges": [
+      0.0,
+      0.1,
+      0.2,
+      0.30000000000000004,
+      0.4,
+      0.5,
+      0.6000000000000001,
+      0.7000000000000001,
+      0.8,
+      0.9,
+      1.0
+    ]
+  },
+  "grid": {
+    "epsg": 32652,
+    "width": 188,
+    "height": 188,
+    "pixel_spacing_m": 80.0,
+    "alignment": "exact common native pixel centers; no resampling"
+  },
+  "artifacts": [
+    {
+      "id": "interferometric_interval_dynamics",
+      "href": "interferometric_interval_dynamics.nc",
+      "role": "observed_interval_arrays",
+      "media_type": "application/x-netcdf",
+      "sha256": "214c33e655f7ca614bc35056d2b6d9530cfa6fff4c9085ec2f1ae0883d1028ee"
+    },
+    {
+      "id": "minimum_coherence",
+      "href": "minimum_coherence.tif",
+      "role": "minimum_measured_pair_coherence",
+      "media_type": "image/tiff",
+      "sha256": "1d3b056cce7df4ce669e07e180c737a73f66f11263b48b6d1c141db3d2635d3e"
+    },
+    {
+      "id": "coherence_interval_contrast",
+      "href": "coherence_interval_contrast.tif",
+      "role": "descriptive_pair_coherence_contrast",
+      "media_type": "image/tiff",
+      "sha256": "02920df70c52f99f961e0a24ddf201334e23d22cbf47bb87541a05b5873efe78"
+    },
+    {
+      "id": "common_phase_support",
+      "href": "common_phase_support.tif",
+      "role": "common_reference_support_mask",
+      "media_type": "image/tiff",
+      "sha256": "164b18195610ca6236f83d616bfa575f575cad6277cc6c7f314456d48ee4e73e"
+    },
+    {
+      "id": "interval_dynamics",
+      "href": "interval_dynamics.png",
+      "role": "observed_interval_science_figure",
+      "media_type": "image/png",
+      "sha256": "7763579796a25597d0a18a8bb9bee547814438a1d27211882075f7aa56a88eeb"
+    }
+  ],
+  "los_displacement_cm": null,
+  "limitations": [
+    "Each pair has its own reference/secondary interval. Unequal baselines, moisture, scattering and processing can change coherence; differences are not isolated event effects.",
+    "The shared reference pixel maximizes minimum coherence; independent stability is not established.",
+    "No atmospheric, ionospheric or tidal correction, LOS/vertical displacement, phase integration, SBAS inversion or forecasting is performed.",
+    "Native common pixel centers are intersected exactly. Connected-component IDs are local to each pair and are never matched numerically across dates.",
+    "Ionosphere-filled flags remain explicit; lack of a fill flag alone is not correction validation."
+  ]
+}

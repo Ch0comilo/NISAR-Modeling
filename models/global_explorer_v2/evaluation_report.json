@@ -1,0 +1,1757 @@
+{
+  "evaluation_version": "1.0",
+  "freeze": {
+    "frozen_at_utc": "2026-11-05T04:05:22.534425+00:00",
+    "checkpoint_sha256": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+    "recipe_sha256": "38b8dff6b470aaa7108802d882c4cefcdae8ad6265d43d19e241c0f858fa1100",
+    "architecture_source_sha256": "1fc041e975ac6beb5e4ba33340ff7fa0d8f5012a27fa8ffda98043ad393e7468",
+    "fresh_test_regions": [
+      "hokkaido",
+      "pantanal"
+    ],
+    "legacy_development_regions": [
+      "amazon",
+      "murray"
+    ],
+    "selection_scope": "training-region spatial stripes only; no geographic scores read during training"
+  },
+  "posting_m": 160,
+  "learned_and_baseline_results": {
+    "v1": {
+      "benchmark_version": "1.0",
+      "task": "all_internal_observed_acquisition_reconstruction",
+      "checkpoint_sha256": "98b93698837e12961ec64373546597cd39a183bf6de3594e6eccb4cf3f33bef1",
+      "seed": 59,
+      "complete_trajectories_only": true,
+      "cases": [
+        {
+          "case_id": "amazon",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 6,
+          "scored_channel_pixels": 6144,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-07-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.1274946820271963,
+              "temporal_mean_rmse_db": 0.482169796807996,
+              "interpolation_rmse_db": 0.27551056204032126
+            },
+            {
+              "masked_date": "2026-07-17",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.1442301508648143,
+              "temporal_mean_rmse_db": 0.4094296690657815,
+              "interpolation_rmse_db": 0.3021426278588927
+            },
+            {
+              "masked_date": "2026-08-10",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.3443761034007082,
+              "temporal_mean_rmse_db": 0.3009178817343252,
+              "interpolation_rmse_db": 0.4264335652139422
+            },
+            {
+              "masked_date": "2026-09-03",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.115884158993223,
+              "temporal_mean_rmse_db": 0.6937549163376199,
+              "interpolation_rmse_db": 0.6482519163836022
+            },
+            {
+              "masked_date": "2026-09-15",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.0424340124785372,
+              "temporal_mean_rmse_db": 0.3308985419564282,
+              "interpolation_rmse_db": 0.45043508766823476
+            },
+            {
+              "masked_date": "2026-09-27",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.1414718453822543,
+              "temporal_mean_rmse_db": 0.5949172147533756,
+              "interpolation_rmse_db": 0.5266807767429009
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 1.1563360313224325,
+            "temporal_mean_rmse_db": 0.48911282949064605,
+            "interpolation_rmse_db": 0.456354536662475
+          }
+        },
+        {
+          "case_id": "murray",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 14,
+          "scored_channel_pixels": 14336,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-01-24",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.8740373971789235,
+              "temporal_mean_rmse_db": 3.3649539912437825,
+              "interpolation_rmse_db": 0.7053868791237282
+            },
+            {
+              "masked_date": "2026-02-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 3.1956863341065236,
+              "temporal_mean_rmse_db": 3.105243291881006,
+              "interpolation_rmse_db": 1.7427037831806138
+            },
+            {
+              "masked_date": "2026-03-01",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 3.9889515792570904,
+              "temporal_mean_rmse_db": 3.6228935739384776,
+              "interpolation_rmse_db": 5.488345591897499
+            },
+            {
+              "masked_date": "2026-03-13",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 4.904953227460097,
+              "temporal_mean_rmse_db": 2.992229537208733,
+              "interpolation_rmse_db": 3.9628026118214645
+            },
+            {
+              "masked_date": "2026-04-06",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 2.5972687859909875,
+              "temporal_mean_rmse_db": 2.4064882090594173,
+              "interpolation_rmse_db": 1.1003090382273397
+            },
+            {
+              "masked_date": "2026-04-18",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 2.9074471106202955,
+              "temporal_mean_rmse_db": 2.5394983234688246,
+              "interpolation_rmse_db": 1.6888545418005634
+            },
+            {
+              "masked_date": "2026-04-30",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 2.0016663660347773,
+              "temporal_mean_rmse_db": 2.663876022982616,
+              "interpolation_rmse_db": 1.6796002543673254
+            },
+            {
+              "masked_date": "2026-05-24",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.7228138900904222,
+              "temporal_mean_rmse_db": 1.7555710325362976,
+              "interpolation_rmse_db": 1.2155455815488556
+            },
+            {
+              "masked_date": "2026-06-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 3.3519995894063173,
+              "temporal_mean_rmse_db": 2.0090164127011834,
+              "interpolation_rmse_db": 1.6025027424701503
+            },
+            {
+              "masked_date": "2026-07-11",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 5.075135155457442,
+              "temporal_mean_rmse_db": 2.663212941688603,
+              "interpolation_rmse_db": 0.8027531556912193
+            },
+            {
+              "masked_date": "2026-07-23",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 5.245128109117322,
+              "temporal_mean_rmse_db": 3.0948219743673837,
+              "interpolation_rmse_db": 0.7400737595787387
+            },
+            {
+              "masked_date": "2026-08-16",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 3.9797038875294906,
+              "temporal_mean_rmse_db": 3.809524463961955,
+              "interpolation_rmse_db": 0.9835487130703001
+            },
+            {
+              "masked_date": "2026-09-09",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 4.377297602751876,
+              "temporal_mean_rmse_db": 3.8157865574035963,
+              "interpolation_rmse_db": 1.4477789986118053
+            },
+            {
+              "masked_date": "2026-09-21",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 2.3399348976197643,
+              "temporal_mean_rmse_db": 2.5134112167215967,
+              "interpolation_rmse_db": 1.2024039758658915
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 3.594111032557845,
+            "temporal_mean_rmse_db": 2.946662299202389,
+            "interpolation_rmse_db": 2.17109569077403
+          }
+        },
+        {
+          "case_id": "hokkaido",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 8,
+          "scored_channel_pixels": 8192,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-07-01",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6731485594237279,
+              "temporal_mean_rmse_db": 0.6324051440151911,
+              "interpolation_rmse_db": 0.6827698774263486
+            },
+            {
+              "masked_date": "2026-07-13",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6553348488831753,
+              "temporal_mean_rmse_db": 0.7991508272011986,
+              "interpolation_rmse_db": 0.6426036808320305
+            },
+            {
+              "masked_date": "2026-07-25",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.7411920890484069,
+              "temporal_mean_rmse_db": 0.7484174445140168,
+              "interpolation_rmse_db": 0.4668540587744788
+            },
+            {
+              "masked_date": "2026-08-18",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.9405105847922965,
+              "temporal_mean_rmse_db": 0.658060494603896,
+              "interpolation_rmse_db": 0.6712867592183379
+            },
+            {
+              "masked_date": "2026-08-30",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.5267770851491007,
+              "temporal_mean_rmse_db": 0.6311973326360928,
+              "interpolation_rmse_db": 0.48976577492119444
+            },
+            {
+              "masked_date": "2026-09-11",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.5846894052589856,
+              "temporal_mean_rmse_db": 0.631340515992361,
+              "interpolation_rmse_db": 0.45210498792287546
+            },
+            {
+              "masked_date": "2026-09-23",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.5702382366087939,
+              "temporal_mean_rmse_db": 0.6708759052034532,
+              "interpolation_rmse_db": 0.71320950333049
+            },
+            {
+              "masked_date": "2026-10-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.290311026140599,
+              "temporal_mean_rmse_db": 0.8111518099474113,
+              "interpolation_rmse_db": 0.9506233413884403
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 0.7846933006691424,
+            "temporal_mean_rmse_db": 0.7014977953839541,
+            "interpolation_rmse_db": 0.6523337708430093
+          }
+        },
+        {
+          "case_id": "pantanal",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 6,
+          "scored_channel_pixels": 6144,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-08-10",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.8448750831268169,
+              "temporal_mean_rmse_db": 0.35373547531557875,
+              "interpolation_rmse_db": 0.2834633742274772
+            },
+            {
+              "masked_date": "2026-08-22",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.39539991990174467,
+              "temporal_mean_rmse_db": 0.33075828007683855,
+              "interpolation_rmse_db": 0.27307754304335063
+            },
+            {
+              "masked_date": "2026-09-03",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.42357319084449657,
+              "temporal_mean_rmse_db": 0.3695480131515976,
+              "interpolation_rmse_db": 0.5151126180380596
+            },
+            {
+              "masked_date": "2026-09-15",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6233080974940083,
+              "temporal_mean_rmse_db": 0.7618418727855323,
+              "interpolation_rmse_db": 0.8478173365751925
+            },
+            {
+              "masked_date": "2026-09-27",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6503222727934659,
+              "temporal_mean_rmse_db": 0.45385850001005024,
+              "interpolation_rmse_db": 0.7044261970968595
+            },
+            {
+              "masked_date": "2026-10-09",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.46325656867607284,
+              "temporal_mean_rmse_db": 0.3965699095258296,
+              "interpolation_rmse_db": 0.4963318756813346
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 0.5881621009641572,
+            "temporal_mean_rmse_db": 0.46810857548622997,
+            "interpolation_rmse_db": 0.5600029274441626
+          }
+        }
+      ],
+      "checkpoint_updated": false,
+      "interpretation": [
+        "Each score hides a complete acquisition from the bidirectional Transformer; all other selected dates remain visible.",
+        "All methods are scored on exactly the same finite target pixels/channels with valid observations on both sides.",
+        "Interpolation uses the nearest valid neighbor on each side and actual acquisition times; temporal mean excludes the target.",
+        "Pixels and overlapping temporal windows are correlated; row/sample counts are not independent geographic replication.",
+        "Case IDs are a convenience check; spatial provenance must establish an independent geographic holdout.",
+        "This benchmark neither forecasts nor retrains/selects the model on held-out regions."
+      ]
+    },
+    "v2": {
+      "benchmark_version": "1.0",
+      "task": "all_internal_observed_acquisition_reconstruction",
+      "checkpoint_sha256": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+      "seed": 59,
+      "complete_trajectories_only": true,
+      "cases": [
+        {
+          "case_id": "amazon",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 6,
+          "scored_channel_pixels": 6144,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-07-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.306338629471237,
+              "temporal_mean_rmse_db": 0.482169796807996,
+              "interpolation_rmse_db": 0.27551056204032126
+            },
+            {
+              "masked_date": "2026-07-17",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.31774359512306866,
+              "temporal_mean_rmse_db": 0.4094296690657815,
+              "interpolation_rmse_db": 0.3021426278588927
+            },
+            {
+              "masked_date": "2026-08-10",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.3840985289289745,
+              "temporal_mean_rmse_db": 0.3009178817343252,
+              "interpolation_rmse_db": 0.4264335652139422
+            },
+            {
+              "masked_date": "2026-09-03",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6534320726884406,
+              "temporal_mean_rmse_db": 0.6937549163376199,
+              "interpolation_rmse_db": 0.6482519163836022
+            },
+            {
+              "masked_date": "2026-09-15",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.44485665270654806,
+              "temporal_mean_rmse_db": 0.3308985419564282,
+              "interpolation_rmse_db": 0.45043508766823476
+            },
+            {
+              "masked_date": "2026-09-27",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.5215373278900273,
+              "temporal_mean_rmse_db": 0.5949172147533756,
+              "interpolation_rmse_db": 0.5266807767429009
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 0.4544608761179387,
+            "temporal_mean_rmse_db": 0.48911282949064605,
+            "interpolation_rmse_db": 0.456354536662475
+          }
+        },
+        {
+          "case_id": "murray",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 14,
+          "scored_channel_pixels": 14336,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-01-24",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.9523058833864498,
+              "temporal_mean_rmse_db": 3.3649539912437825,
+              "interpolation_rmse_db": 0.7053868791237282
+            },
+            {
+              "masked_date": "2026-02-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.9075487797091015,
+              "temporal_mean_rmse_db": 3.105243291881006,
+              "interpolation_rmse_db": 1.7427037831806138
+            },
+            {
+              "masked_date": "2026-03-01",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 4.889507294172971,
+              "temporal_mean_rmse_db": 3.6228935739384776,
+              "interpolation_rmse_db": 5.488345591897499
+            },
+            {
+              "masked_date": "2026-03-13",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 3.3246687729532245,
+              "temporal_mean_rmse_db": 2.992229537208733,
+              "interpolation_rmse_db": 3.9628026118214645
+            },
+            {
+              "masked_date": "2026-04-06",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.4751012940675041,
+              "temporal_mean_rmse_db": 2.4064882090594173,
+              "interpolation_rmse_db": 1.1003090382273397
+            },
+            {
+              "masked_date": "2026-04-18",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.5895744486378234,
+              "temporal_mean_rmse_db": 2.5394983234688246,
+              "interpolation_rmse_db": 1.6888545418005634
+            },
+            {
+              "masked_date": "2026-04-30",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 2.0008370312551857,
+              "temporal_mean_rmse_db": 2.663876022982616,
+              "interpolation_rmse_db": 1.6796002543673254
+            },
+            {
+              "masked_date": "2026-05-24",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.4873416975586644,
+              "temporal_mean_rmse_db": 1.7555710325362976,
+              "interpolation_rmse_db": 1.2155455815488556
+            },
+            {
+              "masked_date": "2026-06-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.5221722349249287,
+              "temporal_mean_rmse_db": 2.0090164127011834,
+              "interpolation_rmse_db": 1.6025027424701503
+            },
+            {
+              "masked_date": "2026-07-11",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.862857150075808,
+              "temporal_mean_rmse_db": 2.663212941688603,
+              "interpolation_rmse_db": 0.8027531556912193
+            },
+            {
+              "masked_date": "2026-07-23",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.0005670790422523,
+              "temporal_mean_rmse_db": 3.0948219743673837,
+              "interpolation_rmse_db": 0.7400737595787387
+            },
+            {
+              "masked_date": "2026-08-16",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.0678419584650511,
+              "temporal_mean_rmse_db": 3.809524463961955,
+              "interpolation_rmse_db": 0.9835487130703001
+            },
+            {
+              "masked_date": "2026-09-09",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.5884458956463618,
+              "temporal_mean_rmse_db": 3.8157865574035963,
+              "interpolation_rmse_db": 1.4477789986118053
+            },
+            {
+              "masked_date": "2026-09-21",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 1.250377689987061,
+              "temporal_mean_rmse_db": 2.5134112167215967,
+              "interpolation_rmse_db": 1.2024039758658915
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 2.065258444770322,
+            "temporal_mean_rmse_db": 2.946662299202389,
+            "interpolation_rmse_db": 2.17109569077403
+          }
+        },
+        {
+          "case_id": "hokkaido",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 8,
+          "scored_channel_pixels": 8192,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-07-01",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6405491761495141,
+              "temporal_mean_rmse_db": 0.6324051440151911,
+              "interpolation_rmse_db": 0.6827698774263486
+            },
+            {
+              "masked_date": "2026-07-13",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.6520283652747503,
+              "temporal_mean_rmse_db": 0.7991508272011986,
+              "interpolation_rmse_db": 0.6426036808320305
+            },
+            {
+              "masked_date": "2026-07-25",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.53016704850046,
+              "temporal_mean_rmse_db": 0.7484174445140168,
+              "interpolation_rmse_db": 0.4668540587744788
+            },
+            {
+              "masked_date": "2026-08-18",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.7137533257065004,
+              "temporal_mean_rmse_db": 0.658060494603896,
+              "interpolation_rmse_db": 0.6712867592183379
+            },
+            {
+              "masked_date": "2026-08-30",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.48534823488807693,
+              "temporal_mean_rmse_db": 0.6311973326360928,
+              "interpolation_rmse_db": 0.48976577492119444
+            },
+            {
+              "masked_date": "2026-09-11",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.42835161612923817,
+              "temporal_mean_rmse_db": 0.631340515992361,
+              "interpolation_rmse_db": 0.45210498792287546
+            },
+            {
+              "masked_date": "2026-09-23",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.7210565470812206,
+              "temporal_mean_rmse_db": 0.6708759052034532,
+              "interpolation_rmse_db": 0.71320950333049
+            },
+            {
+              "masked_date": "2026-10-05",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.9623848685494385,
+              "temporal_mean_rmse_db": 0.8111518099474113,
+              "interpolation_rmse_db": 0.9506233413884403
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 0.6605982459968178,
+            "temporal_mean_rmse_db": 0.7014977953839541,
+            "interpolation_rmse_db": 0.6523337708430093
+          }
+        },
+        {
+          "case_id": "pantanal",
+          "status": "complete",
+          "geographic_role": "unseen_case_id_not_independent_geography_proof",
+          "sampled_spatially_correlated_pixels": 512,
+          "scored_acquisitions": 6,
+          "scored_channel_pixels": 6144,
+          "per_acquisition": [
+            {
+              "masked_date": "2026-08-10",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.315320545174516,
+              "temporal_mean_rmse_db": 0.35373547531557875,
+              "interpolation_rmse_db": 0.2834633742274772
+            },
+            {
+              "masked_date": "2026-08-22",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.28036895543757073,
+              "temporal_mean_rmse_db": 0.33075828007683855,
+              "interpolation_rmse_db": 0.27307754304335063
+            },
+            {
+              "masked_date": "2026-09-03",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.5145017485749976,
+              "temporal_mean_rmse_db": 0.3695480131515976,
+              "interpolation_rmse_db": 0.5151126180380596
+            },
+            {
+              "masked_date": "2026-09-15",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.8297437569028718,
+              "temporal_mean_rmse_db": 0.7618418727855323,
+              "interpolation_rmse_db": 0.8478173365751925
+            },
+            {
+              "masked_date": "2026-09-27",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.7375213894213605,
+              "temporal_mean_rmse_db": 0.45385850001005024,
+              "interpolation_rmse_db": 0.7044261970968595
+            },
+            {
+              "masked_date": "2026-10-09",
+              "scored_channel_pixels": 1024,
+              "transformer_rmse_db": 0.4612981854302862,
+              "temporal_mean_rmse_db": 0.3965699095258296,
+              "interpolation_rmse_db": 0.4963318756813346
+            }
+          ],
+          "pooled": {
+            "transformer_rmse_db": 0.5609447929644561,
+            "temporal_mean_rmse_db": 0.46810857548622997,
+            "interpolation_rmse_db": 0.5600029274441626
+          }
+        }
+      ],
+      "checkpoint_updated": false,
+      "interpretation": [
+        "Each score hides a complete acquisition from the bidirectional Transformer; all other selected dates remain visible.",
+        "All methods are scored on exactly the same finite target pixels/channels with valid observations on both sides.",
+        "Interpolation uses the nearest valid neighbor on each side and actual acquisition times; temporal mean excludes the target.",
+        "Pixels and overlapping temporal windows are correlated; row/sample counts are not independent geographic replication.",
+        "Case IDs are a convenience check; spatial provenance must establish an independent geographic holdout.",
+        "This benchmark neither forecasts nor retrains/selects the model on held-out regions."
+      ]
+    }
+  },
+  "gaussian_process_results": [
+    {
+      "case_id": "amazon",
+      "scored_channel_pixels": 6144,
+      "gp_rmse_db": 0.4821961024763645,
+      "conditional_80_interval_empirical_coverage": 0.7766927083333334,
+      "conditional_95_interval_empirical_coverage": 0.90673828125,
+      "conditional_Gaussian_mean_negative_log_density": 0.8484058087499391,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-07-05",
+          "gp_rmse_db": 0.47729516512419856,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 12.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.42604498525124546,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 12.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.33811910801592016,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-07-17",
+          "gp_rmse_db": 0.36153228594023085,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 9.000000000000002,
+              "signal_sd_db": 0.36435249657780283,
+              "residual_sd_db": 0.23769825339016024,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 9.000000000000002,
+              "signal_sd_db": 0.17336660508413718,
+              "residual_sd_db": 0.30071279420055913,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-08-10",
+          "gp_rmse_db": 0.3072600416107459,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 10.154722763551412,
+              "signal_sd_db": 0.4224939923824684,
+              "residual_sd_db": 0.15191079862579865,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 13.849741748495179,
+              "signal_sd_db": 0.22548921230558358,
+              "residual_sd_db": 0.2702774448530309,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-03",
+          "gp_rmse_db": 0.6639260581738764,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 18.393374198389868,
+              "signal_sd_db": 0.26981403081484545,
+              "residual_sd_db": 0.28881793109519033,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 14.26477708953429,
+              "signal_sd_db": 0.2107294419040481,
+              "residual_sd_db": 0.19723414504931758,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-15",
+          "gp_rmse_db": 0.42751025393333664,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 13.267117159370265,
+              "signal_sd_db": 0.4432698824939331,
+              "residual_sd_db": 0.05000000000000001,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 12.0,
+              "signal_sd_db": 0.35757125876029217,
+              "residual_sd_db": 0.05000000000000001,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-27",
+          "gp_rmse_db": 0.5644383561746936,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 9.000000000000002,
+              "signal_sd_db": 0.36113532261947145,
+              "residual_sd_db": 0.0883543738504075,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 9.000000000000002,
+              "signal_sd_db": 0.23037563136306588,
+              "residual_sd_db": 0.24103341474206524,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "murray",
+      "scored_channel_pixels": 14336,
+      "gp_rmse_db": 2.3197195391377243,
+      "conditional_80_interval_empirical_coverage": 0.81640625,
+      "conditional_95_interval_empirical_coverage": 0.8740234375,
+      "conditional_Gaussian_mean_negative_log_density": 3.00701563839587,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-01-24",
+          "gp_rmse_db": 1.3875209029955784,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 54.36602964198201,
+              "signal_sd_db": 2.495930192102594,
+              "residual_sd_db": 1.6767461059843805,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 43.32292043490806,
+              "signal_sd_db": 2.0253260677490887,
+              "residual_sd_db": 1.7787998593595984,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-02-05",
+          "gp_rmse_db": 1.712646646736066,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 42.552839695766956,
+              "signal_sd_db": 2.568930169567744,
+              "residual_sd_db": 1.453301383229086,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 37.48479975542081,
+              "signal_sd_db": 2.1503609130247363,
+              "residual_sd_db": 1.7048452420600455,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-03-01",
+          "gp_rmse_db": 5.4442319972501565,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 61.152740302270566,
+              "signal_sd_db": 2.8895582187374242,
+              "residual_sd_db": 0.6725974345385886,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 57.23759929982299,
+              "signal_sd_db": 2.45882481514134,
+              "residual_sd_db": 0.9277027706321364,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-03-13",
+          "gp_rmse_db": 4.57259883485087,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 27.273824392685125,
+              "signal_sd_db": 2.909611080230165,
+              "residual_sd_db": 0.05000000000000001,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 27.877616626872918,
+              "signal_sd_db": 2.6050330097340946,
+              "residual_sd_db": 0.785221892602343,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-04-06",
+          "gp_rmse_db": 1.0684978053912608,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 51.02940337252999,
+              "signal_sd_db": 2.5537049091552295,
+              "residual_sd_db": 1.6378598918858758,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 38.9889632376706,
+              "signal_sd_db": 2.1396073988329913,
+              "residual_sd_db": 1.7227490846309306,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-04-18",
+          "gp_rmse_db": 1.7228120190879,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 58.64018459196133,
+              "signal_sd_db": 2.4930319667074294,
+              "residual_sd_db": 1.6910405380582871,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 37.83191139010524,
+              "signal_sd_db": 2.2673971958166788,
+              "residual_sd_db": 1.6045509057962946,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-04-30",
+          "gp_rmse_db": 1.7099595906382181,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 53.03680312490664,
+              "signal_sd_db": 2.53632352362913,
+              "residual_sd_db": 1.641603673774796,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 38.3252361744806,
+              "signal_sd_db": 2.1032301862265435,
+              "residual_sd_db": 1.682398630599438,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-05-24",
+          "gp_rmse_db": 1.2809973195213942,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 49.56901361960824,
+              "signal_sd_db": 2.581857626295387,
+              "residual_sd_db": 1.6131580003711417,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 40.635380756735124,
+              "signal_sd_db": 2.123970803332332,
+              "residual_sd_db": 1.714385117228115,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-06-05",
+          "gp_rmse_db": 1.6890637249694846,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 52.89868097887269,
+              "signal_sd_db": 2.563752604419466,
+              "residual_sd_db": 1.5974853337296016,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 38.8628851601159,
+              "signal_sd_db": 2.2123870047248375,
+              "residual_sd_db": 1.6679886375669843,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-07-11",
+          "gp_rmse_db": 0.9150910102856982,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 50.29471854806166,
+              "signal_sd_db": 2.57755491726155,
+              "residual_sd_db": 1.6285281368553437,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 40.661468197638456,
+              "signal_sd_db": 2.1218618611953493,
+              "residual_sd_db": 1.7420738319197997,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-07-23",
+          "gp_rmse_db": 1.0495185303085102,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 52.25756826136899,
+              "signal_sd_db": 2.5961603340102903,
+              "residual_sd_db": 1.635580786075307,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 40.777728405761884,
+              "signal_sd_db": 2.0130942552644417,
+              "residual_sd_db": 1.7743013318544674,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-08-16",
+          "gp_rmse_db": 1.4381528302596909,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 48.11894896544164,
+              "signal_sd_db": 2.485231068478388,
+              "residual_sd_db": 1.6157629008341228,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 35.89090492037479,
+              "signal_sd_db": 2.056337862173863,
+              "residual_sd_db": 1.7210104687972,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-09",
+          "gp_rmse_db": 1.7878128832969415,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 51.016924730325876,
+              "signal_sd_db": 2.4867567551980163,
+              "residual_sd_db": 1.6116379535748093,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 39.621912242593254,
+              "signal_sd_db": 2.0814483925834004,
+              "residual_sd_db": 1.7326399425868304,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-21",
+          "gp_rmse_db": 1.0943615675349776,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 50.8683156583227,
+              "signal_sd_db": 2.6174582795722845,
+              "residual_sd_db": 1.598076160369621,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 40.85466378261378,
+              "signal_sd_db": 2.1592437004305887,
+              "residual_sd_db": 1.7244359346053633,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "hokkaido",
+      "scored_channel_pixels": 8192,
+      "gp_rmse_db": 0.6381419904834921,
+      "conditional_80_interval_empirical_coverage": 0.8179931640625,
+      "conditional_95_interval_empirical_coverage": 0.93212890625,
+      "conditional_Gaussian_mean_negative_log_density": 0.9288473355960442,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-07-01",
+          "gp_rmse_db": 0.6212090231861358,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 19.985923660615775,
+              "signal_sd_db": 0.6993993806065473,
+              "residual_sd_db": 0.5444051987087567,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 25.556702010505777,
+              "signal_sd_db": 0.5703824792624607,
+              "residual_sd_db": 0.32942733822269993,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-07-13",
+          "gp_rmse_db": 0.6456763794023013,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 17.218651535044103,
+              "signal_sd_db": 0.5567080764495087,
+              "residual_sd_db": 0.6044299925102734,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 26.677205953432026,
+              "signal_sd_db": 0.5079281677705557,
+              "residual_sd_db": 0.35640896293266694,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-07-25",
+          "gp_rmse_db": 0.5574087446901913,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 21.0486884851674,
+              "signal_sd_db": 0.5417577498757672,
+              "residual_sd_db": 0.6534066799167618,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 27.143658336248556,
+              "signal_sd_db": 0.5026082925822521,
+              "residual_sd_db": 0.3745905964672512,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-08-18",
+          "gp_rmse_db": 0.6475541139295588,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 23.870128703258327,
+              "signal_sd_db": 0.5835012792743891,
+              "residual_sd_db": 0.6149271332525456,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 28.522101298684746,
+              "signal_sd_db": 0.5518106535315916,
+              "residual_sd_db": 0.3349965573748486,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-08-30",
+          "gp_rmse_db": 0.523475026256897,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 22.725720664326094,
+              "signal_sd_db": 0.5639663592402493,
+              "residual_sd_db": 0.635693000332615,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 25.18834795867812,
+              "signal_sd_db": 0.5515452359873596,
+              "residual_sd_db": 0.33473102130672094,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-11",
+          "gp_rmse_db": 0.4849449776224569,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 18.768419798647297,
+              "signal_sd_db": 0.6004049056369903,
+              "residual_sd_db": 0.6332486102799247,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 25.534046537796826,
+              "signal_sd_db": 0.5202869126993804,
+              "residual_sd_db": 0.36373335463516165,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-23",
+          "gp_rmse_db": 0.6490535391121975,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 15.158287251769922,
+              "signal_sd_db": 0.675100507285064,
+              "residual_sd_db": 0.528413457966479,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 22.502109850970868,
+              "signal_sd_db": 0.5546550756184705,
+              "residual_sd_db": 0.3309692975340649,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-10-05",
+          "gp_rmse_db": 0.8913494783449221,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 16.68776633393013,
+              "signal_sd_db": 0.7279576855439076,
+              "residual_sd_db": 0.4576539771561283,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 24.735980269087722,
+              "signal_sd_db": 0.5765340418247069,
+              "residual_sd_db": 0.2854085960189044,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "pantanal",
+      "scored_channel_pixels": 6144,
+      "gp_rmse_db": 0.48017050725995297,
+      "conditional_80_interval_empirical_coverage": 0.7644856770833334,
+      "conditional_95_interval_empirical_coverage": 0.8938802083333334,
+      "conditional_Gaussian_mean_negative_log_density": 0.7382941094405013,
+      "per_acquisition": [
+        {
+          "masked_date": "2026-08-10",
+          "gp_rmse_db": 0.3511522721488931,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.5569786773267275,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.2009679443188015,
+              "residual_sd_db": 0.25669056703527804,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-08-22",
+          "gp_rmse_db": 0.32717041456193274,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.565212042087633,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.17467048190024878,
+              "residual_sd_db": 0.28146257172027345,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-03",
+          "gp_rmse_db": 0.36866631720572474,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.5549464608450119,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 7.021132828755474,
+              "signal_sd_db": 0.2972251240819158,
+              "residual_sd_db": 0.1514877603675831,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-15",
+          "gp_rmse_db": 0.7804851902334499,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 16.622656019283944,
+              "signal_sd_db": 0.27841241692194946,
+              "residual_sd_db": 0.36074839626563254,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 10.073953456555092,
+              "signal_sd_db": 0.29006477601974584,
+              "residual_sd_db": 0.10715953967714319,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-09-27",
+          "gp_rmse_db": 0.5009699852152827,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 11.777637623561073,
+              "signal_sd_db": 0.28373010873287113,
+              "residual_sd_db": 0.46919102138736485,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 8.418400912042287,
+              "signal_sd_db": 0.3226019812155136,
+              "residual_sd_db": 0.05000000000000001,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        },
+        {
+          "masked_date": "2026-10-09",
+          "gp_rmse_db": 0.3962208805090279,
+          "scored_channel_pixels": 1024,
+          "parameters": [
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.5500454501403066,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "fit_returned",
+              "optimizer_success": true,
+              "length_days": 6.0,
+              "signal_sd_db": 0.05000000000000001,
+              "residual_sd_db": 0.3118665911528592,
+              "fit_visible_pixels": 64,
+              "interval_kind": "conditional_Gaussian_observation_distribution; parameter/mean uncertainty omitted"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            },
+            {
+              "status": "insufficient_complete_visible_support"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "test_driven_tuning_performed": false,
+  "limitations": [
+    "Complete-trajectory benchmark; valid but incomplete trajectories are excluded, which can bias toward easier support.",
+    "Only two fresh geographic tests; pixels and overlapping dates are correlated, not independent world cases.",
+    "Version comparison changes training data and architecture together; it is not an architecture ablation.",
+    "GP empirical coverage describes conditional historical observation intervals on these pixels; it is not globally calibrated process/sensor uncertainty.",
+    "No forecast, event class, causal attribution or hazard probability."
+  ]
+}

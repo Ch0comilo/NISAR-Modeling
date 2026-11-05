@@ -2,7 +2,7 @@
 
 The science repository publishes code, schemas, model metadata/compact weights, selected scientific previews and small result summaries. Its tracked-file budget is **10 MiB total**, with no individual file above 10 MiB. `scripts/repository_audit.py` enforces the policy in CI.
 
-Generated data belongs in a versioned release asset or an external scientific data store. The `v0.2.0` release bundle contains the seven measured regional cubes, the actual earthquake pair, provenance, the installable wheel and offline handoff. `data/example_bundle.json` pins its URL, size and SHA-256. `scripts/download_examples.py` checks the complete archive before validating and restoring its nine measured fixture files.
+Generated data belongs in a versioned release asset or an external scientific data store. The current `v0.3.0` bundle contains thirteen common-posting regional cubes, legacy fixtures, two real three-pair InSAR windows, provenance, the wheel and offline handoff. `data/example_bundle.json` pins its URL, size and SHA-256. `scripts/download_examples.py` checks the archive before restoring **35 curated input files**, verifies all inputs before writing, and preserves different existing user files. In the extracted portable bundle, a separate bundled-mode manifest verifies its already included inputs without network access. The earlier `v0.2.0` release remains available with its original fixtures.
 
 Keep these local directories outside Git: `products`, `scratch`, `arrays`, `figures`, `descriptive`, `research`, `deliverables`, virtual environments and build outputs. The user-owned `mockup` directory is excluded from publication and remains unchanged on disk. Earthdata/GitHub credentials and protected credential files never belong in a release or commit.
 

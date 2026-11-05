@@ -1,0 +1,15 @@
+{
+  "frozen_at_utc": "2026-11-05T04:05:22.534425+00:00",
+  "checkpoint_sha256": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+  "recipe_sha256": "38b8dff6b470aaa7108802d882c4cefcdae8ad6265d43d19e241c0f858fa1100",
+  "architecture_source_sha256": "1fc041e975ac6beb5e4ba33340ff7fa0d8f5012a27fa8ffda98043ad393e7468",
+  "fresh_test_regions": [
+    "hokkaido",
+    "pantanal"
+  ],
+  "legacy_development_regions": [
+    "amazon",
+    "murray"
+  ],
+  "selection_scope": "training-region spatial stripes only; no geographic scores read during training"
+}

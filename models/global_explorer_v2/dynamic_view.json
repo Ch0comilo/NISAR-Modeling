@@ -1,0 +1,5 @@
+{
+  "fitting_scope": "training-side spatial pixels only, every measured date; no validation/test data",
+  "constant_control": "same frozen weights, acquisition dates and masks; each observed channel replaced by its visible time mean",
+  "interpretation": "Representation contrast removes the pure calendar/mask response. Nonlinear interactions remain; no causal or physical parameter identification."
+}

@@ -1,0 +1,10 @@
+{
+  "contract_version":"1.0",
+  "request_id":"kumamoto-interval-dynamics",
+  "source":{
+    "mode":"catalog_point","longitude":130.65,"latitude":32.65,
+    "start_date":"2026-07-01","end_date":"2026-08-31",
+    "series_key":"024_A_018_4000_SH","max_pairs":3,"extent_km":5
+  },
+  "coherence_threshold":0.35
+}

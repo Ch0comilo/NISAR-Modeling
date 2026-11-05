@@ -1,0 +1,21 @@
+{
+  "recipe_version": "1.0",
+  "seed": 109,
+  "epochs": 16,
+  "target_posting_m": 160,
+  "native_chip_pixels": 512,
+  "max_dates": 12,
+  "pixel_sequences_per_training_region": 1024,
+  "training_regions": ["forest_river", "deliblato", "chenab", "niscemi", "okavango", "california", "mekong", "kafue", "iceland"],
+  "legacy_development_regions": ["amazon", "murray"],
+  "locked_test_regions": ["hokkaido", "pantanal"],
+  "new_regions": [
+    {"id": "california", "longitude": -121.7, "latitude": 38.4, "context": "Agricultural/river landscape; broader measured January-October season"},
+    {"id": "mekong", "longitude": 105.7, "latitude": 10.5, "context": "Rice/floodplain landscape; context is not a crop label"},
+    {"id": "kafue", "longitude": 27.25, "latitude": -15.75, "context": "Wetland/floodplain landscape"},
+    {"id": "iceland", "longitude": -19.7, "latitude": 64.0, "context": "High-latitude surface seasonality; no snow/volcanic labels"},
+    {"id": "hokkaido", "longitude": 142.5, "latitude": 43.5, "context": "New geographic test region; excluded from all fitting and selection"},
+    {"id": "pantanal", "longitude": -56.8, "latitude": -17.9, "context": "New geographic test region; excluded from all fitting and selection"}
+  ],
+  "protocol": "Freeze architecture, recipe and checkpoint selection on training stripes before reading new geographic test scores. The earlier Amazon/Murray results informed this generation and are development results. No forecast, event labels or test-driven tuning."
+}

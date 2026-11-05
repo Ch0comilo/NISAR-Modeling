@@ -1,0 +1,13 @@
+{
+  "contract_version": "1.0",
+  "request_id": "kumamoto-offline-wide",
+  "source": {
+    "mode": "local_pairs",
+    "pair_paths": [
+      "products/insar_stacks/kumamoto_wide/cache/pair_0.npz",
+      "products/insar_stacks/kumamoto_wide/cache/pair_1.npz",
+      "products/insar_stacks/kumamoto_wide/cache/pair_2.npz"
+    ]
+  },
+  "coherence_threshold": 0.35
+}

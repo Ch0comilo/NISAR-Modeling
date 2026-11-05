@@ -40,7 +40,7 @@ def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None):
     if destination.exists() and sidecar.exists():
         meta=json.loads(sidecar.read_text())
         if hashlib.sha256(destination.read_bytes()).hexdigest()!=meta['sha256']:raise ValueError('Cached chip checksum mismatch')
-        if meta.get('query_point')==[longitude,latitude] and meta.get('requested_pixels')==pixels and meta.get('crop_policy')=='point_centered':return meta
+        if meta.get('title')==entry['title'] and meta.get('query_point')==[longitude,latitude] and meta.get('requested_pixels')==pixels and meta.get('crop_policy')=='point_centered':return meta
     reader=load_range_reader();token=token or credential()
     with reader(science_url(entry),token,budget=128*1024*1024) as remote:
         with h5py.File(remote,'r') as h:
@@ -120,6 +120,27 @@ def validate_cube(cube):
 def load_cube(path):
     with np.load(path,allow_pickle=False) as handle:cube={k:handle[k] for k in handle.files}
     return validate_cube(cube)
+
+
+def exclude_empty_acquisitions(cube):
+    """Remove dates with zero supported channel/pixels; preserve the QA record.
+
+    This does not reject partial coverage, interpolate dates, or alter observed
+    powers. It is intended for preparing model inputs, not editing raw granules.
+    """
+    power=cube['power'];valid=cube['valid'].astype(bool)&np.isfinite(power)&(power>0)
+    keep=valid.any(axis=(1,2,3))
+    excluded=[{'date':str(cube['dates'][i]),'reason':'zero supported finite positive channel/pixels'} for i in np.flatnonzero(~keep)]
+    result={**cube,'power':power[keep],'valid':np.asarray(cube['valid'])[keep],'dates':np.asarray(cube['dates'])[keep]}
+    if 'source_metadata_json' in cube:
+        sources=json.loads(str(cube['source_metadata_json']))
+        if len(sources)==len(keep):
+            for item,i in zip(excluded,np.flatnonzero(~keep)):item['source']=sources[i]
+            result['source_metadata_json']=np.array(json.dumps([s for s,ok in zip(sources,keep) if ok]))
+    processing=json.loads(str(cube.get('processing_metadata_json','{}')))
+    processing['excluded_empty_acquisitions']=processing.get('excluded_empty_acquisitions',[])+excluded
+    result['processing_metadata_json']=np.array(json.dumps(processing))
+    return result,excluded
 
 def save_cube(cube,path):
     validate_cube(cube);Path(path).parent.mkdir(parents=True,exist_ok=True)

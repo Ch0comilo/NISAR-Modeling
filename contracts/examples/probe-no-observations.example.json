@@ -1,0 +1,12 @@
+{
+  "contract_version": "1.0",
+  "request_id": "mekong-v2-probe",
+  "status": "no_valid_observations",
+  "observed_series": [],
+  "selected_pixel": [
+    16,
+    16
+  ],
+  "epsg": 32648,
+  "reason": "Selection is inside the projected grid but has no supported measured samples"
+}

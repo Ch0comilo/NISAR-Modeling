@@ -119,6 +119,16 @@ def train(train_paths,validation_paths,output,epochs=10,seed=47):
     (output/'training_report.json').write_text(json.dumps(results,indent=2))
     return results
 
+def model_from_checkpoint(state):
+    if state.get('architecture_id')=='visible_normalized_residual_transformer_v2':
+        from .temporal_v2 import ResidualTemporalTransformer
+        model=ResidualTemporalTransformer(state['width'],state['layers'])
+    elif 'architecture_id' not in state:
+        model=MaskedTemporalTransformer(state['width'],state['layers'])
+    else:raise ValueError('Unsupported checkpoint architecture identifier')
+    model.load_state_dict(state['state_dict']);return model
+
+
 def infer(cube,checkpoint,dropout_draws=4):
     if cube['power'].shape[0]*np.prod(cube['power'].shape[-2:])>1_000_000:
         return {'status':'unsupported_model_domain','reason':'Learned-state job exceeds one million pixel/date vectors; coarsen the grid or request fewer dates'}
@@ -126,6 +136,9 @@ def infer(cube,checkpoint,dropout_draws=4):
     pols=list(map(str,cube['polarizations']))
     if not set(pols)<=set(state['supported_polarizations']) or str(cube['radar_band']) not in state['radar_bands']:
         return {'status':'unsupported_model_domain','reason':'Checkpoint did not train on these polarization/band semantics'}
+    if state.get('architecture_id')=='visible_normalized_residual_transformer_v2':
+        from .temporal_v2 import infer as infer_v2
+        return infer_v2(cube,checkpoint,state,dropout_draws)
     model=MaskedTemporalTransformer(state['width'],state['layers']);model.load_state_dict(state['state_dict']);model.eval()
     mean=state['mean'].numpy();scale=state['scale'].numpy();x,p,t=sequences(cube);H,W=cube['power'].shape[-2:]
     supported=np.flatnonzero(p.all(1).any(1));embedding=np.full((H*W,48),np.nan,dtype='float32');uncertainty=np.full(H*W,np.nan,dtype='float32')

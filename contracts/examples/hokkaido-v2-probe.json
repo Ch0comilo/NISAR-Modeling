@@ -1,0 +1,7 @@
+{
+  "contract_version": "1.0",
+  "request_id": "hokkaido-v2-probe",
+  "dataset_path": "products/global_v2/runs/hokkaido/surface_dynamics.nc",
+  "longitude": 142.5,
+  "latitude": 43.5
+}

@@ -108,12 +108,12 @@ def observed_gif(cube,db,path,title):
         buffer=BytesIO();fig.savefig(buffer,format='png',dpi=100);plt.close(fig);buffer.seek(0);frames.append(Image.open(buffer).convert('RGB').copy())
     frames[0].save(path,save_all=True,append_images=frames[1:],duration=700,loop=0)
 
-def learned_gif(cube,db,rgb_time,path,title):
+def learned_gif(cube,db,rgb_time,path,title,learned_label='Contextual Transformer state RGB'):
     style();frames=[]
     for i,date in enumerate(cube['dates']):
         fig,axs=plt.subplots(1,2,figsize=(10,5.5));fig.subplots_adjust(top=.81,bottom=.20,wspace=.18)
         axs[0].imshow(rgb_power(db[i],cube['polarizations']));axs[1].imshow(np.nan_to_num(rgb_time[i],nan=.04))
-        for ax,label in zip(axs,['Measured power RGB','Contextual Transformer state RGB']):ax.set_title(label,loc='left');ax.set_xticks([]);ax.set_yticks([])
+        for ax,label in zip(axs,['Measured power RGB',learned_label]):ax.set_title(label,loc='left');ax.set_xticks([]);ax.set_yticks([])
         fig.suptitle(title+' / '+str(date),fontsize=15,fontweight='bold',y=.96)
         fig.text(.08,.08,'Fixed colors across time and geography. Learned states use all selected dates as context.\nDerived representation, not a measured extra band or a forecast; playback intervals are uniform.',fontsize=9,color=MUTED)
         stream=BytesIO();fig.savefig(stream,format='png',dpi=100);plt.close(fig);stream.seek(0);frames.append(Image.open(stream).convert('RGB').copy())
@@ -132,4 +132,30 @@ def insar_figure(pair,result,path,title,subtitle=''):
     m=result['metadata'];fig.text(.05,.13,f'One fringe: {m["one_fringe_phase_equivalent_cm"]:.2f} cm phase-equivalent range. Selected component support: {m["selected_fraction"]:.1%}. Ionosphere filled: {m["ionosphere_filled_fraction"]:.1%}.',fontsize=10)
     fig.text(.05,.075,'No atmospheric/ionospheric/tide phase corrections or verified stable reference. Phase-equivalent cm is NOT a deformation product.',fontsize=10)
     fig.text(.05,.035,'Dark pixels are excluded, not surface classes. Native 20/80 m grids remain separate; no earthquake magnitude or vertical motion is inferred.',color=MUTED,fontsize=10)
+    save(fig,path)
+
+
+def insar_stack_figure(ds,observations,quality,path,title):
+    style();N=len(observations);fig,axs=plt.subplots(2,N,figsize=(5*N,9),squeeze=False)
+    fig.subplots_adjust(top=.82,bottom=.20,hspace=.40,wspace=.45)
+    fig.suptitle(title+' / OBSERVED INTERFEROMETRIC INTERVALS',x=.06,ha='left',fontsize=17,fontweight='bold',y=.97)
+    fig.text(.06,.90,'Common native grid; separate pair intervals. Coherence is observability, and phase is uncorrected.',color=MUTED,fontsize=11)
+    values=ds.phase_relative_to_shared_pixel_rad.values;finite=abs(values[np.isfinite(values)])
+    limit=max(float(np.quantile(finite,.98)),.1) if len(finite) else 1.
+    cube={'x':ds.x.values,'y':ds.y.values}
+    for i,observation in enumerate(observations):
+        label=observation['reference_date']+' → '+observation['secondary_date']
+        for row,(array,cmap,unit,vmin,vmax) in enumerate([(ds.coherence.values[i],'magma','coherence',0,1),(values[i],'RdBu_r','uncorrected radians',-limit,limit)]):
+            ax=axs[row,i];im=ax.imshow(array,extent=extent(cube),cmap=cmap,vmin=vmin,vmax=vmax)
+            if row==0 or quality['shared_reference']:fig.colorbar(im,ax=ax,fraction=.045,pad=.03,label=unit)
+            else:ax.text(.5,.5,'Phase comparison unavailable\nNo shared reference support\nacross all selected intervals',transform=ax.transAxes,ha='center',va='center',fontsize=10,color=MUTED)
+            ax.set_title(label+'\n'+str(observation['interval_days'])+' day interval',loc='left',fontsize=9)
+            ax.set_xlabel('Easting (km)');ax.set_ylabel('Northing (km)' if i==0 else '');ax.tick_params(labelsize=8)
+            if row==1 and quality['shared_reference']:
+                ref=quality['shared_reference'];ax.plot(ref['x']/1000,ref['y']/1000,'+',color='black',ms=9)
+    ref_note='Shared reference is selected for coherence; stability is not established.' if quality['shared_reference'] else 'No common phase reference is available; coherence remains observable.'
+    fig.text(.06,.12,f'Common selected-component phase support: {quality["common_phase_support_fraction"]:.1%}. '+ref_note,fontsize=10)
+    fig.text(.06,.075,'Interval length, moisture and scattering differences can change coherence. No phase integration, SBAS inversion, correction or validated displacement.',fontsize=10)
+    datum_note='The same physical pixel supplies the phase datum in every pair.' if quality['shared_reference'] else 'Phase arrays are unavailable, not zero motion.'
+    fig.text(.06,.035,datum_note+' Disconnected components remain excluded separately for each interval.',color=MUTED,fontsize=10)
     save(fig,path)

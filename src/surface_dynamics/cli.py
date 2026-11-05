@@ -8,6 +8,7 @@ def main():
     for name in ['analyze','insar']:
         p=sub.add_parser(name);p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('insar-network');p.add_argument('request');p.add_argument('--output',required=True)
+    p=sub.add_parser('insar-stack');p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('benchmark');p.add_argument('--cubes',nargs='+',required=True);p.add_argument('--checkpoint',required=True);p.add_argument('--output',required=True);p.add_argument('--max-pixels',type=int,default=512)
     p=sub.add_parser('probe');p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('train');p.add_argument('--training',nargs='+',required=True);p.add_argument('--heldout',nargs='+',required=True);p.add_argument('--output',required=True);p.add_argument('--epochs',type=int,default=10)
@@ -20,6 +21,10 @@ def main():
         from .engine import analyze,analyze_insar
         request=json.loads(Path(args.request).read_text(encoding='utf8'));result=(analyze if args.command=='analyze' else analyze_insar)(request,args.output)
         print(json.dumps({'request_id':result['request_id'],'status':result['status'],'result':str(Path(args.output)/'result.json'),'artifacts':len(result['artifacts'])}))
+    elif args.command=='insar-stack':
+        from .insar_stack import process_stack
+        result=process_stack(json.loads(Path(args.request).read_text()),args.output)
+        print(json.dumps({'status':result['status'],'pairs':len(result['observations']),'result':str(Path(args.output)/'result.json')}))
     elif args.command=='insar-network':
         from .network import plan_network
         result=plan_network(json.loads(Path(args.request).read_text()),args.output)

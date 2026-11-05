@@ -1,0 +1,327 @@
+{
+  "architecture_id": "visible_normalized_residual_transformer_v2",
+  "parameters": 42292,
+  "recipe": {
+    "recipe_version": "1.0",
+    "seed": 109,
+    "epochs": 16,
+    "target_posting_m": 160,
+    "native_chip_pixels": 512,
+    "max_dates": 12,
+    "pixel_sequences_per_training_region": 1024,
+    "training_regions": [
+      "forest_river",
+      "deliblato",
+      "chenab",
+      "niscemi",
+      "okavango",
+      "california",
+      "mekong",
+      "kafue",
+      "iceland"
+    ],
+    "legacy_development_regions": [
+      "amazon",
+      "murray"
+    ],
+    "locked_test_regions": [
+      "hokkaido",
+      "pantanal"
+    ],
+    "new_regions": [
+      {
+        "id": "california",
+        "longitude": -121.7,
+        "latitude": 38.4,
+        "context": "Agricultural/river landscape; broader measured January-October season"
+      },
+      {
+        "id": "mekong",
+        "longitude": 105.7,
+        "latitude": 10.5,
+        "context": "Rice/floodplain landscape; context is not a crop label"
+      },
+      {
+        "id": "kafue",
+        "longitude": 27.25,
+        "latitude": -15.75,
+        "context": "Wetland/floodplain landscape"
+      },
+      {
+        "id": "iceland",
+        "longitude": -19.7,
+        "latitude": 64.0,
+        "context": "High-latitude surface seasonality; no snow/volcanic labels"
+      },
+      {
+        "id": "hokkaido",
+        "longitude": 142.5,
+        "latitude": 43.5,
+        "context": "New geographic test region; excluded from all fitting and selection"
+      },
+      {
+        "id": "pantanal",
+        "longitude": -56.8,
+        "latitude": -17.9,
+        "context": "New geographic test region; excluded from all fitting and selection"
+      }
+    ],
+    "protocol": "Freeze architecture, recipe and checkpoint selection on training stripes before reading new geographic test scores. The earlier Amazon/Murray results informed this generation and are development results. No forecast, event labels or test-driven tuning."
+  },
+  "training_pixel_sequences": {
+    "forest_river": 1024,
+    "deliblato": 1024,
+    "chenab": 768,
+    "niscemi": 1024,
+    "okavango": 1024,
+    "california": 768,
+    "mekong": 247,
+    "kafue": 1024,
+    "iceland": 768
+  },
+  "spatial_splits": {
+    "forest_river": {
+      "training_last_column": 47,
+      "validation_first_column": 55,
+      "excluded_buffer_columns": 7,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 64
+    },
+    "deliblato": {
+      "training_last_column": 47,
+      "validation_first_column": 55,
+      "excluded_buffer_columns": 7,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 64
+    },
+    "chenab": {
+      "training_last_column": 23,
+      "validation_first_column": 28,
+      "excluded_buffer_columns": 4,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 32
+    },
+    "niscemi": {
+      "training_last_column": 47,
+      "validation_first_column": 55,
+      "excluded_buffer_columns": 7,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 64
+    },
+    "okavango": {
+      "training_last_column": 47,
+      "validation_first_column": 55,
+      "excluded_buffer_columns": 7,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 64
+    },
+    "california": {
+      "training_last_column": 23,
+      "validation_first_column": 28,
+      "excluded_buffer_columns": 4,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 32
+    },
+    "mekong": {
+      "training_last_column": 8,
+      "validation_first_column": 11,
+      "excluded_buffer_columns": 2,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 12
+    },
+    "kafue": {
+      "training_last_column": 47,
+      "validation_first_column": 55,
+      "excluded_buffer_columns": 7,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 64
+    },
+    "iceland": {
+      "training_last_column": 23,
+      "validation_first_column": 28,
+      "excluded_buffer_columns": 4,
+      "basis": "supported columns only; no geographic test values",
+      "training_source_columns": 32
+    }
+  },
+  "projection_fit_scope": "training-side crops only; no validation or geographic test stripe",
+  "initial_interpolation_baseline_validation": {
+    "forest_river": {
+      "rmse_db": 2.0896250118428914,
+      "interpolation_rmse_db": 2.0896250118428914,
+      "scored_channel_pixels": 1536
+    },
+    "deliblato": {
+      "rmse_db": 0.519039149410162,
+      "interpolation_rmse_db": 0.519039149410162,
+      "scored_channel_pixels": 1152
+    },
+    "chenab": {
+      "rmse_db": 1.478956429100359,
+      "interpolation_rmse_db": 1.478956429100359,
+      "scored_channel_pixels": 1152
+    },
+    "niscemi": {
+      "rmse_db": 1.2721715923784471,
+      "interpolation_rmse_db": 1.2721715923784471,
+      "scored_channel_pixels": 1152
+    },
+    "okavango": {
+      "rmse_db": 0.3936813697560213,
+      "interpolation_rmse_db": 0.3936813697560213,
+      "scored_channel_pixels": 1152
+    },
+    "california": {
+      "rmse_db": 1.2680421779244626,
+      "interpolation_rmse_db": 1.2680421779244626,
+      "scored_channel_pixels": 1920
+    },
+    "mekong": {
+      "rmse_db": 0.9827360985022752,
+      "interpolation_rmse_db": 0.9827360985022752,
+      "scored_channel_pixels": 48
+    },
+    "kafue": {
+      "rmse_db": 0.5306717237057147,
+      "interpolation_rmse_db": 0.5306717237057147,
+      "scored_channel_pixels": 1536
+    },
+    "iceland": {
+      "rmse_db": 1.135053152488729,
+      "interpolation_rmse_db": 1.135053152488729,
+      "scored_channel_pixels": 1920
+    }
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "training_mse_db2": 1.4073923458655675,
+      "case_balanced_spatial_validation_rmse_db": 1.0708095750987512
+    },
+    {
+      "epoch": 2,
+      "training_mse_db2": 1.3444532165924707,
+      "case_balanced_spatial_validation_rmse_db": 1.0738842040191032
+    },
+    {
+      "epoch": 3,
+      "training_mse_db2": 1.3622223834196727,
+      "case_balanced_spatial_validation_rmse_db": 1.0605001139417078
+    },
+    {
+      "epoch": 4,
+      "training_mse_db2": 1.411006542046865,
+      "case_balanced_spatial_validation_rmse_db": 1.0730715884795974
+    },
+    {
+      "epoch": 5,
+      "training_mse_db2": 1.3776688714822134,
+      "case_balanced_spatial_validation_rmse_db": 1.0518015278444866
+    },
+    {
+      "epoch": 6,
+      "training_mse_db2": 1.3430051177740097,
+      "case_balanced_spatial_validation_rmse_db": 1.0572708316324209
+    },
+    {
+      "epoch": 7,
+      "training_mse_db2": 1.2599204411109288,
+      "case_balanced_spatial_validation_rmse_db": 1.0636307006312675
+    },
+    {
+      "epoch": 8,
+      "training_mse_db2": 1.3052383214235306,
+      "case_balanced_spatial_validation_rmse_db": 1.055449127233702
+    },
+    {
+      "epoch": 9,
+      "training_mse_db2": 1.3480005472898484,
+      "case_balanced_spatial_validation_rmse_db": 1.0417443339985224
+    },
+    {
+      "epoch": 10,
+      "training_mse_db2": 1.2780655473470688,
+      "case_balanced_spatial_validation_rmse_db": 1.021195160878514
+    },
+    {
+      "epoch": 11,
+      "training_mse_db2": 1.2831839740276336,
+      "case_balanced_spatial_validation_rmse_db": 1.0365314207567435
+    },
+    {
+      "epoch": 12,
+      "training_mse_db2": 1.2869380394617715,
+      "case_balanced_spatial_validation_rmse_db": 1.0389249665325908
+    },
+    {
+      "epoch": 13,
+      "training_mse_db2": 1.2575951278209687,
+      "case_balanced_spatial_validation_rmse_db": 1.0177725883887554
+    },
+    {
+      "epoch": 14,
+      "training_mse_db2": 1.1960737317800523,
+      "case_balanced_spatial_validation_rmse_db": 1.025982183372584
+    },
+    {
+      "epoch": 15,
+      "training_mse_db2": 1.2537847270568212,
+      "case_balanced_spatial_validation_rmse_db": 1.0123277940785786
+    },
+    {
+      "epoch": 16,
+      "training_mse_db2": 1.2398392488559087,
+      "case_balanced_spatial_validation_rmse_db": 1.0230240112209164
+    }
+  ],
+  "selected_spatial_validation": {
+    "forest_river": {
+      "rmse_db": 1.806766644178354,
+      "interpolation_rmse_db": 2.0896250118428914,
+      "scored_channel_pixels": 1536
+    },
+    "deliblato": {
+      "rmse_db": 0.516063418577816,
+      "interpolation_rmse_db": 0.519039149410162,
+      "scored_channel_pixels": 1152
+    },
+    "chenab": {
+      "rmse_db": 1.2458433555254222,
+      "interpolation_rmse_db": 1.478956429100359,
+      "scored_channel_pixels": 1152
+    },
+    "niscemi": {
+      "rmse_db": 1.1966423663115395,
+      "interpolation_rmse_db": 1.2721715923784471,
+      "scored_channel_pixels": 1152
+    },
+    "okavango": {
+      "rmse_db": 0.39098748212677326,
+      "interpolation_rmse_db": 0.3936813697560213,
+      "scored_channel_pixels": 1152
+    },
+    "california": {
+      "rmse_db": 1.1735453947286212,
+      "interpolation_rmse_db": 1.2680421779244626,
+      "scored_channel_pixels": 1920
+    },
+    "mekong": {
+      "rmse_db": 0.9935875932830767,
+      "interpolation_rmse_db": 0.9827360985022752,
+      "scored_channel_pixels": 48
+    },
+    "kafue": {
+      "rmse_db": 0.5772732955580738,
+      "interpolation_rmse_db": 0.5306717237057147,
+      "scored_channel_pixels": 1536
+    },
+    "iceland": {
+      "rmse_db": 1.2102405964175311,
+      "interpolation_rmse_db": 1.135053152488729,
+      "scored_channel_pixels": 1920
+    }
+  },
+  "checkpoint_sha256": "ab2a7862b1efc15bc82fa186ad38a90baccafb5731aa18a9c0a4e3134e640f7a",
+  "test_scores_read_during_training": false,
+  "interpretation": "Masked historical reconstruction and exploratory contextual states; not forecasting. Selection sees only training-region spatial stripes. Spatial dependence and only regional geographic replication remain."
+}

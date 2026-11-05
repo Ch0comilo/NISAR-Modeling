@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from .io import load_cube
-from .transformer import MaskedTemporalTransformer, collate, sequences
+from .transformer import model_from_checkpoint, collate, sequences
 
 
 def interpolation_baseline(values, present, times, hidden):
@@ -25,12 +25,11 @@ def interpolation_baseline(values, present, times, hidden):
     return np.where(support, prediction, np.nan), support
 
 
-def benchmark(cube_paths, checkpoint, max_pixels=512, seed=59):
+def benchmark(cube_paths, checkpoint, max_pixels=512, seed=59,complete_trajectories_only=False):
     if not 1 <= max_pixels <= 2048:raise ValueError('max_pixels must be 1..2048')
     torch.set_num_threads(4)
     saved = torch.load(checkpoint, map_location='cpu', weights_only=True)
-    model = MaskedTemporalTransformer(saved['width'], saved['layers'])
-    model.load_state_dict(saved['state_dict']); model.eval()
+    model = model_from_checkpoint(saved); model.eval()
     mean=saved['mean'].numpy();scale=saved['scale'].numpy()
     results=[];rng=np.random.default_rng(seed)
     for path in cube_paths:
@@ -38,7 +37,8 @@ def benchmark(cube_paths, checkpoint, max_pixels=512, seed=59):
         if len(cube['dates'])<3:raise ValueError('Benchmark requires three or more dates')
         pols=list(map(str,cube['polarizations']))
         if not set(pols)<=set(saved['supported_polarizations']) or str(cube['radar_band']) not in saved['radar_bands']:raise ValueError('Benchmark cube outside trained polarization/band domain')
-        x,p,t=sequences(cube);ids=np.flatnonzero(p.sum(axis=(1,2))>=3)
+        x,p,t=sequences(cube)
+        ids=np.flatnonzero(p.all(1).any(1) if complete_trajectories_only else p.sum(axis=(1,2))>=3)
         if len(ids)>max_pixels:ids=np.sort(rng.choice(ids,max_pixels,replace=False))
         if not len(ids):
             results.append({'case_id':name,'status':'no_data','reason':'No measured trajectories with three observations'});continue
@@ -65,7 +65,7 @@ def benchmark(cube_paths, checkpoint, max_pixels=512, seed=59):
                         'scored_channel_pixels':totals['transformer'][1], 'per_acquisition':dates,'pooled':scores})
     return {'benchmark_version':'1.0','task':'all_internal_observed_acquisition_reconstruction',
             'checkpoint_sha256':hashlib.sha256(Path(checkpoint).read_bytes()).hexdigest(),
-            'seed':seed,'cases':results,'checkpoint_updated':False,
+            'seed':seed,'complete_trajectories_only':complete_trajectories_only,'cases':results,'checkpoint_updated':False,
             'interpretation':[
                 'Each score hides a complete acquisition from the bidirectional Transformer; all other selected dates remain visible.',
                 'All methods are scored on exactly the same finite target pixels/channels with valid observations on both sides.',

@@ -8,7 +8,7 @@ from rasterio.transform import from_origin
 from jsonschema import Draft202012Validator,FormatChecker
 from .io import load_cube,cube_from_chips,fetch_chip,save_cube
 from .catalog import search,group_entries,choose_series
-from .analysis import measured_db,elapsed_days,physical_statistics,spatial_structure,region_series
+from .analysis import measured_db,elapsed_days,physical_statistics,spatial_structure,region_series,supported_reduction
 from .spectral import spectral_analysis,local_time_frequency
 from .stochastic import smooth_observations
 from . import render
@@ -37,7 +37,7 @@ def validate_request(request,kind='analysis'):
     if not finite(request):raise ValueError('Request numbers must be finite JSON values')
     schema=json.loads((SCHEMAS/f'{kind}-request.schema.json').read_text())
     Draft202012Validator(schema,format_checker=FormatChecker()).validate(request)
-    if kind in ['analysis','insar-network'] and request['source']['mode']=='catalog_point':
+    if kind in ['analysis','insar-network','insar-stack'] and request['source']['mode']=='catalog_point':
         s=request['source']
         if s['end_date']<s['start_date']:raise ValueError('end_date precedes start_date')
     return request
@@ -78,16 +78,34 @@ def analyze(request,output):
         paths=[]
         for entry in entries:
             path=out/'cache'/(entry['time_start'][:10]+'.npz');fetch_chip(entry,source['longitude'],source['latitude'],path,source.get('native_chip_pixels',512));paths.append(path)
-        cube=cube_from_chips(paths,source.get('aggregate_pixels',4));save_cube(cube,out/'measured_cube.npz');register(out/'measured_cube.npz','measured_linear_power_cube','gamma0 (unitless)',['time','polarization','y','x'])
+        aggregate=source.get('aggregate_pixels',4)
+        if 'target_posting_m' in source:
+            if 'aggregate_pixels' in source:raise ValueError('Choose target_posting_m or aggregate_pixels, not both')
+            with np.load(paths[0],allow_pickle=False) as measured:spacing=float(measured['x'][1]-measured['x'][0])
+            aggregate=int(round(source['target_posting_m']/spacing))
+            if aggregate<1 or not np.isclose(aggregate*spacing,source['target_posting_m']):raise ValueError('Target posting must be a whole native pixel multiple; no interpolation or upsampling')
+        cube=cube_from_chips(paths,aggregate);save_cube(cube,out/'measured_cube.npz');register(out/'measured_cube.npz','measured_linear_power_cube','gamma0 (unitless)',['time','polarization','y','x'])
         result['observations']['selection']={'catalog_hits':catalog['hits'],'compatible_group':key,'selected_dates':len(entries),'available_compatible_dates':len(groups[key]),'selection_policy':'evenly spaced acquisition indices when capped; omitted dates are not evidence of outages'}
     if len(cube['dates'])<3:raise ValueError('At least three observed acquisitions are required')
     db=measured_db(cube);t=elapsed_days(cube['dates']);x,y=cube['x'],cube['y'];pols=list(map(str,cube['polarizations']));H,W=db.shape[-2:];pixel_m=float(x[1]-x[0]);title=request['request_id'].replace('-',' ').replace('_',' ')
-    result['observations'].update(dates=list(map(str,cube['dates'])),polarizations=pols,grid={'epsg':int(cube['epsg']),'width':W,'height':H,'pixel_spacing_m':[pixel_m,float(y[0]-y[1])],'bounds_native':[float(x[0]-pixel_m/2),float(y[-1]-pixel_m/2),float(x[-1]+pixel_m/2),float(y[0]+pixel_m/2)],'coordinate_units':'metres','pixel_coordinates':'centers; upper left origin; north-up'},sources=json.loads(str(cube.get('source_metadata_json','[]'))))
+    pixel_m_y=float(y[0]-y[1])
+    result['observations'].update(dates=list(map(str,cube['dates'])),polarizations=pols,grid={'epsg':int(cube['epsg']),'width':W,'height':H,'pixel_spacing_m':[pixel_m,pixel_m_y],'bounds_native':[float(x[0]-pixel_m/2),float(y[-1]-pixel_m_y/2),float(x[-1]+pixel_m/2),float(y[0]+pixel_m_y/2)],'coordinate_units':'metres','pixel_coordinates':'centers; upper left origin; north-up'},sources=json.loads(str(cube.get('source_metadata_json','[]'))))
+    result['observations']['input_quality']={'valid_channel_pixel_fraction_by_date':cube['valid'].mean(axis=(1,2,3)).tolist(),
+                                           'complete_channel_pixel_fraction':float(cube['valid'].all(axis=0).mean()),
+                                           'support_scope':'Focused positive-power sample support; not SNR, stable terrain or atmospheric quality'}
+    if 'processing_metadata_json' in cube:result['observations']['processing']=json.loads(str(cube['processing_metadata_json']))
+    if source['mode']=='catalog_point':
+        from rasterio.warp import transform
+        qx,qy=transform('EPSG:4326',f'EPSG:{int(cube["epsg"])}',[source['longitude']],[source['latitude']])
+        qc=int(np.argmin(abs(x-qx[0])));qr=int(np.argmin(abs(y-qy[0])))
+        result['observations']['query_point_quality']={'selected_pixel':[qr,qc],
+            'observed_date_count':int(cube['valid'][:,:,qr,qc].any(1).sum()),
+            'valid_polarizations_by_date':[[str(pols[c]) for c in range(len(pols)) if cube['valid'][i,c,qr,qc]] for i in range(len(cube['dates']))]}
     if (np.isfinite(db).sum(0)>=3).sum()<8:
         result['status']='no_data';result['limitations'].append('Insufficient valid measured support: fewer than eight channel/pixels have three observations.')
         for m in request['analyses']:result['capabilities'][m]={'status':'insufficient_data','reason':'Insufficient finite positive measured support'}
         return finish(result,out)
-    stat=physical_statistics(db,t);structure=spatial_structure(db,pixel_m);common=np.isfinite(db).all(axis=(0,1));regional=region_series(db,common)
+    stat=physical_statistics(db,t);structure=spatial_structure(db,pixel_m,pixel_m_y);common=np.isfinite(db).all(axis=(0,1));regional=region_series(db,common)
     data={'gamma0_power':(('time','polarization','y','x'),cube['power']),'gamma0_db':(('time','polarization','y','x'),db),'valid_observation':(('time','polarization','y','x'),cube['valid'].astype('uint8'))}
     for name in ['valid_date_count','median_db','mad_db','slope_db_per_day','maximum_step_db']:data[name]=(('polarization','y','x'),stat[name])
     data['change_rate_db_per_day']=(('transition_time','polarization','y','x'),stat['change_rate_db_per_day'])
@@ -134,8 +152,29 @@ def analyze(request,output):
             learned=infer(cube,checkpoint)
             if learned['status']=='available':
                 data['learned_embedding']=(('y','x','latent'),learned['embedding']);data['learned_state']=(('time','y','x','latent'),learned['state']);data['dropout_embedding_sd']=(('y','x'),learned['dropout_embedding_sd'])
+                if 'contextual_state_change_per_day' in learned:
+                    data['contextual_state_change_per_day']=(('transition_time','y','x'),learned['contextual_state_change_per_day'])
+                    path=out/'maximum_contextual_state_change.tif'
+                    write_cog(path,supported_reduction(learned['contextual_state_change_per_day'],np.nanmax),x,y,cube['epsg'],'RMS latent-coordinate difference/day')
+                    register(path,'experimental_contextual_state_change','RMS latent-coordinate difference/day',['y','x'],{'interpretation':'Derived change in bidirectional latent states; not speed, displacement or event probability'})
+                    dynamic_projection=checkpoint.parent/'dynamic_projection.npz'
+                    if dynamic_projection.exists():
+                        from .dynamic_view import controlled_view
+                        dynamic=controlled_view(cube,checkpoint,learned['state'])
+                        dynamic_rgb,_=apply_basis(dynamic['state'],dynamic_projection)
+                        data['dynamic_state']=(('time','y','x','latent'),dynamic['state'])
+                        data['dynamic_rgb_time']=(('time','y','x','rgb'),dynamic_rgb)
+                        data['dynamic_context_change_per_day']=(('transition_time','y','x'),dynamic['change_per_day'])
+                        render.learned_gif(cube,db,dynamic_rgb,out/'controlled_dynamics.gif',title+' / constant-control contrast',learned_label='Actual minus constant-trajectory state RGB')
+                        register(out/'controlled_dynamics.gif','constant_trajectory_control_contrast_animation',legend={'RGB':'frozen training-only PCA of actual minus constant-trajectory contextual states','interpretation':dynamic['interpretation']})
+                        path=out/'maximum_controlled_state_change.tif'
+                        write_cog(path,supported_reduction(dynamic['change_per_day'],np.nanmax),x,y,cube['epsg'],'RMS control-contrast coordinate difference/day')
+                        register(path,'experimental_control_contrast_change','RMS control-contrast coordinate difference/day',['y','x'])
+                        learned['metadata']['dynamic_view']=dynamic['interpretation']
+                        learned['metadata']['dynamic_projection_sha256']=hashlib.sha256(dynamic_projection.read_bytes()).hexdigest()
                 projection=checkpoint.parent/'embedding_projection.npz'
                 if projection.exists():
+                    learned['metadata']['embedding_projection_sha256']=hashlib.sha256(projection.read_bytes()).hexdigest()
                     rgb,distance=apply_basis(learned['embedding'],projection);data['learned_rgb']=(('y','x','rgb'),rgb);data['embedding_standardized_distance']=(('y','x'),distance)
                     rgb_time,_=apply_basis(learned['state'],projection);data['learned_rgb_time']=(('time','y','x','rgb'),rgb_time)
                     render.learned_gif(cube,db,rgb_time,out/'learned_evolution.gif',title);register(out/'learned_evolution.gif','bidirectional_contextual_observed_date_state_animation',legend={'RGB':'same frozen latent projection for every geography/date','context':'all selected observations; no forecast'})
@@ -154,6 +193,11 @@ def analyze(request,output):
     if 'learned_state' in ds:ds.learned_state.attrs.update(units='latent coordinate',context='bidirectional context of all selected dates; derived representation, not a forecast')
     if 'learned_rgb_time' in ds:ds.learned_rgb_time.attrs.update(units='1',projection='frozen training-only global latent PCA and scaling; not class colors')
     if 'gp_conditional_sd_db' in ds:ds.gp_conditional_sd_db.attrs.update(units='dB',uncertainty_type='conditional empirical-Bayes latent SD; hyperparameter/model uncertainty omitted; not calibrated sensor noise')
+    if 'contextual_state_change_per_day' in ds:ds.contextual_state_change_per_day.attrs.update(units='RMS latent-coordinate difference/day',interpretation='Difference between contextual learned states at adjacent observed dates divided by actual elapsed days; no physical speed, motion or event likelihood')
+    if 'dynamic_state' in ds:ds.dynamic_state.attrs.update(units='latent contrast coordinate',interpretation='Frozen actual contextual state minus a constant-trajectory control at identical dates and masks; not causal attribution or physical motion')
+    if 'dynamic_context_change_per_day' in ds:ds.dynamic_context_change_per_day.attrs.update(units='RMS control-contrast coordinate difference/day',interpretation='Actual-date rate of contextual control contrast; not physical speed, hazard or calibrated anomaly likelihood')
+    if 'dynamic_rgb_time' in ds:ds.dynamic_rgb_time.attrs.update(units='1',projection='training-only frozen dynamic_projection.npz; no class semantics')
+    ds.spatial_orientation_radians.attrs.update(units='radian',convention=structure['orientation_convention'])
     crs_wkt=ds.attrs['spatial_ref'];ds['spatial_ref']=xr.DataArray(np.int32(0),attrs={'spatial_ref':crs_wkt,'crs_wkt':crs_wkt,'epsg_code':f'EPSG:{int(cube["epsg"])}'})
     for name in ds.data_vars:
         if 'x' in ds[name].dims and 'y' in ds[name].dims:ds[name].attrs['grid_mapping']='spatial_ref'

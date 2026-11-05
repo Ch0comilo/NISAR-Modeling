@@ -4,9 +4,17 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 **Observed dynamics · worldwide point queries · explicit quality flags · no forecasting**
 
-![One shared representation across seven real NISAR regions](docs/images/global_surface_atlas.png)
+![Controlled dynamics across thirteen real NISAR regions](docs/images/global_dynamic_atlas_v2.png)
 
-[Team integration guide](TEAM_HANDOFF.md) · [Scientific methods and evidence](SCIENCE_IMPLEMENTATION.md) · [Model card](models/global_explorer_v1/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.2.0)
+[Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.3.0)
+
+## Current experiment: v0.3.0
+
+The new candidate uses **visible-only normalization and an interpolation-residual Transformer**, trained on nine regions with broader seasonal support. Thirteen regions across six continents provide **128 accepted regional acquisition chips** at a common 160 m posting; Hokkaido and Pantanal are two newly reserved geographic tests. Raw contextual states and a **constant-trajectory control contrast** are separate outputs, so calendar-induced latent evolution is distinguishable from trajectory-related representation changes.
+
+On the new geographic tests, V2 reconstruction RMSE is **0.661 dB in Hokkaido** and **0.561 dB in Pantanal**, improving over V1's 0.785 and 0.588 dB on the same data/support. Interpolation remains slightly better at 0.652 and 0.560 dB; the temporal mean or Matérn GP can also win. The learned views remain experimental. The [full protocol and results](docs/MODELING_V2.md) distinguish these new tests from the older Amazon/Murray development cases.
+
+New **multi-pair InSAR** processing compares three actual Kumamoto intervals, exports coherence contrasts and gates phase comparison on a shared reference. The 5 km window lacks common phase support; a separate 15 km window has 4.57%. Neither establishes stable ground or validated displacement. The release adds ten request/result schemas, point-query quality/probe outcomes, **43 offline tests**, and independent verification of **298 artifacts across 15 new jobs**.
 
 ## What you can explore
 
@@ -15,8 +23,9 @@ Explore how Earth's surfaces change through measured radar time series and inter
 | Measured surface change | Gamma0 power, robust dispersion, actual-date slopes and steps, spatial texture, POD | Georeferenced layers, trajectories, transition rates, modes and measured-date animations |
 | Spectral structure | Actual-time generalized Lomb–Scargle, sampling-window diagnostics, permutation tests, local sinusoidal fits when supported | Candidate-period maps, spectra and time-frequency arrays |
 | Stochastic states | Empirical-Bayes Matérn-3/2 Gaussian processes, Monte Carlo draws, spatial block bootstrap | Historical latent-state distributions and separate spatial-heterogeneity intervals |
-| Shared learned representation | Trained 41,716-parameter masked temporal Transformer; fixed training-only latent projection | Per-date 48-dimensional states, shared embedding colors, dropout sensitivity |
+| Shared learned representation | Masked temporal Transformers; 42,292-parameter v2 candidate; training-only projections | Per-date 48-dimensional states, constant-control contrasts, shared colors and dropout sensitivity |
 | InSAR pair | Native wrapped/unwrapped grids, coherence, connected components and ionosphere flags | Phase/coherence maps, threshold sensitivity, supported-component statistics |
+| InSAR intervals | Compatible measured pair stacks, common native pixels, coherent-component/reference gates | Interval coherence contrasts, phase support, shared-pixel radians when available and explicit partial outcomes |
 | InSAR network **new** | Compatible acquisition graphs, connected components, minimum temporal-baseline forest, independent cycle paths | Available pair intervals, event bracketing and catalog-level time-series readiness |
 | Map probe | Pixel or metric-radius extraction from an existing NetCDF | Measured histories, descriptors and contextual learned states for a map selection |
 
@@ -37,13 +46,13 @@ python -m venv .venv
 
 On Linux, use `.venv/bin/python` in place of `.venv\Scripts\python.exe`. `requirements-lock.txt` records the exact reference CPU environment; install it after the CPU Torch step to reproduce those versions.
 
-Restore the seven measured cubes and real earthquake pair from the checksummed release asset, then run an offline job:
+Restore the regional cubes and InSAR pairs from the checksummed release asset, then run an offline job:
 
 ```powershell
 .venv\Scripts\python.exe scripts\download_examples.py
-.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\forest-river.json --output products\runs\forest_river
-.venv\Scripts\python.exe -m surface_dynamics insar contracts\examples\kumamoto-earthquake.json --output products\runs\kumamoto-earthquake
-.venv\Scripts\python.exe -m surface_dynamics probe contracts\examples\map-probe.json --output products\probes\forest-map-probe.json
+.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\hokkaido-v2.json --output products\global_v2\runs\hokkaido
+.venv\Scripts\python.exe -m surface_dynamics insar-stack contracts\examples\kumamoto-stack-offline-wide.json --output products\example_insar_stack
+.venv\Scripts\python.exe -m surface_dynamics probe contracts\examples\hokkaido-v2-probe.json --output products\probes\hokkaido-v2.json
 ```
 
 No Earthdata credentials are needed for these downloaded fixtures. The release ZIP also contains the source, wheel, model weights, provenance and offline examples. The helper verifies its checksum and restores only measured fixtures; it refuses to overwrite different existing measurements.
@@ -52,7 +61,7 @@ For a live worldwide point/date request:
 
 ```powershell
 # Supply EARTHDATA_TOKEN through your local environment or secret manager.
-.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\world-point.json --output products\runs\world-point
+.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\global-v2.json --output products\runs\world-v2
 .venv\Scripts\python.exe -m surface_dynamics insar-network contracts\examples\kumamoto-network.json --output products\networks\kumamoto
 ```
 
@@ -68,9 +77,9 @@ Use the versioned [JSON Schemas](contracts/) and [request/response examples](con
 
 This repository provides synchronous workers and a CLI. Your backend can wrap them in its job system and serve manifest artifacts to the existing frontend. No frontend code is included.
 
-## Evidence and honest limits
+## V1 reference evidence and continuing limits
 
-The reference run uses **66 measured GCOV chips from seven regions across six continents**, plus a live global-point job and a real Kumamoto earthquake GUNW pair. The nine original scientific jobs have 152 registered, independently checked artifacts. The offline suite has **22 tests**; CI runs without downloading satellite data.
+The v0.2 reference run used **66 measured GCOV chips from seven regions across six continents**, plus a live global-point job and a real Kumamoto earthquake GUNW pair. Its nine original jobs have 152 checked artifacts. The current offline suite has **43 tests**; CI runs without downloading satellite data. The table below is the earlier V1 experiment on its original posting/support; use the [V2 report](docs/MODELING_V2.md) for the new matched-grid comparison.
 
 Worldwide querying and processing are implemented within chip, resource and measurement limits. Coverage is uneven, and these regional examples do **not** establish globally validated model accuracy.
 
@@ -100,6 +109,8 @@ Git contains source, contracts, documentation, compact trained weights and selec
 ```powershell
 .venv\Scripts\python.exe scripts\benchmark_global_model.py
 .venv\Scripts\python.exe scripts\run_global_examples.py
+.venv\Scripts\python.exe scripts\run_global_v2.py
+.venv\Scripts\python.exe scripts\verify_global_v2.py
 ```
 
 `train_global_example.py` retrains the experimental representation; it is separate from the frozen benchmark. The model's five training geographies and two holdouts are documented in its card. Future scientific work should prioritize independent geography/season validation, native NISAR support, coherent common reference support and correction provenance before stronger model or deformation claims.

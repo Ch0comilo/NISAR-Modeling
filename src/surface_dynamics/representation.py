@@ -22,7 +22,9 @@ def fit_basis(values,path,names=None):
 def apply_basis(features,path):
     with np.load(path,allow_pickle=False) as f:
         z=(features-f['center'])/f['scale'];score=z@f['components'];rgb=np.clip((score-f['low'])/np.maximum(f['high']-f['low'],1e-6),0,1)
-        return rgb, np.sqrt(np.nanmean(z*z,axis=-1))
+        count=np.isfinite(z).sum(-1)
+        distance=np.sqrt(np.divide(np.nansum(z*z,axis=-1),count,out=np.full(count.shape,np.nan),where=count>0))
+        return rgb, distance
 
 def fit_projections(model,cases,mean,scale,output):
     from .transformer import POLS

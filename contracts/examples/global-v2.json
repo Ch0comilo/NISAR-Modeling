@@ -1,0 +1,22 @@
+{
+  "contract_version": "1.0",
+  "request_id": "world-dynamics-v2",
+  "theme": "explore",
+  "source": {
+    "mode": "catalog_point",
+    "longitude": -121.7,
+    "latitude": 38.4,
+    "start_date": "2026-01-01",
+    "end_date": "2026-10-31",
+    "max_dates": 12,
+    "native_chip_pixels": 512,
+    "target_posting_m": 160
+  },
+  "analyses": [
+    "physical",
+    "spectral",
+    "stochastic",
+    "transformer"
+  ],
+  "transformer_checkpoint": "models/global_explorer_v2/masked_temporal_transformer.pt"
+}

@@ -1,0 +1,93 @@
+{
+  "new_scientific_jobs": 15,
+  "regional_cases": 13,
+  "accepted_regional_dates": 128,
+  "registered_artifacts_verified": 298,
+  "checkpoint_and_prediction_source_frozen": true,
+  "values_coordinates_fixed_projections_and_gifs_verified": true,
+  "interferometric_displacement_guard": true,
+  "point_probe_outcomes": {
+    "hokkaido": "complete",
+    "mekong": "no_valid_observations"
+  },
+  "checks": [
+    {
+      "case_id": "forest_river",
+      "dates": 10,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "deliblato",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "chenab",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "niscemi",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "okavango",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "california",
+      "dates": 12,
+      "status": "complete",
+      "artifacts": 23
+    },
+    {
+      "case_id": "mekong",
+      "dates": 10,
+      "status": "complete",
+      "artifacts": 21
+    },
+    {
+      "case_id": "kafue",
+      "dates": 10,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "iceland",
+      "dates": 12,
+      "status": "complete",
+      "artifacts": 23
+    },
+    {
+      "case_id": "amazon",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "murray",
+      "dates": 16,
+      "status": "complete",
+      "artifacts": 23
+    },
+    {
+      "case_id": "hokkaido",
+      "dates": 10,
+      "status": "complete",
+      "artifacts": 22
+    },
+    {
+      "case_id": "pantanal",
+      "dates": 8,
+      "status": "complete",
+      "artifacts": 22
+    }
+  ]
+}
