@@ -7,7 +7,7 @@ import requests
 CMR='https://cmr.earthdata.nasa.gov/search/granules.json'
 COLLECTIONS={'GCOV':'NISAR_L2_GCOV_PROVISIONAL_V1','GUNW':'NISAR_L2_GUNW_PROVISIONAL_V1'}
 
-def search(longitude, latitude, product='GCOV', start=None, end=None, max_records=2000,collection=None):
+def search(longitude, latitude, product='GCOV', start=None, end=None, max_records=2000,collection=None, *, timeout=(10,60)):
     if not -180<=longitude<=180 or not -90<=latitude<=90:raise ValueError('Coordinates outside WGS84 bounds')
     if product not in COLLECTIONS:raise ValueError('Unsupported product')
     selected=collection or COLLECTIONS[product]
@@ -16,7 +16,7 @@ def search(longitude, latitude, product='GCOV', start=None, end=None, max_record
     if selected not in allowed:raise ValueError('Unsupported product collection')
     end=end or datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     params={'short_name':selected,'point':f'{longitude},{latitude}','page_size':min(max_records,2000),'sort_key':'start_date','temporal':f'{start or ""},{end}'}
-    response=requests.get(CMR,params=params,timeout=(10,60));response.raise_for_status()
+    response=requests.get(CMR,params=params,timeout=timeout);response.raise_for_status()
     hits=int(response.headers.get('CMR-Hits','0'))
     if hits>min(max_records,2000):raise ValueError('Catalog result exceeds limit; narrow dates rather than silently truncate')
     return {'query_url':response.url,'queried_at_utc':datetime.now(timezone.utc).isoformat(),'server_date':response.headers.get('Date'),'hits':hits,'entries':response.json()['feed']['entry']}

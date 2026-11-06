@@ -8,6 +8,7 @@ from pathlib import Path
 from datetime import datetime,timedelta,timezone
 from urllib.parse import urlparse
 import hashlib,json,math
+from time import monotonic
 import numpy as np
 import requests
 import rasterio
@@ -21,12 +22,12 @@ VALID_CODES=(0,1,2)
 KNOWN_CODES={0,1,2,252,253,254,255}
 
 
-def discover(longitude,latitude,date,max_offset_days=7):
+def discover(longitude,latitude,date,max_offset_days=7,*,timeout=(10,45)):
     center=datetime.fromisoformat(str(date)[:10]);start=center-timedelta(days=max_offset_days);end=center+timedelta(days=max_offset_days)
     response=requests.get('https://cmr.earthdata.nasa.gov/search/granules.json',params={
         'collection_concept_id':COLLECTION,'point':f'{longitude},{latitude}',
         'temporal':start.strftime('%Y-%m-%dT00:00:00Z')+','+end.strftime('%Y-%m-%dT23:59:59Z'),
-        'page_size':200,'sort_key':'start_date'},timeout=(10,45))
+        'page_size':200,'sort_key':'start_date'},timeout=timeout)
     response.raise_for_status()
     if int(response.headers.get('CMR-Hits','0'))>200:raise ValueError('Narrow optical reference dates; catalog is not silently truncated')
     entries={}
@@ -45,18 +46,23 @@ def asset_url(entry):
     raise ValueError('No official quantitative DSWx-HLS WTR asset')
 
 
-def fetch_asset(entry,directory,token=None,budget=16*1024*1024):
+def fetch_asset(entry,directory,token=None,budget=16*1024*1024,*,timeout=(10,45),deadline=None):
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
-    url=asset_url(entry);path=directory/(entry['title']+'_B01_WTR.tif');sidecar=path.with_suffix('.json')
+    url=asset_url(entry);title=entry['title']
+    if not title or not all(c.isascii() and (c.isalnum() or c in '_.-') for c in title):
+        raise ValueError('Unexpected optical granule title')
+    path=directory/(title+'_B01_WTR.tif');sidecar=path.with_suffix('.json')
     if path.exists() and sidecar.exists():
         meta=json.loads(sidecar.read_text())
         if meta['source']==url and hashlib.sha256(path.read_bytes()).hexdigest()==meta['sha256']:return path,meta
         raise ValueError('Optical reference cache identity/checksum mismatch')
     try:
-        with requests.get(url,headers={'Authorization':'Bearer '+(token or credential())},stream=True,timeout=(10,45)) as response:
+        with requests.get(url,headers={'Authorization':'Bearer '+(token or credential())},stream=True,timeout=timeout) as response:
             if response.status_code!=200:raise RuntimeError(f'Optical archive returned HTTP {response.status_code}')
             data=bytearray()
             for chunk in response.iter_content(1024*1024):
+                if deadline is not None and monotonic() >= deadline:
+                    raise TimeoutError('Optical evidence deadline elapsed')
                 if len(data)+len(chunk)>budget:raise ValueError('Optical asset exceeds bounded transfer budget')
                 data.extend(chunk)
     except requests.RequestException:
@@ -102,16 +108,24 @@ def align_classes(path,cube):
     return outputs
 
 
-def select_reference(catalog,cube,date,directory,max_candidates=8,min_coverage=.8):
+def select_reference(catalog,cube,date,directory,max_candidates=8,min_coverage=.8,*,
+                     support=None,accept_sensing_day=None,timeout=(10,45),deadline=None):
     target=np.datetime64(str(date)[:10]);entries=sorted(catalog['entries'],key=lambda e:(abs(int((np.datetime64(e['time_start'][:10])-target)/np.timedelta64(1,'D'))),e['title']))[:max_candidates]
     candidates=[];errors=[]
     for entry in entries:
+        if deadline is not None and monotonic() >= deadline:
+            break
         try:
-            path,meta=fetch_asset(entry,directory);aligned=align_classes(path,cube)
-            coverage=float((aligned['valid_coverage']>=min_coverage).mean())
-            offset=abs(int((np.datetime64(meta['observation_time'][:10])-target)/np.timedelta64(1,'D')))
+            path,meta=fetch_asset(entry,directory,timeout=timeout,deadline=deadline)
+            sensing_day=meta['observation_time'][:10]
+            if accept_sensing_day is not None and not accept_sensing_day(sensing_day):
+                continue
+            aligned=align_classes(path,cube)
+            valid=aligned['valid_coverage']>=min_coverage
+            coverage=float((valid if support is None else valid[support]).mean())
+            offset=abs(int((np.datetime64(sensing_day)-target)/np.timedelta64(1,'D')))
             candidates.append((coverage,offset,entry['title'],aligned,meta))
-        except (RuntimeError,ValueError) as error:
+        except (RuntimeError,ValueError,OSError) as error:
             errors.append({'source_id':entry['title'],'reason':str(error)})
     if not candidates:return None,{'status':'unavailable','candidate_errors':errors}
     # Coverage is the only image-quality criterion. Never select an optical

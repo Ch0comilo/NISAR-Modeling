@@ -5,6 +5,15 @@ def main():
     parser=argparse.ArgumentParser(description='Descriptive radar surface dynamics; science/data artifacts only')
     sub=parser.add_subparsers(dest='command',required=True)
     sub.add_parser('capabilities')
+    serve=sub.add_parser('serve-explore',help='Run the local measured point exploration API')
+    serve.add_argument('--cache',required=True)
+    serve.add_argument('--port',type=int,default=8787)
+    lens=sub.add_parser('flood-lens-case',help='Prepare the flood lens from verified local radar and optical inputs')
+    lens.add_argument('case_directory');lens.add_argument('--output',required=True)
+    vegetation=sub.add_parser('vegetation-lens-case',help='Prepare the vegetation lens from measured case inputs')
+    vegetation.add_argument('request');vegetation.add_argument('--output',required=True)
+    wildfire=sub.add_parser('wildfire-lens-case',help='Prepare the wildfire lens from measured case inputs')
+    wildfire.add_argument('request');wildfire.add_argument('--output',required=True)
     for name in ['analyze','insar','flood-characterize','insar-readiness','characterize','fingerprint']:
         p=sub.add_parser(name);p.add_argument('request');p.add_argument('--output',required=True)
     p=sub.add_parser('insar-network');p.add_argument('request');p.add_argument('--output',required=True)
@@ -17,6 +26,18 @@ def main():
     if args.command=='capabilities':
         from .engine import SCHEMAS
         print((SCHEMAS/'phenomena-catalog.json').read_text(encoding='utf8'))
+    elif args.command=='serve-explore':
+        from .explore_server import serve
+        serve(args.cache,args.port)
+    elif args.command=='flood-lens-case':
+        from .exploration_lenses import prepare_flood_lens_case
+        report=prepare_flood_lens_case(args.case_directory,args.output)
+        print(json.dumps({'case':report['case_id'],'status':report['status'],'evidence':report['evidence']['status']}))
+    elif args.command in ['vegetation-lens-case','wildfire-lens-case']:
+        from .exploration_lenses import WILDFIRE, VEGETATION_DISTURBANCE, prepare_vegetation_lens_case
+        lens=WILDFIRE if args.command=='wildfire-lens-case' else VEGETATION_DISTURBANCE
+        report=prepare_vegetation_lens_case(args.request,args.output,lens_id=lens['id'])
+        print(json.dumps({'case':report['case_id'],'status':report['status'],'evidence':report['evidence']['status']}))
     elif args.command in ['analyze','insar']:
         from .engine import analyze,analyze_insar
         request=json.loads(Path(args.request).read_text(encoding='utf8'));result=(analyze if args.command=='analyze' else analyze_insar)(request,args.output)

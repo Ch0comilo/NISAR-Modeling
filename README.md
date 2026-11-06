@@ -8,6 +8,37 @@ Explore how Earth's surfaces change through measured radar time series and inter
 
 [Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.5.0)
 
+## Exploration lenses
+
+Pick a point and date window to see what NISAR measured there. Start with the time series and signed dB maps, then apply a lens to ask a more specific question of the same observations. The backend keeps the measured change, its historical baseline and any independent evidence separate so people can investigate their own questions and see where the observations leave room for interpretation.
+
+| Lens | Question you can ask | Measured example |
+| --- | --- | --- |
+| `flood_wetland` | Where did both radar channels darken, and how does that line up with independently observed water? | On two snapshots of the same Crete flood, both channels darkened in 4.7% of mapped inundation cells versus 0.4–0.6% nearby. Most mapped cells went unflagged. |
+| `vegetation_disturbance` | How does radar change where dated optical data show vegetation loss, compared with baseline-matched cells? | At the Timber Fire site, optical data showed loss in 157 of 256 usable cells. The 13 matched pairs left the radar contrast uncertain in both channels. |
+| `wildfire` | Where did the cross-polarized signal stay below its earlier range across multiple observations? | Repeated HV declines at the Bug Fire appeared in 7.3% of cells inside the mapped perimeter and 1.0% nearby. The perimeter gives event context and can enclose unburned areas. |
+| `agriculture` | Did a focal patch change differently from the surrounding landscape? | At the Sköllersta rye trial, the focal-minus-nearby HH contrast rose 1.78 dB between radar dates bracketing the recorded harvest. The trial record supplies a date and point. |
+
+![Measured lens examples showing radar changes around crop harvests and inside mapped flood and fire areas](docs/images/exploration_lens_holdout.webp)
+
+The API publishes partial and insufficient-data outcomes. For an automatically selected radar series with zero usable pixels, it tries at most one compatible alternate. At Weiser Knoll the first series yielded no usable pixels across five dates and the alternate yielded five usable observations. Each result reports its selected series and both attempts when a retry runs.
+
+Run the loopback API with the installed package and local Earthdata access. List the lenses with `GET /v1/lenses` and send a point request to `POST /v1/explore`. Poll the returned `status_url` to get the observations, comparison and GeoTIFF links.
+
+```powershell
+.venv\Scripts\python.exe -m surface_dynamics serve-explore --cache scratch/explore-cache
+```
+
+In another terminal, submit one of the measured examples:
+
+```powershell
+$cases = Get-Content contracts/examples/exploration-lens-requests.json -Raw | ConvertFrom-Json
+$body = $cases.skollersta_agriculture | ConvertTo-Json -Depth 5
+Invoke-RestMethod http://127.0.0.1:8787/v1/explore -Method Post -ContentType application/json -Body $body
+```
+
+[Lens methods and interpretation](docs/EXPLORATION_LENSES.md) · [Point API and response fields](docs/EXPLORE_API.md) · [Geographic holdouts and cell counts](docs/EXPLORATION_HOLDOUT.md)
+
 ## Flood evidence in new regions
 
 The [held-out Pursat experiment](docs/FLOOD_SIMILARITY.md) scores resemblance to earlier flood observations and retrieves example radar histories. The score separated new water from stable nonwater in this chip. Existing open water often scored just as highly.
@@ -115,7 +146,7 @@ Use the versioned [JSON Schemas](contracts/) and [request/response examples](con
 - **Outputs:** validated JSON manifests; COG maps; NetCDF scientific arrays; CSV trajectories; NPZ draws/latent states; scientific PNG/GIF previews; network topology and observability diagnostics.
 - **Python entrypoints:** `engine.analyze`, `engine.analyze_insar`, `insar_stack.process_stack`, `network.plan_network`, `probe.probe`, `flood.process_flood`, `insar_readiness.process_readiness`.
 
-This repository provides synchronous workers and a CLI. Your backend can wrap them in its job system and serve manifest artifacts to the existing frontend. No frontend code is included.
+The synchronous workers and CLI support batch processing. The [local exploration API](docs/EXPLORE_API.md) adds point coverage, progressive GCOV jobs, measured date-comparison TIFFs and native wrapped-phase and coherence measurements for a selected InSAR pair.
 
 ## V1 reference evidence and continuing limits
 

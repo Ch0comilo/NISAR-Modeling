@@ -1,6 +1,7 @@
 """Independent optical vegetation-disturbance evidence, not a fire classifier."""
 from pathlib import Path
 from datetime import datetime,timedelta
+from time import monotonic
 from urllib.parse import urlparse
 import hashlib,json,math
 import numpy as np
@@ -19,22 +20,26 @@ CONFIRMED=(3,6,7,8)
 LAYERS=('VEG-DIST-STATUS','VEG-DIST-DATE','VEG-LAST-DATE')
 
 
-def discover(longitude,latitude,date,days=7):
+def discover(longitude,latitude,date,days=7,*,timeout=(10,45)):
     center=datetime.fromisoformat(date);lo=center-timedelta(days=days);hi=center+timedelta(days=days)
     r=requests.get('https://cmr.earthdata.nasa.gov/search/granules.json',params={
         'collection_concept_id':COLLECTION,'point':f'{longitude},{latitude}',
         'temporal':lo.strftime('%Y-%m-%dT00:00:00Z')+','+hi.strftime('%Y-%m-%dT23:59:59Z'),
-        'page_size':200,'sort_key':'start_date'},timeout=(10,45));r.raise_for_status()
+        'page_size':200,'sort_key':'start_date'},timeout=timeout);r.raise_for_status()
     if int(r.headers.get('CMR-Hits','0'))>200:raise ValueError('Disturbance reference catalog exceeds bounded query')
     unique={}
     for e in r.json()['feed']['entry']:
-        parts=e['title'].split('_');key=(parts[3],parts[4],parts[6])
+        parts=e['title'].split('_')
+        if len(parts)<7:continue
+        key=(parts[3],parts[4],parts[6])
         if key not in unique or e['title']>unique[key]['title']:unique[key]=e
     return {'query_url':r.url,'entries':list(unique.values())}
 
 
-def fetch_layer(entry,layer,directory,token=None):
-    if layer not in LAYERS or not entry['title'].startswith('OPERA_L3_DIST-ALERT-HLS_') or not entry['title'].endswith('_v1'):
+def fetch_layer(entry,layer,directory,token=None,*,timeout=(10,45),deadline=None):
+    title=entry['title']
+    if (layer not in LAYERS or not title.startswith('OPERA_L3_DIST-ALERT-HLS_') or not title.endswith('_v1')
+            or not all(c.isascii() and (c.isalnum() or c in '_.-') for c in title)):
         raise ValueError('Only the documented optical DIST-ALERT-HLS V1 layers are admitted')
     urls=[x['href'] for x in entry['links'] if x.get('href','').endswith('_'+layer+'.tif')
           and urlparse(x['href']).scheme=='https' and urlparse(x['href']).hostname=='data.lpdaac.earthdatacloud.nasa.gov']
@@ -46,10 +51,11 @@ def fetch_layer(entry,layer,directory,token=None):
         if meta['source']!=url or meta['sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Disturbance cache identity/checksum mismatch')
         return path,meta
     try:
-        with requests.get(url,headers={'Authorization':'Bearer '+(token or credential())},stream=True,timeout=(10,45)) as r:
+        with requests.get(url,headers={'Authorization':'Bearer '+(token or credential())},stream=True,timeout=timeout) as r:
             if r.status_code!=200:raise RuntimeError(f'Optical disturbance archive returned HTTP {r.status_code}')
             data=bytearray()
             for chunk in r.iter_content(1024*1024):
+                if deadline is not None and monotonic()>=deadline:raise TimeoutError('Optical disturbance deadline elapsed')
                 if len(data)+len(chunk)>12*1024*1024:raise ValueError('Disturbance layer exceeds bounded transfer budget')
                 data.extend(chunk)
     except requests.RequestException:raise RuntimeError('Disturbance archive request failed; signed/authentication URLs are not logged') from None
@@ -108,42 +114,65 @@ def align_layers(paths,cube,assessment_start,assessment_end,sar_date):
     return outputs
 
 
-def prepare_disturbance(cube,longitude,latitude,assessment,sar_date,output):
-    output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
-    catalog=discover(longitude,latitude,sar_date);(output.parent/'disturbance_catalog.json').write_text(json.dumps(catalog,indent=2))
-    target=np.datetime64(sar_date);entries=sorted(catalog['entries'],key=lambda e:(abs(int((np.datetime64(e['time_start'][:10])-target)/np.timedelta64(1,'D'))),e['title']))[:16]
+def select_reference(catalog,cube,assessment,sar_date,directory,*,max_candidates=16,support=None,
+                     timeout=(10,45),deadline=None):
+    target=np.datetime64(sar_date);entries=sorted(catalog['entries'],key=lambda e:(abs(int((np.datetime64(e['time_start'][:10])-target)/np.timedelta64(1,'D'))),e['title']))[:max_candidates]
     candidates=[];errors=[]
     for e in entries:
+        if deadline is not None and monotonic()>=deadline:break
         try:
-            fetched={key:fetch_layer(e,key,output.parent/'disturbance_raw') for key in LAYERS}
+            fetched={}
+            for key in LAYERS:
+                if deadline is not None and monotonic()>=deadline:raise TimeoutError('Optical disturbance deadline elapsed')
+                fetched[key]=fetch_layer(e,key,directory,timeout=timeout,deadline=deadline)
             arrays=align_layers({k:v[0] for k,v in fetched.items()},cube,assessment['start_date'],assessment['end_date'],sar_date)
-            coverage=float((arrays['valid_coverage']>=.8).mean())
+            valid=arrays['valid_coverage']>=.8
+            coverage=float((valid if support is None else valid[support]).mean())
             offset=abs(int((np.datetime64(e['time_start'][:10])-target)/np.timedelta64(1,'D')))
             candidates.append((coverage,offset,e['title'],arrays,{k:v[1] for k,v in fetched.items()}))
-        except (ValueError,RuntimeError) as error:errors.append({'source_id':e['title'],'reason':str(error)})
-    if not candidates:return {'status':'unavailable','candidate_errors':errors}
+        except (ValueError,RuntimeError,OSError) as error:errors.append({'source_id':e['title'],'reason':str(error)})
+    if not candidates:return None,{'status':'unavailable','candidate_errors':errors}
     adequate=[c for c in candidates if c[0]>=.5]
     selected=min(adequate,key=lambda c:(c[1],-c[0],c[2])) if adequate else max(candidates,key=lambda c:(c[0],-c[1],c[2]))
     coverage,offset,title,arrays,metadata=selected
     arrays.update(x=cube['x'],y=cube['y'],epsg=cube['epsg'],source_family=np.array('OPERA_DIST_HLS'),
                   sar_date=np.array(sar_date),observation_date=np.array(next(iter(metadata.values()))['observation_time'][:10]),
                   assessment_start=np.array(assessment['start_date']),assessment_end=np.array(assessment['end_date']))
-    np.savez_compressed(output,**arrays)
     report={'status':'prepared','source_family':'OPERA_DIST_HLS','source_id':title,
-            'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'valid_analysis_cell_fraction':coverage,
+            'valid_analysis_cell_fraction':coverage,
             'optical_offset_days':offset,'source_layers':metadata,'candidate_errors':errors,
             'selection_policy':'Nearest date among >=50% recent usable-cell candidates; otherwise highest recent usable coverage; no radar-agreement criterion',
             'semantics':'Source-class shares conditioned on recent usable optical coverage; confirmed vegetation loss is not a wildfire cause or burned-area label'}
+    return arrays,report
+
+
+def prepare_disturbance(cube,longitude,latitude,assessment,sar_date,output):
+    output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
+    catalog=discover(longitude,latitude,sar_date);(output.parent/'disturbance_catalog.json').write_text(json.dumps(catalog,indent=2))
+    arrays,report=select_reference(catalog,cube,assessment,sar_date,output.parent/'disturbance_raw')
+    if arrays is None:return report
+    np.savez_compressed(output,**arrays)
+    report['sha256']=hashlib.sha256(output.read_bytes()).hexdigest()
     output.with_suffix('.json').write_text(json.dumps(report,indent=2));return report
 
 
-def summarize_disturbance(path,cube,support,baseline,assessment):
+def load_reference(path,cube,assessment):
     path=Path(path);meta=json.loads(path.with_suffix('.json').read_text())
     if meta['sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Disturbance reference checksum mismatch')
     with np.load(path,allow_pickle=False) as h:r={k:h[k] for k in h.files}
     if str(r['source_family'])!='OPERA_DIST_HLS':raise ValueError('Independent optical DIST-HLS evidence is required')
     if int(r['epsg'])!=int(cube['epsg']) or any(not np.array_equal(r[k],cube[k]) for k in ['x','y']):raise ValueError('Disturbance reference grid mismatch')
     if str(r['assessment_start'])!=assessment['start_date'] or str(r['assessment_end'])!=assessment['end_date']:raise ValueError('Disturbance reference assessment window mismatch')
+    return r,meta
+
+
+def summarize_disturbance(path,cube,support,baseline,assessment):
+    r,meta=load_reference(path,cube,assessment)
+    result,_=compare_disturbance(r,cube,support,baseline,assessment)
+    return {**result,'source_id':meta['source_id'],'reference_sha256':meta['sha256'],'provenance':meta}
+
+
+def compare_disturbance(r,cube,support,baseline,assessment):
     for key in ['valid_coverage','confirmed_loss_fraction','non_disturbed_fraction']:
         v=r[key]
         if v.shape!=support.shape or np.any(np.isfinite(v)&((v<0)|(v>1+1e-5))):raise ValueError('Invalid disturbance support fractions')
@@ -158,11 +187,12 @@ def summarize_disturbance(path,cube,support,baseline,assessment):
     controls,matched,matching=match_controls(base[channels],loss,control)
     delta=db[idx,co]-base[co];contrast=spatial_contrast(delta,matched,controls)
     return {'kind':'independent_optical_vegetation_disturbance','status':'usable' if int(valid.sum())>=8 else 'insufficient_support',
-            'source_id':meta['source_id'],'reference_sha256':meta['sha256'],'provenance':meta,
             'comparison_sar_date':sar,'optical_date':optical,'optical_offset_days':offset,
             'recent_optical_supported_cells':int(valid.sum()),'fraction_of_fixed_radar_support':float(valid.sum()/support.sum()) if support.any() else None,
             'confirmed_in_window_loss_cells':int(loss.sum()),'reference_non_disturbed_cells':int(control.sum()),
             'median_loss_group_co_pol_change_db':float(np.median(delta[loss])) if loss.any() else None,
             'matched_controls':matching,'matched_contrast':contrast,
             'wildfire_attribution':None,'burned_area_ha':None,
-            'limitation':'Optical vegetation loss can arise from fire, harvest, clearing, drought or other processes. Recent-observation and onset-window gates exclude stale/old disturbances; no fire perimeter validation is supplied.'}
+            'limitation':'Optical vegetation loss can arise from fire, harvest, clearing, drought or other processes. Recent-observation and onset-window gates exclude stale/old disturbances; no fire perimeter validation is supplied.'}, {
+                'valid':valid,'loss':loss,'control':control,'matched_loss':matched,'matched_control':controls,
+            }

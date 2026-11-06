@@ -12,17 +12,18 @@ class NoCoherentSupport(ValueError):
     """Valid measurement file, but no supported component at this threshold."""
 
 
-def validate_pair(pair,require_wrapped=True):
+def validate_pair(pair,require_wrapped=True,*,wrapped_only=False):
     """Check native grids without resampling wrapped/unwrapped measurements."""
     from rasterio.crs import CRS
-    required=['unwrappedPhase','unwrapped_coherence','unwrapped_mask','connectedComponents','center_frequency_hz']
-    if require_wrapped:required+=['wrapped_complex','wrapped_coherence','wrapped_mask']
+    required=['center_frequency_hz']
+    if not wrapped_only:required+=['unwrappedPhase','unwrapped_coherence','unwrapped_mask','connectedComponents']
+    if require_wrapped or wrapped_only:required+=['wrapped_complex','wrapped_coherence','wrapped_mask']
     for key in required:
         if key not in pair:raise ValueError(f'Missing measured GUNW field: {key}')
     frequency=float(pair['center_frequency_hz'])
     if not np.isfinite(frequency) or frequency<=0:raise ValueError('Invalid measured center frequency')
-    grids=[('unwrapped','unwrappedPhase',['unwrapped_coherence','unwrapped_mask','connectedComponents'])]
-    if require_wrapped:grids.append(('wrapped','wrapped_complex',['wrapped_coherence','wrapped_mask']))
+    grids=[] if wrapped_only else [('unwrapped','unwrappedPhase',['unwrapped_coherence','unwrapped_mask','connectedComponents'])]
+    if require_wrapped or wrapped_only:grids.append(('wrapped','wrapped_complex',['wrapped_coherence','wrapped_mask']))
     for prefix,field,fields in grids:
         shape=pair[field].shape
         if len(shape)!=2 or min(shape)<2 or max(shape)>1536:raise ValueError('Invalid or oversized GUNW raster shape')
@@ -37,6 +38,7 @@ def validate_pair(pair,require_wrapped=True):
         if not np.issubdtype(pair[prefix+'_mask'].dtype,np.integer):raise ValueError('GUNW mask must preserve integer bit fields')
         c=pair[prefix+'_coherence'];support=valid_gunw_mask(pair[prefix+'_mask'])&np.isfinite(c)
         if ((c[support]<0)|(c[support]>1+1e-5)).any():raise ValueError('Coherence outside measured [0,1] domain')
+    if wrapped_only:return pair
     if require_wrapped and int(pair['wrapped_epsg'])!=int(pair['unwrapped_epsg']):raise ValueError('Native GUNW grids must share a CRS')
     if not np.issubdtype(pair['connectedComponents'].dtype,np.integer):raise ValueError('Connected components must be integer labels')
     for key in ['ionospherePhaseScreen','ionospherePhaseScreenUncertainty']:
@@ -57,19 +59,24 @@ def valid_gunw_mask(mask):
     m=mask.astype('uint32');sub=m&255
     return (sub!=255)&(sub%10>0)&((sub//10)%10>0)&((m&0x00ffff00)==0)
 
-def fetch_pair(entry,longitude,latitude,destination,extent_km=20,token=None,unwrapped_only=False):
+def fetch_pair(entry,longitude,latitude,destination,extent_km=20,token=None,unwrapped_only=False,*,wrapped_only=False):
+    if wrapped_only and unwrapped_only:raise ValueError('Choose one GUNW grid or both')
+    mode='wrapped_only' if wrapped_only else 'unwrapped_only' if unwrapped_only else 'wrapped_and_unwrapped'
     destination=Path(destination);destination.parent.mkdir(parents=True,exist_ok=True)
     if destination.exists() and destination.with_suffix('.json').exists():
         metadata=json.loads(destination.with_suffix('.json').read_text())
         if hashlib.sha256(destination.read_bytes()).hexdigest()!=metadata['sha256']:raise ValueError('Cached GUNW checksum mismatch')
-        if metadata.get('title')==entry['title'] and metadata.get('longitude')==longitude and metadata.get('latitude')==latitude and metadata.get('extent_km')==extent_km and metadata.get('crop_policy')=='point_centered' and (unwrapped_only or metadata.get('quantitative_layers')!='unwrapped_only'):return destination
-    arrays={};meta={'title':entry['title'],'source':science_url(entry),'longitude':longitude,'latitude':latitude,'extent_km':extent_km,'crop_policy':'point_centered','quantitative_layers':'unwrapped_only' if unwrapped_only else 'wrapped_and_unwrapped'}
+        cached_mode=metadata.get('quantitative_layers','wrapped_and_unwrapped')
+        if metadata.get('title')==entry['title'] and metadata.get('longitude')==longitude and metadata.get('latitude')==latitude and metadata.get('extent_km')==extent_km and metadata.get('crop_policy')=='point_centered' and cached_mode in {mode,'wrapped_and_unwrapped'}:return destination
+    arrays={};meta={'title':entry['title'],'source':science_url(entry),'longitude':longitude,'latitude':latitude,'extent_km':extent_km,'crop_policy':'point_centered','quantitative_layers':mode}
     with RangeReader(science_url(entry),token or credential(),budget=180*1024*1024) as remote:
         with h5py.File(remote,'r') as h:
             root=h['science/LSAR/GUNW/grids/frequencyA'];pols=[p.decode() for p in root['listOfPolarizations'][:]];pol=next((p for p in ['HH','VV'] if p in pols),None)
             if pol is None:raise ValueError('No measured co-polarized interferogram')
             arrays['center_frequency_hz']=root['centerFrequency'][()]
-            layers=[('unwrappedInterferogram','unwrapped')] if unwrapped_only else [('wrappedInterferogram','wrapped'),('unwrappedInterferogram','unwrapped')]
+            layers=[]
+            if not unwrapped_only:layers.append(('wrappedInterferogram','wrapped'))
+            if not wrapped_only:layers.append(('unwrappedInterferogram','unwrapped'))
             for kind,prefix in layers:
                 g=root[kind];pg=g[pol];x=g['xCoordinates'][:];y=g['yCoordinates'][:];epsg=int(g['projection'][()]);dx=abs(float(x[1]-x[0]));n=int(round(extent_km*1000/dx))
                 if n>1536:raise ValueError('GUNW scratch extent exceeds bounded raster budget')
@@ -88,16 +95,31 @@ def fetch_pair(entry,longitude,latitude,destination,extent_km=20,token=None,unwr
             meta['identification']={k:value(ds) for k,ds in idg.items() if isinstance(ds,h5py.Dataset) and ds.size==1 and any(s in k.lower() for s in ['time','fullframe','urgent','exception','orbit','track','frame','band','version'])}
             meta['polarization']=pol;meta['corrections_applied_by_this_pipeline']=[]
         meta['transfer_bytes']=remote.transferred
-    validate_pair(arrays,require_wrapped=not unwrapped_only)
+    validate_pair(arrays,require_wrapped=not unwrapped_only,wrapped_only=wrapped_only)
     temp=destination.with_name(destination.stem+'.partial.npz');np.savez_compressed(temp,**arrays);temp.replace(destination)
     meta['sha256']=hashlib.sha256(destination.read_bytes()).hexdigest();destination.with_suffix('.json').write_text(json.dumps(meta,indent=2))
     return destination
 
-def analyze_pair(pair,coherence_threshold=.35):
-    if not np.isfinite(coherence_threshold) or not 0<=coherence_threshold<=1:raise ValueError('Invalid coherence threshold')
-    wrapped=pair['wrapped_complex']
+def _decode_wrapped(wrapped):
     if wrapped.dtype.fields:
         keys=list(wrapped.dtype.fields);wrapped=wrapped[keys[0]].astype(float)+1j*wrapped[keys[1]].astype(float)
+    return wrapped
+
+
+def wrapped_products(pair,coherence_threshold=.35):
+    """Retain focused measured coherence independently of usable wrapped phase."""
+    if not np.isfinite(coherence_threshold) or not 0<=coherence_threshold<=1:raise ValueError('Invalid coherence threshold')
+    validate_pair(pair,wrapped_only=True)
+    wrapped=_decode_wrapped(pair['wrapped_complex'])
+    coherence=pair['wrapped_coherence']
+    focused=valid_gunw_mask(pair['wrapped_mask'])&np.isfinite(coherence)&(coherence>=0)&(coherence<=1+1e-5)
+    phase_ok=focused&(coherence>=coherence_threshold)&np.isfinite(wrapped)&(abs(wrapped)>0)
+    return np.where(focused,np.clip(coherence,0,1),np.nan),np.where(phase_ok,np.angle(wrapped),np.nan)
+
+
+def analyze_pair(pair,coherence_threshold=.35):
+    if not np.isfinite(coherence_threshold) or not 0<=coherence_threshold<=1:raise ValueError('Invalid coherence threshold')
+    wrapped=_decode_wrapped(pair['wrapped_complex'])
     phase=np.angle(wrapped);cw=pair['wrapped_coherence'];cu=pair['unwrapped_coherence'];u=pair['unwrappedPhase'];cc=pair['connectedComponents']
     vw=valid_gunw_mask(pair['wrapped_mask'])&np.isfinite(phase)&np.isfinite(cw)&(abs(wrapped)>0)&(cw>=0)&(cw<=1+1e-5)
     base=valid_gunw_mask(pair['unwrapped_mask'])&np.isfinite(u)&np.isfinite(cu)&(cc>0)&(cu>=0)&(cu<=1+1e-5)

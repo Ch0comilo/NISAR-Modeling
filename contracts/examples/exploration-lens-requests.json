@@ -1,0 +1,78 @@
+{
+  "skollersta_agriculture": {
+    "longitude": 15.39726192,
+    "latitude": 59.13216973,
+    "start_date": "2026-07-05",
+    "end_date": "2026-09-03",
+    "lens": "agriculture",
+    "baseline_end_date": "2026-08-17",
+    "max_dates": 5,
+    "optical_evidence": false,
+    "compare_dates": [
+      "2026-08-10",
+      "2026-09-03"
+    ]
+  },
+  "crete_flood": {
+    "longitude": 25.4382619,
+    "latitude": 35.19345243,
+    "start_date": "2026-08-29",
+    "end_date": "2026-10-04",
+    "lens": "flood_wetland",
+    "baseline_end_date": "2026-09-30",
+    "max_dates": 4,
+    "optical_evidence": true,
+    "compare_dates": [
+      "2026-09-22",
+      "2026-10-04"
+    ]
+  },
+  "bug_wildfire": {
+    "longitude": -119.88332214,
+    "latitude": 39.83778865,
+    "start_date": "2026-06-29",
+    "end_date": "2026-09-09",
+    "lens": "wildfire",
+    "baseline_end_date": "2026-08-07",
+    "max_dates": 5,
+    "optical_evidence": false,
+    "compare_dates": [
+      "2026-07-23",
+      "2026-09-09"
+    ]
+  },
+  "bug_vegetation": {
+    "longitude": -119.88332214,
+    "latitude": 39.83778865,
+    "start_date": "2026-06-29",
+    "end_date": "2026-09-09",
+    "lens": "vegetation_disturbance",
+    "baseline_end_date": "2026-08-07",
+    "max_dates": 5,
+    "optical_evidence": true,
+    "compare_dates": [
+      "2026-07-23",
+      "2026-09-09"
+    ]
+  },
+  "weiser_retry": {
+    "longitude": -108.56159047,
+    "latitude": 42.63582383,
+    "start_date": "2026-06-25",
+    "end_date": "2026-09-07",
+    "lens": "wildfire",
+    "baseline_end_date": "2026-08-08",
+    "max_dates": 5,
+    "optical_evidence": false
+  },
+  "sparse": {
+    "longitude": 0,
+    "latitude": -89.99,
+    "start_date": "2026-10-12",
+    "end_date": "2026-10-13",
+    "lens": "wildfire",
+    "baseline_end_date": "2026-10-12",
+    "max_dates": 5,
+    "optical_evidence": false
+  }
+}

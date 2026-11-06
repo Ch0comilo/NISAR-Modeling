@@ -110,7 +110,7 @@ class FloodTests(unittest.TestCase):
     def test_optical_selection_uses_time_and_coverage_without_radar_agreement(self):
         entries=[{'time_start':'2026-02-06T00:00:00Z','title':'near'},
                  {'time_start':'2026-02-08T00:00:00Z','title':'clear'}]
-        def fetch(entry,directory):return entry['title'],{'observation_time':entry['time_start']}
+        def fetch(entry,directory,**options):return entry['title'],{'observation_time':entry['time_start']}
         def align(path,c):return {'valid_coverage':np.full((4,4),.1 if path=='near' else 1.)}
         with patch('surface_dynamics.optical_water.fetch_asset',side_effect=fetch),patch('surface_dynamics.optical_water.align_classes',side_effect=align):
             _,selection=select_reference({'entries':entries},cube(),'2026-02-06','unused')

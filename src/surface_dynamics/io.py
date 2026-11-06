@@ -34,13 +34,14 @@ def load_range_reader():
     from .ranges import RangeReader
     return RangeReader
 
-def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None):
+def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None,*,cache_only=False):
     destination=Path(destination);destination.parent.mkdir(parents=True,exist_ok=True)
     sidecar=destination.with_suffix('.json')
     if destination.exists() and sidecar.exists():
         meta=json.loads(sidecar.read_text())
         if hashlib.sha256(destination.read_bytes()).hexdigest()!=meta['sha256']:raise ValueError('Cached chip checksum mismatch')
         if meta.get('title')==entry['title'] and meta.get('query_point')==[longitude,latitude] and meta.get('requested_pixels')==pixels and meta.get('crop_policy')=='point_centered':return meta
+    if cache_only:raise FileNotFoundError('Validated cached chip unavailable')
     reader=load_range_reader();token=token or credential()
     with reader(science_url(entry),token,budget=128*1024*1024) as remote:
         with h5py.File(remote,'r') as h:
@@ -67,7 +68,8 @@ def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None):
     temp=destination.with_name(destination.stem+'.partial.npz')
     np.savez_compressed(temp,**arrays);temp.replace(destination)
     meta['sha256']=hashlib.sha256(destination.read_bytes()).hexdigest()
-    sidecar.write_text(json.dumps(meta,indent=2))
+    temp=sidecar.with_suffix('.partial.json')
+    temp.write_text(json.dumps(meta,indent=2));temp.replace(sidecar)
     return meta
 
 def cube_from_chips(paths,aggregate=4):

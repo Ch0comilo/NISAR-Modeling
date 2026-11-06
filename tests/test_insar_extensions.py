@@ -6,7 +6,9 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 from surface_dynamics.network import build_network, plan_network
-from surface_dynamics.insar import validate_pair, analyze_pair, NoCoherentSupport, fetch_pair
+from surface_dynamics.insar import validate_pair, analyze_pair, NoCoherentSupport, fetch_pair, wrapped_products
+from surface_dynamics.explore import parse_request
+from surface_dynamics.exploration_insar import discover_pairs
 from surface_dynamics.benchmark import interpolation_baseline
 from surface_dynamics.engine import analyze_insar
 
@@ -69,6 +71,32 @@ class InSARExtensionTests(unittest.TestCase):
         self.assertEqual(fractions,sorted(fractions,reverse=True))
         self.assertEqual(rows[-1]['valid_fraction'],0)
         with self.assertRaises(NoCoherentSupport):analyze_pair(value,.9)
+
+    def test_wrapped_preview_retains_coherence_without_phase_or_unwrapped_grid(self):
+        value = {key: field for key, field in pair().items()
+                 if key.startswith("wrapped_") or key == "center_frequency_hz"}
+        value["wrapped_complex"][0, 0] = 0
+        value["wrapped_mask"][0, 1] = 255
+        coherence, phase = wrapped_products(value, .35)
+        self.assertEqual(int(np.isfinite(coherence).sum()), 15)
+        self.assertEqual(int(np.isfinite(phase).sum()), 14)
+        self.assertAlmostEqual(coherence[0, 0], .6)
+        strict_coherence, strict_phase = wrapped_products(value, .9)
+        np.testing.assert_allclose(strict_coherence, coherence)
+        self.assertTrue(np.isnan(strict_phase).all())
+
+    def test_inventory_requires_both_dates_and_deduplicates_revisions(self):
+        point = parse_request(dict(longitude=0, latitude=0, start_date="2026-01-01", end_date="2026-01-13"))
+        rows = [entry("20260101", "20260125"), entry("20260101", "20260113"),
+                entry("20260101", "20260113", revision="002")]
+        with patch("surface_dynamics.exploration_insar.search",
+                   return_value={"entries": rows, "hits": 3, "queried_at_utc": "test"}):
+            inventory, eligible = discover_pairs(point)
+        self.assertEqual(len(inventory["pairs"]), 1)
+        self.assertEqual(inventory["pairs"][0]["id"], rows[-1]["title"])
+        self.assertEqual(inventory["pairs"][0]["temporal_baseline_days"], 12)
+        self.assertEqual(list(eligible), [rows[-1]["title"]])
+        self.assertEqual(inventory["pixel_support"], "unchecked")
 
     def test_unobservable_pair_worker_returns_no_data(self):
         import hashlib

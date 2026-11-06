@@ -1,0 +1,47 @@
+{
+  "protocol_id": "exploration_geographic_holdout_v1",
+  "scope": "Fixed geographic transfer check for descriptive lenses. Keep every enrolled site, including unusable radar and independent evidence. No tuning or relocation after retrieval.",
+  "minimum_distance_from_known_development_km": 150,
+  "cases": [
+    {
+      "id": "palouse_upland",
+      "context": "Palouse agricultural region, upland candidate",
+      "context_source": "https://www.nrcs.usda.gov/sites/default/files/2022-10/AgHandbook296_text_low-res.pdf",
+      "point": [-117.25, 46.82],
+      "start_date": "2026-06-17", "baseline_end_date": "2026-08-20", "end_date": "2026-10-23",
+      "lenses": ["agriculture"]
+    },
+    {
+      "id": "high_plains_upland",
+      "context": "Western Kansas High Plains agricultural candidate and an off-event comparison scene",
+      "context_source": "https://www.nrcs.usda.gov/sites/default/files/2022-10/AgHandbook296_text_low-res.pdf",
+      "point": [-101.47, 38.49],
+      "start_date": "2026-06-17", "baseline_end_date": "2026-08-20", "end_date": "2026-10-23",
+      "lenses": ["agriculture", "flood_wetland", "vegetation_disturbance", "wildfire"]
+    },
+    {
+      "id": "platte_valley",
+      "context": "Nebraska Platte Valley agricultural candidate",
+      "context_source": "https://www.nrcs.usda.gov/sites/default/files/2022-10/AgHandbook296_text_low-res.pdf",
+      "point": [-98.44, 40.776],
+      "start_date": "2026-06-17", "baseline_end_date": "2026-08-20", "end_date": "2026-10-23",
+      "lenses": ["agriculture"]
+    },
+    {
+      "id": "baja_flood_context",
+      "context": "GDACS Mexico flood event 1104099 marker in Baja California Sur. It indicates regional context.",
+      "context_source": "https://www.gdacs.org/report.aspx?episodeid=7&eventid=1104099&eventtype=FL",
+      "point": [-109.7025, 23.0598],
+      "start_date": "2026-06-17", "baseline_end_date": "2026-08-16", "end_date": "2026-09-15",
+      "lenses": ["flood_wetland"]
+    },
+    {
+      "id": "timber_fire_context",
+      "context": "CAL FIRE Timber Fire incident coordinates in Monterey County. The marker provides regional context.",
+      "context_source": "https://www.fire.ca.gov/incidents/2026/8/8/timber-fire/",
+      "point": [-121.72983, 36.224857],
+      "start_date": "2026-06-17", "baseline_end_date": "2026-08-07", "end_date": "2026-10-23",
+      "lenses": ["wildfire", "vegetation_disturbance"]
+    }
+  ]
+}
