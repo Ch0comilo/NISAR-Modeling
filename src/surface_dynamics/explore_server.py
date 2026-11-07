@@ -14,6 +14,8 @@ import requests
 
 from .explore import chips_cached, discover, enrich_lens, measure, parse_request, select, select_alternate
 from .exploration_lenses import LENSES, empty_lens
+from .flood_lens import with_evidence
+from .feature_lab import empty_feature_lab
 from .exploration_insar import discover_pairs, measure_pair, pair_cache_path, parse_pair_request
 
 
@@ -76,6 +78,8 @@ class ExploreJobs:
                 "optical_evidence_requested": query.optical_evidence,
                 "observations": [], "comparison": None, "reason": reason, "cache_only": cache_only,
                 "lens": empty_lens(None, [], reason, query.lens) if query.lens and not entries else None,
+                "feature_lab": empty_feature_lab(reason or "acquisitions_pending", "pending" if entries else "insufficient_data")
+                if query.feature_lab else None,
                 "phase": "radar" if entries else None,
             }
             self.jobs[job_id] = state
@@ -135,7 +139,8 @@ class ExploreJobs:
             for index, (key, entries) in enumerate(choices):
                 dates = [entry["time_start"][:10] for entry in entries]
                 publish(status="running", series_key=key, selected_dates=dates,
-                        observations=[], comparison=None, lens=None, series_attempts=list(attempts))
+                        observations=[], comparison=None, lens=None, series_attempts=list(attempts),
+                        feature_lab=empty_feature_lab("acquisitions_pending", "pending") if query.feature_lab else None)
                 final = {}
 
                 def progress(**fields):
@@ -164,7 +169,7 @@ class ExploreJobs:
                     self.optical_worker.submit(self._run_optical, query, status, lens, paths, out, publish)
                     return
             evidence = {"status": "unavailable", "reason": "optical_queue_full"}
-            publish(status=status, phase=None, lens={**lens, "evidence": evidence})
+            publish(status=status, phase=None, lens=with_evidence(lens, evidence))
 
     def _run_optical(self, query, status, lens, paths, out, publish):
         try:
@@ -172,7 +177,7 @@ class ExploreJobs:
         except Exception as exc:
             print(f"Explore optical job {out.name} failed ({type(exc).__name__})", flush=True)
             evidence = {"status": "unavailable", "reason": "optical_worker_error"}
-        publish(status=status, phase=None, lens={**lens, "evidence": evidence})
+        publish(status=status, phase=None, lens=with_evidence(lens, evidence))
 
     def result(self, job_id):
         with self.lock:
@@ -190,6 +195,7 @@ class ExploreJobs:
             layers = [item.get("layer") or {} for item in sources]
             layers.extend((lens.get("radar") or {}).get("layers", []))
             layers.extend((state.get("insar") or {}).get("layers", []))
+            layers.extend((state.get("feature_lab") or {}).get("layers", []))
             if not any(layer.get("href") == expected for layer in layers):
                 return None
             return (self.output / job_id / name).read_bytes()

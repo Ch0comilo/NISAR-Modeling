@@ -14,6 +14,9 @@ from urllib3.exceptions import HTTPError, TimeoutError as RangeTimeout
 from .analysis import measured_db
 from .catalog import COLLECTIONS, group_entries, search
 from .engine import write_cog
+from .flood_lens import with_evidence, write_signature_layer
+from .feature_lab import build_feature_lab, empty_feature_lab, write_feature_layers
+from .agriculture_lens import write_agriculture_layers
 from .exploration_lenses import (
     AGRICULTURE, FLOOD_WETLAND, GROUPS, LENSES, TEMPORAL_LENSES, VEGETATION_GROUPS, WILDFIRE, WILDFIRE_PATTERNS,
     agriculture_history, empty_lens, evaluate_lens, evaluate_vegetation_evidence, find_optical_reference,
@@ -38,6 +41,7 @@ class ExploreRequest:
     lens: str | None = None
     optical_evidence: bool = False
     baseline_end_date: str | None = None
+    feature_lab: bool = False
 
 
 def _iso_day(value):
@@ -54,9 +58,9 @@ def _iso_day(value):
 
 def parse_request(body):
     required = {"longitude", "latitude", "start_date", "end_date"}
-    allowed = required | {"series_key", "max_dates", "compare_dates", "lens", "optical_evidence", "baseline_end_date"}
+    allowed = required | {"series_key", "max_dates", "compare_dates", "lens", "optical_evidence", "baseline_end_date", "feature_lab"}
     if not isinstance(body, dict) or not required <= body.keys() <= allowed:
-        raise ValueError("Expected point coordinates, start_date, end_date and optional series_key, max_dates, compare_dates, lens, optical_evidence, baseline_end_date.")
+        raise ValueError("Expected point coordinates, start_date, end_date and optional series_key, max_dates, compare_dates, lens, optical_evidence, baseline_end_date, feature_lab.")
     for key, limit in (("longitude", 180), ("latitude", 90)):
         value = body[key]
         if type(value) not in (int, float) or not -limit <= value <= limit or not isfinite(value):
@@ -82,6 +86,9 @@ def parse_request(body):
     if "lens" in body and (not isinstance(lens, str) or lens not in LENSES):
         raise ValueError("Supported lenses are " + ", ".join(LENSES) + ".")
     optical = body.get("optical_evidence", False)
+    feature_lab = body.get("feature_lab", False)
+    if type(feature_lab) is not bool:
+        raise ValueError("feature_lab must be a Boolean.")
     if type(optical) is not bool or (optical and lens is None):
         raise ValueError("optical_evidence must be a Boolean and requires a lens when true.")
     if optical and lens == AGRICULTURE["id"]:
@@ -89,11 +96,11 @@ def parse_request(body):
     baseline_end = body.get("baseline_end_date")
     if "baseline_end_date" in body:
         cutoff = _iso_day(baseline_end)
-        if lens is None or not start <= cutoff < (after if compare_dates else end):
-            raise ValueError("baseline_end_date requires a lens and must be within the window before the target.")
+        if (lens is None and not feature_lab) or not start <= cutoff < (after if compare_dates else end):
+            raise ValueError("baseline_end_date requires a lens or Feature Lab and must be within the window before the target.")
     return ExploreRequest(
         float(body["longitude"]), float(body["latitude"]), body["start_date"], body["end_date"],
-        series_key, max_dates, compare_dates, lens, optical, baseline_end,
+        series_key, max_dates, compare_dates, lens, optical, baseline_end, feature_lab,
     )
 
 
@@ -170,7 +177,7 @@ def select(query, groups):
         if not selected:
             selected.append(entries[-1])
         prior = [entry for entry in priority if _day(entry) <= query.baseline_end_date]
-        if query.lens in TEMPORAL_LENSES:
+        if query.lens in TEMPORAL_LENSES or query.feature_lab:
             target = query.compare_dates[1] if query.compare_dates else _day(entries[-1])
             post = [entry for entry in priority if query.baseline_end_date < _day(entry) <= target]
             needed = max(0, 3 - sum(_day(entry) <= query.baseline_end_date for entry in selected))
@@ -317,13 +324,19 @@ def measure(query, entries, cache, out, publish, *, cache_only=False):
         status = "partial"
     else:
         status = "complete"
-    lens = _radar_lens(query, dates, paths, out) if query.lens else None
+    feature_lab, shared_cube = _feature_lab(query, dates, paths, out) if query.feature_lab else (None, None)
+    lens = _radar_lens(query, dates, paths, out, shared_cube=shared_cube) if query.lens else None
+    if lens is not None and shared_cube is not None:
+        lens["shared_observation_support"] = {
+            "dates": feature_lab["dates"], **feature_lab["support"],
+        }
     optical_pending = query.optical_evidence and lens["status"] == "evaluated"
     if optical_pending:
-        lens["evidence"] = {"status": "pending"}
+        lens = with_evidence(lens, {"status": "pending"})
     publish(status="running" if optical_pending else status,
             phase="optical_evidence" if optical_pending else None,
             observed_date_count=observed, usable_window_date_count=usable, lens=lens,
+            feature_lab=feature_lab,
             comparison=comparison or {"status": "unavailable", "reason": "fewer_than_two_selected_dates"})
     if optical_pending:
         assessed = lens.get("assessment_dates", [lens["target_date"]])
@@ -341,7 +354,8 @@ def enrich_lens(query, lens, paths, cache, out):
         return {"status": "unavailable", "reason": "optical_grid_unavailable"}
     cube = cube_from_chips(paths, aggregate=factor)
     target = lens["target_date"]
-    radar_report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date)
+    point = (query.longitude, query.latitude)
+    radar_report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date, point=point)
     if not arrays:
         return {"status": "unavailable", "reason": "no_common_support_at_optical_scale"}
     is_water = query.lens == FLOOD_WETLAND["id"]
@@ -353,7 +367,8 @@ def enrich_lens(query, lens, paths, cache, out):
     if reference is None:
         return evidence
     if is_water:
-        report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date, reference=reference)
+        report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date,
+                                       reference=reference, point=point, reference_epochs=evidence.get("epochs"))
         evidence.update(report["evidence"])
         groups, legend, role = arrays["optical_groups"], GROUPS, "optical_water_class_comparison"
         if evidence["status"] != "optical_comparison_available":
@@ -381,7 +396,28 @@ def enrich_lens(query, lens, paths, cache, out):
     return evidence
 
 
-def _radar_lens(query, dates, paths, out):
+def _feature_lab(query, dates, paths, out):
+    target = query.compare_dates[1] if query.compare_dates else dates[-1]
+    chosen = [day for day in dates if day <= target and day in paths]
+    if not chosen:
+        report = empty_feature_lab("no_usable_observations")
+        report.update(requested_target_date=target, excluded_unusable_dates=[day for day in dates if day <= target])
+        return report, None
+    try:
+        cube = cube_from_chips([paths[day] for day in chosen], aggregate=1)
+    except ValueError as exc:
+        if str(exc) not in {"No common measured polarization", "Incompatible grids; reproject explicitly before combining"}:
+            raise
+        return empty_feature_lab("incompatible_measured_support"), None
+    report, arrays, shared = build_feature_lab(
+        cube, target, baseline_end=query.baseline_end_date, point=(query.longitude, query.latitude),
+    )
+    report["excluded_unusable_dates"] = [day for day in dates if day <= target and day not in paths]
+    report["layers"] = write_feature_layers(out, report, arrays, cube, href_prefix=f"/v1/jobs/{out.name}/assets/")
+    return report, shared
+
+
+def _radar_lens(query, dates, paths, out, *, shared_cube=None):
     target = query.compare_dates[1] if query.compare_dates else dates[-1]
     prior = [day for day in dates if day < target and day <= (query.baseline_end_date or target)]
     before = [day for day in prior if day in paths]
@@ -395,7 +431,12 @@ def _radar_lens(query, dates, paths, out):
         report = empty_lens(target, before, "target_unavailable", query.lens)
     else:
         try:
-            cube = cube_from_chips([paths[day] for day in [*before, *assessed] if day in paths], aggregate=1)
+            chosen = [day for day in [*before, *assessed] if day in paths]
+            if shared_cube is None:
+                cube = cube_from_chips([paths[day] for day in chosen], aggregate=1)
+            else:
+                selected = np.isin(shared_cube["dates"], chosen)
+                cube = {**shared_cube, **{key: shared_cube[key][selected] for key in ("power", "valid", "dates")}}
         except ValueError as exc:
             if str(exc) not in {
                 "No common measured polarization",
@@ -404,7 +445,8 @@ def _radar_lens(query, dates, paths, out):
                 raise
             report = empty_lens(target, before, "incompatible_measured_support", query.lens)
         else:
-            report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date)
+            report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date,
+                                          point=(query.longitude, query.latitude))
             if report["status"] == "evaluated":
                 cube["polarizations"] = np.asarray(report["radar"]["polarizations"])
                 delta = arrays["target_change_db"]
@@ -424,9 +466,16 @@ def _radar_lens(query, dates, paths, out):
                 report["radar"]["layer"] = _layer(
                     out, "baseline_change.tif", cube, delta, "target_minus_observed_baseline_db", [target],
                 )
+                if query.lens == FLOOD_WETLAND["id"]:
+                    report["radar"]["layers"] = write_signature_layer(
+                        out, arrays, cube, href_prefix=f"/v1/jobs/{out.name}/assets/",
+                    )
                 if query.lens == AGRICULTURE["id"]:
                     report["agriculture"] = agriculture_history(
                         cube, report, np.isfinite(delta).all(axis=0), query.longitude, query.latitude,
+                    )
+                    report["radar"]["layers"] = write_agriculture_layers(
+                        out, arrays, cube, report["evaluation"], href_prefix=f"/v1/jobs/{out.name}/assets/",
                     )
                 if query.lens == WILDFIRE["id"]:
                     report["radar"]["layers"] = write_wildfire_layers(

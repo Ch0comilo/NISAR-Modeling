@@ -1,0 +1,629 @@
+{
+  "contract_version": "1.0",
+  "policy_id": "explore_agriculture_observations_v1",
+  "status": "evaluated",
+  "reason": null,
+  "target_date": "2026-09-03",
+  "baseline_dates": [
+    "2026-07-05",
+    "2026-07-17",
+    "2026-08-10"
+  ],
+  "assessment_dates": [
+    "2026-08-22",
+    "2026-09-03"
+  ],
+  "grid": {
+    "epsg": 32633,
+    "width": 64,
+    "height": 64,
+    "pixel_spacing_m": [
+      20.0,
+      20.0
+    ]
+  },
+  "point": {
+    "selection": "requested_point",
+    "inside_grid": true,
+    "x": 522736.0000898462,
+    "y": 6554836.999343858,
+    "row": 32,
+    "column": 32,
+    "fixed_common_support": true
+  },
+  "support": {
+    "dates": [
+      "2026-07-05",
+      "2026-07-17",
+      "2026-08-10",
+      "2026-08-22",
+      "2026-09-03"
+    ],
+    "common_cells": 4096,
+    "common_mask_sha256": "3431383721510cf1c211de027cf958c183e16db5fabb6b230eb284c85e196aa9"
+  },
+  "channels": [
+    "HH",
+    "HV",
+    "HV_over_HH"
+  ],
+  "policy": {
+    "focal_radius_m": 60,
+    "comparison_annulus_m": [
+      120,
+      300
+    ],
+    "minimum_cells": 5,
+    "minimum_common_fraction": 0.5,
+    "minimum_matched_fraction": 0.5,
+    "baseline_match_tolerance_db": 2.0,
+    "maximum_control_candidates": 128,
+    "material_contrast_db": 1.0,
+    "cell_step_threshold_db": 1.0,
+    "synchrony_fraction": 0.6,
+    "spatial_block_pixels": 8,
+    "minimum_blocks_per_group": 4,
+    "bootstrap_draws": 400,
+    "minimum_assessment_intervals_for_synchrony": 2,
+    "step_tie_break": "earliest_observed_interval"
+  },
+  "neighborhood": {
+    "status": "evaluated",
+    "focal_radius_m": 60,
+    "comparison_annulus_m": [
+      120,
+      300
+    ],
+    "focal_cells": 29,
+    "comparison_cells": 593,
+    "focal_grid_cells": 29,
+    "comparison_grid_cells": 593
+  },
+  "matches": {
+    "positive_pixels": 29,
+    "matched_control_pixels": 29,
+    "matched_positive_pixels": 29,
+    "matched_fraction": 1.0,
+    "baseline_mean_positive_minus_control_db_by_channel": [
+      -0.03719760631692821,
+      0.021200903530778557
+    ],
+    "criterion": "unique baseline co-/cross-pol levels within declared dB tolerance; at most 128 nearest candidates; contrast uses matched positives only; not causal matching on all confounders"
+  },
+  "series": [
+    {
+      "date": "2026-07-05",
+      "channels": {
+        "HH": {
+          "focal_mean_db": -11.51441606982001,
+          "control_mean_db": -12.088272193382526,
+          "focal_minus_control_db": 0.5738561235625159,
+          "contrast_shift_from_baseline_db": 0.5663812900411678
+        },
+        "HV": {
+          "focal_mean_db": -18.763669934766046,
+          "control_mean_db": -20.398426450532057,
+          "focal_minus_control_db": 1.6347565157660107,
+          "contrast_shift_from_baseline_db": 1.9199025713164204
+        },
+        "HV_over_HH": {
+          "focal_mean_db": -7.249253864946036,
+          "control_mean_db": -8.310154257149533,
+          "focal_minus_control_db": 1.0609003922034965,
+          "contrast_shift_from_baseline_db": 1.0323138072572915
+        }
+      }
+    },
+    {
+      "date": "2026-07-17",
+      "channels": {
+        "HH": {
+          "focal_mean_db": -14.055688627834979,
+          "control_mean_db": -14.063163461356327,
+          "focal_minus_control_db": 0.007474833521348145,
+          "contrast_shift_from_baseline_db": 0.0
+        },
+        "HV": {
+          "focal_mean_db": -20.818610421542463,
+          "control_mean_db": -20.533464365992053,
+          "focal_minus_control_db": -0.2851460555504097,
+          "contrast_shift_from_baseline_db": 0.0
+        },
+        "HV_over_HH": {
+          "focal_mean_db": -6.762921793707486,
+          "control_mean_db": -6.470300904635725,
+          "focal_minus_control_db": -0.29262088907176054,
+          "contrast_shift_from_baseline_db": -0.32120747401796557
+        }
+      }
+    },
+    {
+      "date": "2026-08-10",
+      "channels": {
+        "HH": {
+          "focal_mean_db": -15.05735601227859,
+          "control_mean_db": -14.220810364032614,
+          "focal_minus_control_db": -0.8365456482459752,
+          "contrast_shift_from_baseline_db": -0.8440204817673234
+        },
+        "HV": {
+          "focal_mean_db": -21.488201799063848,
+          "control_mean_db": -20.680242735764075,
+          "focal_minus_control_db": -0.8079590632997729,
+          "contrast_shift_from_baseline_db": -0.5228130077493631
+        },
+        "HV_over_HH": {
+          "focal_mean_db": -6.430845786785257,
+          "control_mean_db": -6.459432371731462,
+          "focal_minus_control_db": 0.02858658494620503,
+          "contrast_shift_from_baseline_db": 0.0
+        }
+      }
+    },
+    {
+      "date": "2026-08-22",
+      "channels": {
+        "HH": {
+          "focal_mean_db": -10.98663017667573,
+          "control_mean_db": -11.985053029553644,
+          "focal_minus_control_db": 0.9984228528779138,
+          "contrast_shift_from_baseline_db": 0.9909480193565656
+        },
+        "HV": {
+          "focal_mean_db": -19.01043155275542,
+          "control_mean_db": -19.4150081174127,
+          "focal_minus_control_db": 0.40457656465727965,
+          "contrast_shift_from_baseline_db": 0.6897226202076894
+        },
+        "HV_over_HH": {
+          "focal_mean_db": -8.02380137607969,
+          "control_mean_db": -7.429955087859055,
+          "focal_minus_control_db": -0.5938462882206359,
+          "contrast_shift_from_baseline_db": -0.6224328731668409
+        }
+      }
+    },
+    {
+      "date": "2026-09-03",
+      "channels": {
+        "HH": {
+          "focal_mean_db": -13.529658153139312,
+          "control_mean_db": -12.736636342673465,
+          "focal_minus_control_db": -0.7930218104658469,
+          "contrast_shift_from_baseline_db": -0.800496643987195
+        },
+        "HV": {
+          "focal_mean_db": -21.029520692496465,
+          "control_mean_db": -20.080819886306237,
+          "focal_minus_control_db": -0.948700806190228,
+          "contrast_shift_from_baseline_db": -0.6635547506398183
+        },
+        "HV_over_HH": {
+          "focal_mean_db": -7.499862539357152,
+          "control_mean_db": -7.34418354363277,
+          "focal_minus_control_db": -0.15567899572438204,
+          "contrast_shift_from_baseline_db": -0.18426558067058707
+        }
+      }
+    }
+  ],
+  "target_contrasts": {
+    "HH": {
+      "status": "conditional_spatial_resampling",
+      "positive_pixels": 29,
+      "control_pixels": 29,
+      "positive_mean_db": 0.20721419104214372,
+      "control_mean_db": 0.963038395191061,
+      "positive_median_db": 0.0025224685668945312,
+      "control_median_db": 0.6582002639770508,
+      "mean_contrast_db": -0.7558242041489174,
+      "spatial_resampling_95_interval_db": [
+        -2.0974239972632973,
+        0.5082389719772028
+      ],
+      "positive_blocks": 4,
+      "control_blocks": 12,
+      "valid_resampling_draws": 394,
+      "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established",
+      "state": "insufficient_data",
+      "reason": "interval_overlaps_material_contrast_bound",
+      "definition": "Mean cellwise target-minus-baseline change in matched focal cells minus matched controls."
+    },
+    "HV": {
+      "status": "conditional_spatial_resampling",
+      "positive_pixels": 29,
+      "control_pixels": 29,
+      "positive_mean_db": -0.7047421027874124,
+      "control_mean_db": 0.26515960693359375,
+      "positive_median_db": -1.094400405883789,
+      "control_median_db": -0.22260475158691406,
+      "mean_contrast_db": -0.9699017097210062,
+      "spatial_resampling_95_interval_db": [
+        -1.64462467521589,
+        -0.3807017201346319
+      ],
+      "positive_blocks": 4,
+      "control_blocks": 12,
+      "valid_resampling_draws": 394,
+      "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established",
+      "state": "insufficient_data",
+      "reason": "interval_overlaps_material_contrast_bound",
+      "definition": "Mean cellwise target-minus-baseline change in matched focal cells minus matched controls."
+    },
+    "HV_over_HH": {
+      "status": "conditional_spatial_resampling",
+      "positive_pixels": 29,
+      "control_pixels": 29,
+      "positive_mean_db": -0.8082739731361126,
+      "control_mean_db": -0.42201001068641397,
+      "positive_median_db": -0.7678289413452148,
+      "control_median_db": -0.26219844818115234,
+      "mean_contrast_db": -0.38626396244969863,
+      "spatial_resampling_95_interval_db": [
+        -1.7426492108246705,
+        0.8847106607177049
+      ],
+      "positive_blocks": 4,
+      "control_blocks": 12,
+      "valid_resampling_draws": 394,
+      "interval_limit": "Conditional resampling of fixed spatial blocks; spatial independence, measurement errors, reference errors and causal identification are not established",
+      "state": "insufficient_data",
+      "reason": "interval_overlaps_material_contrast_bound",
+      "definition": "Mean cellwise target-minus-baseline change in matched focal cells minus matched controls."
+    }
+  },
+  "steps": {
+    "HH": {
+      "intervals": [
+        {
+          "code": 1,
+          "dates": [
+            "2026-07-05",
+            "2026-07-17"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": -0.5663812900411678,
+          "focal_mean_step_db": -2.5412725580149687,
+          "spatial_95_interval_db": [
+            -1.2686021322863437,
+            -0.01673314718679499
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 2,
+          "dates": [
+            "2026-07-17",
+            "2026-08-10"
+          ],
+          "interval_days": 24.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": -0.8440204817673234,
+          "focal_mean_step_db": -1.0016673844436106,
+          "spatial_95_interval_db": [
+            -1.5638844280884048,
+            0.005170844430508762
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 3,
+          "dates": [
+            "2026-08-10",
+            "2026-08-22"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": 1.834968501123889,
+          "focal_mean_step_db": 4.070725835602859,
+          "spatial_95_interval_db": [
+            0.7156491554231252,
+            3.102752168238037
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.47164948453608246
+        },
+        {
+          "code": 4,
+          "dates": [
+            "2026-08-22",
+            "2026-09-03"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": -1.7914446633437606,
+          "focal_mean_step_db": -2.5430279764635824,
+          "spatial_95_interval_db": [
+            -3.477787755651352,
+            -0.3970067209455464
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.5283505154639175
+        }
+      ],
+      "largest_observed_interval_code": 3,
+      "largest_assessment_interval_code": 3,
+      "bootstrap_material_step_draws": 388,
+      "synchrony_interval_code": 3,
+      "exact_event_date_estimated": false,
+      "synchrony": {
+        "state": "supports",
+        "reason": null,
+        "focal_cells": 29,
+        "synchronous_cells": 22,
+        "fraction": 0.7586206896551724,
+        "spatial_95_interval": [
+          0.6666666666666666,
+          0.9166666666666666
+        ],
+        "conditioning": "Largest focal-mean assessment bracket held fixed. Contrast-step selection sensitivity is reported separately.",
+        "blocks": 4
+      }
+    },
+    "HV": {
+      "intervals": [
+        {
+          "code": 1,
+          "dates": [
+            "2026-07-05",
+            "2026-07-17"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": -1.9199025713164204,
+          "focal_mean_step_db": -2.0549404867764167,
+          "spatial_95_interval_db": [
+            -2.7656448500320847,
+            -1.1750756535115818
+          ],
+          "state": "supports",
+          "reason": null,
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 2,
+          "dates": [
+            "2026-07-17",
+            "2026-08-10"
+          ],
+          "interval_days": 24.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": -0.5228130077493631,
+          "focal_mean_step_db": -0.6695913775213853,
+          "spatial_95_interval_db": [
+            -1.1126870294411981,
+            0.2403970771936297
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 3,
+          "dates": [
+            "2026-08-10",
+            "2026-08-22"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": 1.2125356279570525,
+          "focal_mean_step_db": 2.4777702463084275,
+          "spatial_95_interval_db": [
+            0.2051104108434725,
+            2.213355345194871
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.3028391167192429
+        },
+        {
+          "code": 4,
+          "dates": [
+            "2026-08-22",
+            "2026-09-03"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": -1.3532773708475077,
+          "focal_mean_step_db": -2.0190891397410446,
+          "spatial_95_interval_db": [
+            -2.428334476632602,
+            -0.4934808663346562
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.6971608832807571
+        }
+      ],
+      "largest_observed_interval_code": 1,
+      "largest_assessment_interval_code": 4,
+      "bootstrap_material_step_draws": 317,
+      "synchrony_interval_code": 3,
+      "exact_event_date_estimated": false,
+      "synchrony": {
+        "state": "insufficient_data",
+        "reason": "interval_overlaps_synchrony_bound",
+        "focal_cells": 29,
+        "synchronous_cells": 16,
+        "fraction": 0.5517241379310345,
+        "spatial_95_interval": [
+          0.4,
+          0.71875
+        ],
+        "conditioning": "Largest focal-mean assessment bracket held fixed. Contrast-step selection sensitivity is reported separately.",
+        "blocks": 4
+      }
+    },
+    "HV_over_HH": {
+      "intervals": [
+        {
+          "code": 1,
+          "dates": [
+            "2026-07-05",
+            "2026-07-17"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": -1.353521281275257,
+          "focal_mean_step_db": 0.48633207123855016,
+          "spatial_95_interval_db": [
+            -2.415980330518582,
+            -0.2700174058494694
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 2,
+          "dates": [
+            "2026-07-17",
+            "2026-08-10"
+          ],
+          "interval_days": 24.0,
+          "ends_in_assessment": false,
+          "focal_minus_control_step_db": 0.32120747401796557,
+          "focal_mean_step_db": 0.33207600692222883,
+          "spatial_95_interval_db": [
+            -0.5121920364446085,
+            1.1180576778830251
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": null
+        },
+        {
+          "code": 3,
+          "dates": [
+            "2026-08-10",
+            "2026-08-22"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": -0.6224328731668409,
+          "focal_mean_step_db": -1.5929555892944336,
+          "spatial_95_interval_db": [
+            -2.565720711047189,
+            0.9880858025375823
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.6616161616161617
+        },
+        {
+          "code": 4,
+          "dates": [
+            "2026-08-22",
+            "2026-09-03"
+          ],
+          "interval_days": 12.0,
+          "ends_in_assessment": true,
+          "focal_minus_control_step_db": 0.43816729249625386,
+          "focal_mean_step_db": 0.5239388367225386,
+          "spatial_95_interval_db": [
+            -0.9366957554110779,
+            2.0728619569540037
+          ],
+          "state": "insufficient_data",
+          "reason": "interval_overlaps_material_contrast_bound",
+          "bootstrap_largest_assessment_fraction": 0.3383838383838384
+        }
+      ],
+      "largest_observed_interval_code": 1,
+      "largest_assessment_interval_code": null,
+      "bootstrap_material_step_draws": 198,
+      "synchrony_interval_code": 3,
+      "exact_event_date_estimated": false,
+      "synchrony": {
+        "state": "insufficient_data",
+        "reason": "interval_overlaps_synchrony_bound",
+        "focal_cells": 29,
+        "synchronous_cells": 15,
+        "fraction": 0.5172413793103449,
+        "spatial_95_interval": [
+          0.4,
+          0.6428571428571429
+        ],
+        "conditioning": "Largest focal-mean assessment bracket held fixed. Contrast-step selection sensitivity is reported separately.",
+        "blocks": 4
+      }
+    }
+  },
+  "uncertainty": {
+    "observation": {
+      "status": "unavailable",
+      "reason": "Sensor and speckle uncertainty are unestimated."
+    },
+    "spatial": {
+      "positive_blocks": 4,
+      "control_blocks": 12,
+      "valid_draws": 394,
+      "status": "available",
+      "reason": null,
+      "block_size_m": [
+        160.0,
+        160.0
+      ],
+      "scope": "Conditional resampling of fixed spatial blocks with complete channel histories.",
+      "limitations": "Block independence, sensor errors, reference errors and selection-adjusted intervals are unestimated."
+    },
+    "model": {
+      "status": "unavailable",
+      "reason": "No crop or management model is fitted."
+    }
+  },
+  "independent_evidence": {
+    "status": "insufficient_data",
+    "reason": "dated_parcel_or_management_reference_not_supplied",
+    "needed": [
+      "Dated harvest, tillage or irrigation records for the focal area.",
+      "Parcel boundaries, crop context and dated optical vegetation observations."
+    ]
+  },
+  "confounders": [
+    {
+      "id": "rain_or_soil_moisture",
+      "status": "unavailable"
+    },
+    {
+      "id": "irrigation",
+      "status": "unavailable"
+    },
+    {
+      "id": "freeze_thaw",
+      "status": "unavailable"
+    },
+    {
+      "id": "mixed_parcels",
+      "status": "unavailable"
+    },
+    {
+      "id": "incidence_and_track",
+      "status": "unavailable"
+    },
+    {
+      "id": "speckle_and_noise",
+      "status": "unavailable"
+    },
+    {
+      "id": "layover_or_shadow",
+      "status": "unavailable"
+    }
+  ],
+  "questions": [
+    "Did the focal patch change differently from baseline-matched surrounding cells?",
+    "Which observed interval contains the strongest focal-minus-control step?",
+    "Did focal cells change together within that sampled interval?"
+  ],
+  "phenomenon_class": null,
+  "phenomenon_probability": null,
+  "causal_attribution": null,
+  "displacement_cm": null
+}

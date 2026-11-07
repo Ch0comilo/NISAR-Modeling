@@ -8,6 +8,51 @@ from .catalog import science_url
 
 POLS=('HH','HV','VV','VH')
 
+def point_location(cube, point):
+    """Use the requested pixel, or explicitly select the center of an offline grid."""
+    x, y = cube["x"], cube["y"]
+    dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
+    if point is None:
+        qx, qy = float(x[len(x) // 2]), float(y[len(y) // 2])
+        selection = "grid_center"
+    else:
+        xx, yy = transform("EPSG:4326", f"EPSG:{int(cube['epsg'])}", [point[0]], [point[1]])
+        qx, qy = xx[0], yy[0]
+        selection = "requested_point"
+    inside = x[0] - dx / 2 <= qx < x[-1] + dx / 2 and y[-1] - dy / 2 < qy <= y[0] + dy / 2
+    return {
+        "selection": selection, "inside_grid": bool(inside),
+        "x": qx if np.isfinite(qx) else None, "y": qy if np.isfinite(qy) else None,
+        "row": int(np.argmin(abs(y - qy))) if inside else None,
+        "column": int(np.argmin(abs(x - qx))) if inside else None,
+    }
+
+
+def local_neighborhood(cube, location, common):
+    """Fixed 60 m focal and 120–300 m annulus populations on a metric grid."""
+    result = {"status": "insufficient_data", "focal_radius_m": 60, "comparison_annulus_m": [120, 300]}
+    if not location["inside_grid"]:
+        return {**result, "reason": "neighborhood_outside_grid"}, None, None
+    x, y = cube["x"], cube["y"]
+    qx, qy = location["x"], location["y"]
+    dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
+    extent = min(qx - x[0] + dx / 2, x[-1] + dx / 2 - qx,
+                 qy - y[-1] + dy / 2, y[0] + dy / 2 - qy)
+    if extent < 300:
+        return {**result, "reason": "neighborhood_outside_grid"}, None, None
+    distance = np.hypot(x[None, :] - qx, y[:, None] - qy)
+    focal_grid = distance <= 60
+    ring_grid = (distance >= 120) & (distance <= 300)
+    focal, ring = focal_grid & common, ring_grid & common
+    counts = [int(mask.sum()) for mask in (focal, ring)]
+    totals = [int(mask.sum()) for mask in (focal_grid, ring_grid)]
+    result.update(focal_cells=counts[0], comparison_cells=counts[1],
+                  focal_grid_cells=totals[0], comparison_grid_cells=totals[1])
+    if min(counts) < 5 or any(count / max(total, 1) < 0.5 for count, total in zip(counts, totals)):
+        return {**result, "reason": "insufficient_common_neighborhood_support"}, focal, ring
+    return {**result, "status": "evaluated"}, focal, ring
+
+
 def credential():
     token=os.environ.get('EARTHDATA_TOKEN')
     if token:return token.strip()

@@ -12,6 +12,34 @@ The point result separates three states:
 
 The lenses report signed dB relative to the median of the earlier dates and the common cell count. The baseline band is a diagnostic rule. The flood lens also reports co/cross darkening counts. Stable open water, soil moisture, crops and shadow can all affect these measurements.
 
+## Computed flood evaluation
+
+The flood and wetland lens now adds `lens.evaluation`, with its own `contract_version: "1.0"` and `policy_id: "explore_flood_observations_v1"`. The [evaluation schema](../contracts/flood-lens-evaluation.schema.json) describes this companion object. Existing observations, comparison layers, baseline-band point states and optical groups remain available. `GET /v1/lenses` advertises the evaluation version and schema.
+
+| Field | What the frontend can display |
+|---|---|
+| `point` | Named co/cross-pol dB observations at actual dates, cellwise baseline median and scaled MAD, target change, cross-minus-co ratio change, and the last-baseline-to-target bracket. |
+| `point.signature_states` | Whether joint darkening or co-pol brightening is present at this pixel under the recorded thresholds. |
+| `grid_signatures` | Counts and fractions on the fixed common radar grid, with the denominator. A changed window can surround an unsupported clicked pixel. |
+| `surrounding_comparison` | Changes and trajectories for a 60 m focal patch and unique baseline-level matched cells in the 120–300 m annulus. Includes match coverage, signed focal-minus-control contrasts and conditional spatial block intervals. |
+| `water_comparison` | A separate optical grid, exact snapshot dates, new-water/stable-water/stable-nonwater group summaries and baseline-matched new-water/control contrasts. The point state refers to the optical comparison cell containing the click. |
+| `uncertainty` | Common-grid spatial change quartiles, and explicit unavailable observation-error and fitted-model uncertainty. Channel contrast intervals live alongside their block counts in the relevant comparison. |
+| `confounders` | Available optical group evidence for existing water. Rain, moisture, freeze-thaw, wind, incidence, noise and terrain visibility remain unresolved by this calculation. Processing flags are retained in the source observations. |
+
+Joint darkening means co-pol change ≤ −3 dB and cross-pol change ≤ −1.5 dB. Co-pol brightening means change ≥ +3 dB. `supports` describes the named measured signature. `absent_on_sampled_support` describes a supported pixel or grid where that diagnostic is absent. Missing target, fewer than three baseline dates, unpaired polarizations, invalid support and off-grid points return `insufficient_data` with reasons.
+
+The surrounding comparison requires both geographic neighborhoods to fit in the chip, at least five common cells and half the potential cells in each, and five matches covering at least half the focal cells. Matches use only baseline co/cross levels within 2 dB per channel, with up to 128 candidates for each focal cell. These surrounding cells have no independently established stability or land cover. The differential-darkening subclaim requires both channel intervals to lie beyond the corresponding negative thresholds. Intervals overlapping those bounds leave that subclaim unresolved. The existing optical-group matcher retains its 16-candidate policy and reports the matched subset separately.
+
+Spatial contrast intervals resample complete 8 × 8-cell blocks 400 times and require at least four contributing blocks per group. The response reports their size in metres. A measured contrast can be published with an unavailable interval when blocks are sparse. These intervals quantify conditional spatial resampling sensitivity. Sensor error, reference errors, causal confounding and block independence remain unestimated.
+
+At the optical scale, `point_new_open_water_state` supports the explicitly stated new-open-water snapshot claim for a dry-to-open-water cell. It contradicts that claim for stable nonwater, stable water or water loss. Mixed, masked and inadequate coverage remain insufficient. This claim requires both sensing dates, a pre snapshot before the radar target, a post snapshot on or after it, and at most four days from each radar anchor. A long radar gap still leaves timing unresolved. Optical water may be present without radar darkening, and radar darkening may occur over existing water.
+
+The evaluation accompanies the radar result while `water_comparison.status` is `pending`. Optical failure or a full evidence queue preserves measured radar outputs and publishes a reason. On completion, the optical comparison updates alongside its separate grid and dates.
+
+The new `flood_signature_flags.tif` has two named bands, `dual_darkening` and `co_pol_brightening`. Each uses 0 for absent, 1 for present, and NaN for unsupported radar cells. Read the native grid from the radar response, use nearest-neighbor display/overviews, and resolve the allowlisted URL in `lens.radar.layers`. The layer includes its SHA-256. This diagnostic footprint supports inspection of measured change.
+
+The local `flood-lens-case` command produces the same evaluation on checksum-verified case inputs. Its point is explicitly the grid center. Live point requests evaluate the requested location, and optical comparisons use the corresponding cell on their coarser grid. Phenomenon class, probability, cause and displacement fields stay null.
+
 ## Request optical evidence
 
 Set `"optical_evidence": true` alongside `"lens": "flood_wetland"` to request the independent optical comparison. A separate local worker looks for OPERA DSWx-HLS within four calendar days of the last radar baseline and of the radar target. The pre snapshot must precede the radar target. The post snapshot must be on or after it. The worker rechecks the sensing date on the downloaded asset and ranks at most three candidates per epoch using timing and coverage.
@@ -59,6 +87,8 @@ With `"optical_evidence": true`, the worker compares OPERA optical vegetation lo
 The Rowe Creek case combines the archived observations and optical reference with documented regional fire context. The scene-level comparison leaves the cause of individual changes unresolved. [USGS Rowe Creek account](https://www.usgs.gov/media/images/rowe-creek-complex-fire-oregon-2026)
 
 ## Agriculture
+
+The [computed agriculture v1 guide](AGRICULTURE_LENS_V1.md) describes the new `lens.evaluation` companion, baseline-matched controls, separate contrast and synchrony states, block uncertainty, observed step brackets and linked map layers. The [schema](../contracts/agriculture-lens-evaluation.schema.json) and [measured example](../contracts/examples/skollersta-agriculture-lens-evaluation.json) support frontend integration.
 
 Use `"lens": "agriculture"` and choose a `baseline_end_date` for the period you want to compare against. The lens asks whether the selected patch changed differently from its surroundings. For each selected date it reports the median radar level inside 60 m of the point and between 120 and 300 m from the point. It reports their signed difference by polarization, the departure from the median pre-window difference, and the two observed dates that bound the largest step. A step may have occurred anywhere between those samples.
 

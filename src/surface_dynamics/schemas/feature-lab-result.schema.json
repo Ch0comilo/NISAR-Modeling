@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Measured Feature Lab companion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "policy_id", "status", "reason", "dates", "baseline_dates",
+               "requested_target_date", "excluded_unusable_dates", "grid", "point", "support",
+               "features", "layers", "uncertainty", "phenomenon_class", "phenomenon_probability",
+               "causal_attribution", "displacement_cm"],
+  "properties": {
+    "contract_version": {"const": "1.0"}, "policy_id": {"const": "feature_lab_measured_v1"},
+    "status": {"enum": ["available", "pending", "insufficient_data", "unavailable"]},
+    "reason": {"type": ["string", "null"]},
+    "dates": {"$ref": "#/$defs/dates"}, "baseline_dates": {"$ref": "#/$defs/dates"},
+    "requested_target_date": {"type": ["string", "null"], "format": "date"},
+    "excluded_unusable_dates": {"$ref": "#/$defs/dates"},
+    "grid": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["epsg", "width", "height", "pixel_spacing_m", "bounds_native"],
+          "properties": {
+            "epsg": {"type": "integer"}, "width": {"type": "integer", "minimum": 1},
+            "height": {"type": "integer", "minimum": 1},
+            "pixel_spacing_m": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number", "exclusiveMinimum": 0}},
+            "bounds_native": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}}
+          }
+        }
+      ]
+    },
+    "point": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["selection", "inside_grid", "x", "y", "row", "column", "fixed_common_support"],
+          "properties": {
+            "selection": {"enum": ["requested_point", "grid_center"]}, "inside_grid": {"type": "boolean"},
+            "x": {"$ref": "#/$defs/nullableNumber"}, "y": {"$ref": "#/$defs/nullableNumber"},
+            "row": {"type": ["integer", "null"], "minimum": 0}, "column": {"type": ["integer", "null"], "minimum": 0},
+            "fixed_common_support": {"type": "boolean"}
+          }
+        }
+      ]
+    },
+    "support": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["scope", "common_cells", "grid_cells", "common_mask_sha256"],
+          "properties": {
+            "scope": {"type": "string"}, "common_cells": {"type": "integer", "minimum": 0},
+            "grid_cells": {"type": "integer", "minimum": 1}, "common_mask_sha256": {"$ref": "#/$defs/hash"}
+          }
+        }
+      ]
+    },
+    "features": {"type": "array", "maxItems": 6, "items": {"$ref": "#/$defs/feature"}},
+    "layers": {
+      "type": "array", "maxItems": 5, "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["role", "href", "units", "bands", "resampling", "sha256"],
+        "properties": {
+          "role": {"enum": ["common_support", "target_db", "baseline_db", "change_db", "patch_ids"]},
+          "href": {"type": "string"}, "units": {"enum": ["support flag", "signed diagnostic patch id", "dB"]},
+          "bands": {"type": "array", "minItems": 1, "maxItems": 6, "items": {"type": "string"}},
+          "resampling": {"enum": ["nearest", "average"]}, "sha256": {"$ref": "#/$defs/hash"}
+        }
+      }
+    },
+    "uncertainty": {
+      "type": "object", "additionalProperties": false, "required": ["observation", "spatial", "model"],
+      "properties": {
+        "observation": {
+          "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+          "properties": {"status": {"const": "unavailable"}, "reason": {"type": "string"}}
+        },
+        "spatial": {"type": "string"}, "model": {"type": "string"}
+      }
+    },
+    "phenomenon_class": {"type": "null"}, "phenomenon_probability": {"type": "null"},
+    "causal_attribution": {"type": "null"}, "displacement_cm": {"type": "null"}
+  },
+  "$defs": {
+    "dates": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"type": "string", "format": "date"}},
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableNumber": {"type": ["number", "null"]},
+    "quartiles": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/nullableNumber"}},
+    "status": {"enum": ["available", "insufficient_data", "unavailable"]},
+    "timing": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+        "baseline_median_db": {"type": "number"}, "baseline_scaled_mad_db": {"type": "number", "minimum": 0},
+        "diagnostic_half_width_db": {"type": "number", "minimum": 3},
+        "first_departure_bracket": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": ["string", "null"], "format": "date"}}
+          ]
+        },
+        "departure_acquisitions": {"type": "integer", "minimum": 0},
+        "assessment_acquisitions": {"type": "integer", "minimum": 1}, "exact_onset_inferred": {"const": false}
+      }
+    },
+    "texture": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason", "bins"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]}, "definition": {"type": "string"},
+        "bins": {
+          "type": "array", "maxItems": 16, "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["direction", "lag_m", "pairs", "status", "semivariance_db2", "median_absolute_gradient_db_per_m"],
+            "properties": {
+              "direction": {"enum": ["east", "north", "northeast", "northwest"]},
+              "lag_m": {"type": "number", "exclusiveMinimum": 0}, "pairs": {"type": "integer", "minimum": 0},
+              "status": {"$ref": "#/$defs/status"}, "semivariance_db2": {"$ref": "#/$defs/nullableNumber"},
+              "median_absolute_gradient_db_per_m": {"$ref": "#/$defs/nullableNumber"}
+            }
+          }
+        }
+      }
+    },
+    "patches": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+        "threshold_absolute_change_db": {"const": 3.0}, "minimum_cells": {"const": 4}, "connectivity": {"const": 8},
+        "patch_count": {"type": "integer", "minimum": 0},
+        "area_quantiles_25_50_75_m2": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/quartiles"}]},
+        "objects_truncated": {"type": "boolean"}, "interpretation": {"type": "string"},
+        "objects": {
+          "type": "array", "maxItems": 100, "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "direction", "cells", "area_m2", "touches_chip_edge_or_nodata",
+                         "inside_mean_change_db", "outside_cells", "boundary_contrast_db"],
+            "properties": {
+              "id": {"type": "integer", "not": {"const": 0}}, "direction": {"enum": ["decrease", "increase"]},
+              "cells": {"type": "integer", "minimum": 4}, "area_m2": {"type": "number", "exclusiveMinimum": 0},
+              "touches_chip_edge_or_nodata": {"type": "boolean"}, "inside_mean_change_db": {"type": "number"},
+              "outside_cells": {"type": "integer", "minimum": 0}, "boundary_contrast_db": {"$ref": "#/$defs/nullableNumber"}
+            }
+          }
+        }
+      }
+    },
+    "gp": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+        "dates": {"$ref": "#/$defs/dates"}, "scope": {"type": "string"}, "parameters": {"type": "object"},
+        "draw_count": {"const": 128}, "mean_db": {"type": "array", "minItems": 6, "maxItems": 128, "items": {"type": "number"}},
+        "quantiles_025_50_975_db": {
+          "type": "array", "minItems": 3, "maxItems": 3,
+          "items": {"type": "array", "minItems": 6, "maxItems": 128, "items": {"type": "number"}}
+        },
+        "draws_db": {
+          "type": "array", "minItems": 128, "maxItems": 128,
+          "items": {"type": "array", "minItems": 6, "maxItems": 128, "items": {"type": "number"}}
+        },
+        "interpretation": {"type": "string"}, "observed_temporal_mean_db": {"type": "number"},
+        "observed_temporal_sd_db": {"type": "number", "minimum": 0}
+      },
+      "if": {"properties": {"status": {"const": "available"}}},
+      "then": {"required": ["dates", "scope", "parameters", "draw_count", "mean_db", "quantiles_025_50_975_db",
+                           "draws_db", "interpretation", "observed_temporal_mean_db", "observed_temporal_sd_db"]}
+    },
+    "feature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "units", "source_channels", "definition", "physical_meaning", "series",
+                   "point_timing", "roi_timing", "target_change_db", "spatial", "gp"],
+      "properties": {
+        "id": {"enum": ["HH", "HV", "VV", "VH", "HV_over_HH", "VH_over_VV"]},
+        "kind": {"enum": ["power", "log_power_ratio"]}, "units": {"const": "dB"},
+        "source_channels": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"enum": ["HH", "HV", "VV", "VH"]}},
+        "definition": {"type": "string"}, "physical_meaning": {"type": "string"},
+        "series": {
+          "type": "array", "maxItems": 128, "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["date", "point_db", "roi_mean_db", "roi_quantiles_25_50_75_db"],
+            "properties": {
+              "date": {"type": "string", "format": "date"}, "point_db": {"$ref": "#/$defs/nullableNumber"},
+              "roi_mean_db": {"$ref": "#/$defs/nullableNumber"}, "roi_quantiles_25_50_75_db": {"$ref": "#/$defs/quartiles"},
+              "point_linear_ratio": {"$ref": "#/$defs/nullableNumber"}
+            }
+          }
+        },
+        "point_timing": {"$ref": "#/$defs/timing"}, "roi_timing": {"$ref": "#/$defs/timing"},
+        "target_change_db": {"$ref": "#/$defs/nullableNumber"},
+        "spatial": {
+          "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+          "properties": {
+            "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+            "directional_texture": {"$ref": "#/$defs/texture"}, "patches": {"$ref": "#/$defs/patches"}
+          }
+        },
+        "gp": {"$ref": "#/$defs/gp"}
+      }
+    }
+  }
+}
