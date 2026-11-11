@@ -15,6 +15,8 @@ The public gateway has one container with a 0.25 physical-core CPU ceiling and 5
 
 At list rates, a four-minute worker at 1 core and 2 GiB is approximately $0.0042 in reserved-resource compute. Even 12 fully timed-out jobs/day over a 31-day month would be about $1.57 on that model. A continuously active gateway at the stated CPU and RAM ceilings for 31 days would be about $11.75. These are conservative compute-only estimates before credits. Startup, image builds, idle windows, actual metering and other workspace workloads affect the bill. The Workspace usage limit is the outer billing control. Review it in Usage & Billing. [Pricing](https://modal.com/pricing) · [Budgets](https://modal.com/docs/guide/budgets)
 
+The hosted mock at `/mock` uses the same gateway, queue and quotas as the API. The gateway and worker scale to zero between requests, with configured idle windows of 5 and 10 seconds. An idle deployment uses no compute after its containers stop. Page views, catalog reads, job polling and artifact requests can start the gateway. Storage and network egress are metered separately against the workspace allowances. [Modal autoscaling](https://modal.com/docs/guide/scale) · [Egress billing](https://modal.com/docs/guide/network-egress-billing)
+
 The job record store is shared by gateway and workers. Deploy with one gateway and avoid overlapping deployments that share a state Dict while high traffic is admitted. Modal Dict entries expire after seven days without access. Completed results are eligible for a 24-hour cache hit. Artifacts and the chip cache remain in Volume storage until the operator cleans them up. Check usage periodically and retire old job and chip data during a maintenance window.
 
 ## Clear cache

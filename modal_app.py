@@ -41,7 +41,13 @@ runtime_config = {
     "NISAR_STATE_DICT": STATE_NAME, "NISAR_EARTHDATA_SECRET": SECRET_NAME,
 }
 package = ROOT / "src" / "surface_dynamics"
-gateway_image = common.uv_pip_install(*DEPS).env(runtime_config).add_local_dir(package, "/opt/nisar/surface_dynamics")
+MOCK_HTML = "/opt/nisar/observation-mock.html"
+gateway_image = (
+    common.uv_pip_install(*DEPS)
+    .env(runtime_config)
+    .add_local_dir(package, "/opt/nisar/surface_dynamics")
+    .add_local_file(ROOT / "scripts" / "observation-mock" / "index.html", MOCK_HTML)
+)
 worker_image = (
     common.apt_install("libexpat1", "libgomp1")
     .uv_pip_install(requirements=[str(ROOT / "requirements-lock.txt")],
@@ -96,4 +102,5 @@ def api():
     from surface_dynamics.service_api import create_app
     from surface_dynamics.service_state import JobStore
 
-    return create_app(STORAGE, JobStore(state, worker.spawn, REVISION), reload=volume.reload)
+    return create_app(STORAGE, JobStore(state, worker.spawn, REVISION), reload=volume.reload,
+                      observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"))

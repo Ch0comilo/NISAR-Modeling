@@ -11,7 +11,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Path as ApiPath, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.exceptions import HTTPException
 import requests
 
@@ -101,7 +101,7 @@ def artifact_response(body, asset, request):
     return Response(body, headers=headers, media_type=asset["media_type"])
 
 
-def create_app(root: Path, jobs, *, reload=lambda: None):
+def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str | None = None):
     results = Results(root, reload)
     rate = OrderedDict()
     rate_lock = RLock()
@@ -161,6 +161,11 @@ def create_app(root: Path, jobs, *, reload=lambda: None):
     @app.get("/health")
     def health():
         return {"status": "ok", "api_version": "2.0", "science_version": __version__}
+
+    if observation_page is not None:
+        @app.get("/mock", response_class=HTMLResponse, include_in_schema=False)
+        def mock():
+            return HTMLResponse(observation_page, headers={"Cache-Control": PUBLIC_CACHE})
 
     @app.get("/v2/capabilities")
     def capabilities():

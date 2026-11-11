@@ -75,6 +75,16 @@ class ApiTests(TestCase):
         cached = self.client.post("/v2/jobs", json={**BODY, "longitude": 0})
         self.assertEqual((cached.status_code, cached.json()["cache"]), (200, "hit"))
 
+    def test_hosted_observation_page_and_api_share_a_gateway(self):
+        page = Path(__file__).resolve().parents[1] / "scripts" / "observation-mock" / "index.html"
+        client = TestClient(create_app(self.root, self.jobs, observation_page=page.read_text(encoding="utf-8")))
+        response = client.get("/mock")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/html", response.headers["content-type"])
+        self.assertIn("Search catalog", response.text)
+        self.assertEqual(client.get("/v2/capabilities").json()["daily_new_jobs_per_ip"], 5)
+        self.assertEqual(client.post("/v2/jobs", json=BODY).status_code, 202)
+
     def test_schema_and_cors(self):
         schema = self.client.get("/v2/openapi.json").json()
         self.assertIn("/v2/jobs", schema["paths"])

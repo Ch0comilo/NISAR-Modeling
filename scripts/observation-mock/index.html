@@ -19,9 +19,11 @@ pre,code{font:13px/1.5 ui-monospace,monospace}.muted{color:#aabdc7;font-size:.9r
 figcaption{font-size:.9rem}figure img{width:100%;max-height:320px;object-fit:contain;background:#0b1319;border:1px solid #394c57;border-radius:.35rem}
 #images .comparison{grid-column:1/-1}#images .comparison img{max-height:none}
 #images{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));margin-top:1rem}a{color:#a4dacc}
+#granules{overflow-wrap:anywhere}
+@media(max-width:480px){body{padding:1rem}}
 </style>
 <h1>NISAR observation mock</h1>
-<nav aria-label="Data source">
+<nav id="sourceTabs" aria-label="Data source" hidden>
   <button id="liveTab" aria-pressed="true">Live catalog and Modal</button>
   <button id="localTab" aria-pressed="false">Measured fixtures</button>
 </nav>
@@ -82,6 +84,9 @@ figcaption{font-size:.9rem}figure img{width:100%;max-height:320px;object-fit:con
 
 <script>
 const el = id => document.getElementById(id);
+const hosted = location.pathname.replace(/\/$/, "") === "/mock";
+const api = hosted ? "/v2" : "/modal";
+const artifactUrl = path => (hosted ? "" : "/modal") + path;
 const lenses = [
   ["flood_wetland", "Flood / wetland lens"],
   ["vegetation_disturbance", "Vegetation disturbance lens"],
@@ -189,7 +194,7 @@ el("search").onsubmit = run(el("search"), async () => {
     start_date: el("from").value, end_date: el("to").value, product: el("product").value};
   message("Querying the public catalog…");
   el("liveJob").hidden = true;
-  catalog = await request("/modal/coverage?" + new URLSearchParams(next));
+  catalog = await request(api + "/coverage?" + new URLSearchParams(next));
   query = next;
   el("hits").textContent = catalog.catalog_hits + " catalog hits · pixel support unchecked";
   if (!catalog.series.length) { message("No compatible observations in this window."); return; }
@@ -222,14 +227,14 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
     }
   }
   message("Submitting to Modal…");
-  let job = await request("/modal/jobs", body);
+  let job = await request(api + "/jobs", body);
   const started = Date.now();
   const initialCache = job.cache;
   while (["queued","running"].includes(job.status)) {
     message(job.status + " · " + Math.round((Date.now()-started)/1000) + " s");
     if (Date.now() - started > 400000) throw Error("Stopped polling. Job ID " + job.job_id);
     await seconds();
-    job = await request("/modal/jobs/" + job.job_id);
+    job = await request(api + "/jobs/" + job.job_id);
   }
   if (job.status !== "succeeded") throw Error(job.error?.message || "The Modal job failed.");
   const result = job.result;
@@ -239,10 +244,10 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
     const title = original ? `Original SAR · ${original[1]} · ${original[2]}` :
       lens ? `Lens · target minus baseline median · ${lens[1]}` : layer.id;
     return {id:layer.id, title:title + " · " + layer.units,
-      url:"/modal" + layer.png_url, download:"/modal" + layer.cog_url};
+      url:artifactUrl(layer.png_url), download:artifactUrl(layer.cog_url)};
   });
   if (!layers.length) for (const asset of result.artifacts || []) {
-    if (asset.media_type === "image/png") layers.push({title:asset.name,url:"/modal" + asset.href});
+    if (asset.media_type === "image/png") layers.push({title:asset.name,url:artifactUrl(asset.href)});
   }
   const science = result.science;
   const bracket = science.lens?.observation_bracket;
@@ -257,7 +262,7 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
     " s worker · " + initialCache, layers, science.lens || {capabilities:science.capabilities,
     observations:science.observations, comparison:science.comparison, quality:science.quality,
     median_coherence:science.median_coherence, los_displacement_cm:science.los_displacement_cm,
-    reason:science.reason}, "/modal/jobs/" + job.job_id);
+    reason:science.reason}, api + "/jobs/" + job.job_id);
   message("Modal result ready.");
 });
 function show(title, meta, images, metrics, link) {
@@ -279,15 +284,18 @@ function show(title, meta, images, metrics, link) {
     return figure;
   }));
 }
-request("/fixtures").then(config => {
-  fixtures = config.fixtures;
-  choices("fixture", fixtures.map(item => [item.id, item.title]));
-  el("local").querySelector("button").disabled = !fixtures.length;
-  chooseFixture();
-  if (!fixtures.length) el("fixtureGrid").textContent =
-    "Install the science dependencies and restore the release fixtures to use this tab.";
-}).catch(error => message(error.message));
-request("/modal/capabilities").then(caps => {
+if (!hosted) {
+  el("sourceTabs").hidden = false;
+  request("/fixtures").then(config => {
+    fixtures = config.fixtures;
+    choices("fixture", fixtures.map(item => [item.id, item.title]));
+    el("local").querySelector("button").disabled = !fixtures.length;
+    chooseFixture();
+    if (!fixtures.length) el("fixtureGrid").textContent =
+      "Install the science dependencies and restore the release fixtures to use this tab.";
+  }).catch(error => message(error.message));
+}
+request(api + "/capabilities").then(caps => {
   if (Number.isInteger(caps.daily_new_jobs_per_ip) && Number.isInteger(caps.daily_new_jobs_total)) {
     el("modalQuota").textContent =
       `${caps.daily_new_jobs_per_ip} new jobs per IP, ${caps.daily_new_jobs_total} across the app per UTC day. Cache hits are exempt.`;
@@ -295,7 +303,7 @@ request("/modal/capabilities").then(caps => {
 }).catch(() => {});
 
 const modalRun = new URLSearchParams(location.search).get("modalRun");
-if (/^[a-f0-9]{32}$/.test(modalRun || "")) {
+if (!hosted && /^[a-f0-9]{32}$/.test(modalRun || "")) {
   switchTab(true);
   const prefix = "/runs/" + modalRun;
   message("Loading the completed Modal run…");
