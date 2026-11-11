@@ -1,8 +1,6 @@
 """Prepare and serve bounded, georeferenced display assets."""
 from hashlib import file_digest
 import json
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
 
 ASSET_LIMIT = 24 * 1024 * 1024
@@ -51,7 +49,7 @@ def render_layer(out, prefix, layer_id, values, x, y, epsg, *, units, cmap, stre
             rgba[display == code] = np.asarray(to_rgba(color)) * 255
     rgba[~valid, 3] = 0
     Image.fromarray(rgba).save(out / f"{layer_id}.png")
-    write_cog(out / f"{layer_id}.tif", values, x, y, epsg, units, [layer_id], angular=bool(legend))
+    write_cog(out / f"{layer_id}.tif", values, x, y, epsg, units, [layer_id], angular=bool(legend) or units in {"rad", "diagnostic mask"})
     return {"id": layer_id, "png_url": f"{prefix}/{layer_id}.png", "cog_url": f"{prefix}/{layer_id}.tif",
             "bounds": list(bounds), "crs": "EPSG:4326", "north_up": True,
             "units": units, "colormap": "optical_reference_groups" if legend else cmap,

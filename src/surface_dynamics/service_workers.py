@@ -1,6 +1,7 @@
 """Bounded HTTP-to-science translation. No client-selected paths or archive URLs."""
 from datetime import date, timedelta
 import logging
+import re
 from pathlib import Path
 from time import perf_counter
 from tempfile import TemporaryDirectory
@@ -127,13 +128,25 @@ def live_layers(out, prefix, operation):
                     units, cmap, stretch = "rad", "twilight", (-3.1415926536, 3.1415926536)
                 elif "change" in path.stem or "delta" in path.stem:
                     units, cmap, stretch = "dB", "RdBu_r", (-8, 8)
-                elif path.stem.startswith("observation"):
+                elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
                     units, cmap, stretch = "dB", "gray", (-30, 0)
                 else:
                     continue
                 layers.append(render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
                                            units=units, cmap=cmap, stretch=stretch))
     return layers
+
+
+def published_science(value, hrefs):
+    if isinstance(value, list):
+        return [published_science(item, hrefs) for item in value]
+    if isinstance(value, dict):
+        result = {key: published_science(item, hrefs) for key, item in value.items()}
+        href = result.get("href")
+        if isinstance(href, str) and href.startswith("/v1/jobs/"):
+            result["href"] = hrefs.get(href.rsplit("/", 1)[-1])
+        return result
+    return value
 
 
 def execute_job(body, job_id, out, cache, revision):
@@ -147,6 +160,7 @@ def execute_job(body, job_id, out, cache, revision):
     allowed = {asset["href"] for asset in assets}
     layers = [layer for layer in layers if {layer["png_url"], layer["cog_url"]} <= allowed]
     raw.pop("artifacts", None)
+    raw = published_science(raw, {asset["name"]: asset["href"] for asset in assets})
     if raw.get("status") in {"failed", "unavailable"}:
         raise RuntimeError("The scientific source could not be read.")
     result = {"operation": body["operation"], "science_status": raw["status"], "revision": revision,

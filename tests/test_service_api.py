@@ -102,3 +102,19 @@ class ApiTests(TestCase):
         response = self.client.get("/v2/coverage", params={"longitude": 0, "latitude": 0,
                                    "start_date": "2026-01-01", "end_date": "2026-01-02"})
         self.assertEqual((response.status_code, response.json()["code"]), (504, "catalog_timeout"))
+
+    def test_live_dates_share_stretch_and_links_follow_published_assets(self):
+        import numpy as np
+        from surface_dynamics.engine import write_cog
+        from surface_dynamics.service_workers import live_layers, published_science
+
+        for date, value in [("2026-10-07", -15), ("2026-10-19", -18)]:
+            write_cog(self.root / (date + ".tif"), np.full((3, 3), value),
+                      [500000, 500010, 500020], [5300020, 5300010, 5300000],
+                      32614, "dB", ["HH"])
+        layers = live_layers(self.root, "/v2/jobs/abcd/layers", "explore")
+        self.assertEqual(len(layers), 2)
+        self.assertTrue(all(layer["range"] == [-30, 0] for layer in layers))
+        href = "/v2/jobs/abcd/layers/2026-10-07.tif"
+        science = {"observations": [{"layer": {"href": "/v1/jobs/abcd/assets/2026-10-07.tif"}}]}
+        self.assertEqual(published_science(science, {"2026-10-07.tif": href})["observations"][0]["layer"]["href"], href)

@@ -34,19 +34,21 @@ def revision():
 # The SDK evaluates this module in the container too, where the revision comes from the image.
 REVISION = os.environ.get("NISAR_BUILD_REVISION") or revision()
 common = modal.Image.debian_slim(python_version="3.13").env(
-    {"PYTHONPATH": "/opt/nisar", "NISAR_BUILD_REVISION": REVISION,
-     "NISAR_APP_NAME": APP_NAME, "NISAR_VOLUME": VOLUME_NAME, "NISAR_STATE_DICT": STATE_NAME,
-     "NISAR_EARTHDATA_SECRET": SECRET_NAME, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1",
-     "MPLBACKEND": "Agg"}
+    {"PYTHONPATH": "/opt/nisar", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MPLBACKEND": "Agg"}
 )
+runtime_config = {
+    "NISAR_BUILD_REVISION": REVISION, "NISAR_APP_NAME": APP_NAME, "NISAR_VOLUME": VOLUME_NAME,
+    "NISAR_STATE_DICT": STATE_NAME, "NISAR_EARTHDATA_SECRET": SECRET_NAME,
+}
 package = ROOT / "src" / "surface_dynamics"
-gateway_image = common.uv_pip_install(*DEPS).add_local_dir(package, "/opt/nisar/surface_dynamics")
+gateway_image = common.uv_pip_install(*DEPS).env(runtime_config).add_local_dir(package, "/opt/nisar/surface_dynamics")
 worker_image = (
     common.apt_install("libexpat1", "libgomp1")
     .uv_pip_install(requirements=[str(ROOT / "requirements-lock.txt")],
                     extra_index_url="https://download.pytorch.org/whl/cpu",
                     extra_options="--index-strategy unsafe-best-match")
     .uv_pip_install(*DEPS)
+    .env(runtime_config)
     .add_local_dir(package, "/opt/nisar/surface_dynamics")
     .add_local_dir(ROOT / "models" / "global_explorer_v2", "/opt/nisar/models/global_explorer_v2")
 )
