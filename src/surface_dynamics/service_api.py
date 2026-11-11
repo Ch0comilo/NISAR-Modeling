@@ -167,6 +167,7 @@ def create_app(root: Path, jobs, *, reload=lambda: None):
         return {"api_version": "2.0", "science_version": __version__, "revision": jobs.revision,
                 "radar_band": "L", "window_days_limit": 366, "live_date_limit": 5,
                 "gunw_pair_limit": 3, "public_job_timeout_seconds": 240,
+                "daily_new_jobs_per_ip": jobs.jobs_per_ip_day, "daily_new_jobs_total": jobs.jobs_per_day,
                 "measurement": ["GCOV gamma0", "signed dB change", "GUNW coherence", "wrapped phase"],
                 "forecast": None, "classification": None, "los_displacement_cm": None,
                 "origins": ORIGINS, "case_mode": "precomputed", "point_shape": "native square window"}

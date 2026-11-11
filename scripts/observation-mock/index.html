@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NISAR observation mock</title>
+<style>
+:root{font:16px/1.55 system-ui,sans-serif;color:#e4edf0;background:#111a20;color-scheme:dark}
+[hidden]{display:none!important}
+body{max-width:900px;margin:0 auto;padding:1.5rem}h1{font-size:1.8rem;line-height:1.2;margin:.35rem 0 1rem}
+nav{display:flex;gap:.5rem;margin-bottom:1rem}fieldset{border:1px solid #394c57;border-radius:.6rem;padding:1rem;margin:0 0 1rem}
+legend{padding:0 .45rem;color:#c2dfd9}label{display:grid;gap:.25rem;font-size:.9rem;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(155px,100%),1fr));gap:.75rem}
+select,input,button{font:inherit;padding:.45rem .6rem;border:1px solid #47616b;border-radius:.35rem;max-width:100%}
+select,input{width:100%;box-sizing:border-box;background:#1b2830}button{cursor:pointer;background:#233a43;color:inherit}
+button[aria-pressed=true],button.primary{background:#91d2c4;color:#101e23;border-color:#91d2c4}button:disabled{opacity:.55;cursor:default}
+.actions{display:flex;gap:.85rem;align-items:center;flex-wrap:wrap;margin-top:.9rem}.check{display:flex;align-items:center;gap:.35rem}.check input{width:auto}
+#message{color:#f4c48c;min-height:1.4rem}pre{background:#0b1319;padding:.8rem;border-radius:.45rem;overflow:auto;max-height:25rem}
+pre,code{font:13px/1.5 ui-monospace,monospace}.muted{color:#aabdc7;font-size:.9rem}figure{margin:0;min-width:0}
+figcaption{font-size:.9rem}figure img{width:100%;max-height:320px;object-fit:contain;background:#0b1319;border:1px solid #394c57;border-radius:.35rem}
+#images .comparison{grid-column:1/-1}#images .comparison img{max-height:none}
+#images{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));margin-top:1rem}a{color:#a4dacc}
+</style>
+<h1>NISAR observation mock</h1>
+<nav aria-label="Data source">
+  <button id="liveTab" aria-pressed="true">Live catalog and Modal</button>
+  <button id="localTab" aria-pressed="false">Measured fixtures</button>
+</nav>
+
+<form id="local" hidden>
+  <fieldset>
+    <legend>Measured fixture</legend>
+    <div class="grid">
+      <label>Site<select id="fixture"></select></label>
+      <label>Target pass<select id="fixtureTarget"></select></label>
+      <label>Baseline through<select id="fixtureCutoff"></select></label>
+      <label>Worker<select id="fixtureWorker"></select></label>
+    </div>
+    <div class="actions"><button class="primary" disabled>Run locally</button><span class="muted" id="fixtureGrid"></span></div>
+  </fieldset>
+</form>
+
+<section id="live">
+  <form id="search">
+    <fieldset>
+      <legend>Find acquisition groups at a point</legend>
+      <div class="grid">
+        <label>Longitude<input id="lon" type="number" min="-180" max="180" step="any" value="-97.7" required></label>
+        <label>Latitude<input id="lat" type="number" min="-90" max="90" step="any" value="48.2" required></label>
+        <label>From (UTC)<input id="from" type="date" value="2026-09-01" required></label>
+        <label>Through (UTC)<input id="to" type="date" value="2026-10-19" required></label>
+        <label>Product<select id="product"><option>GCOV</option><option>GUNW</option></select></label>
+      </div>
+      <div class="actions"><button class="primary">Search catalog</button><span class="muted" id="hits"></span></div>
+    </fieldset>
+  </form>
+  <form id="liveJob" hidden>
+    <fieldset>
+      <legend>Select compatible observations</legend>
+      <div class="grid">
+        <label>Track / direction / frame / mode<select id="group"></select></label>
+        <label id="beforeLabel">Comparison pass<select id="before"></select></label>
+        <label id="targetLabel">Target pass or pair<select id="target"></select></label>
+        <label>Worker<select id="liveWorker"></select></label>
+      </div>
+      <div class="actions"><button class="primary">Submit to Modal</button>
+        <label id="opticalLabel" class="check" hidden><input id="optical" type="checkbox"> Request optical evidence</label>
+        <span class="muted" id="modalQuota">New jobs use the public API quota.</span>
+      </div>
+      <p class="muted" id="granules"></p>
+    </fieldset>
+  </form>
+</section>
+
+<p id="message" role="status" aria-live="polite"></p>
+<section id="result" hidden>
+  <h2 id="resultTitle"></h2>
+  <p id="resultMeta" class="muted"></p>
+  <div id="images" class="grid"></div>
+  <details open><summary>Measured values and worker status</summary><pre id="metrics"></pre></details>
+  <p><a id="fullReport" target="_blank" rel="noopener">Open full worker report</a></p>
+</section>
+
+<script>
+const el = id => document.getElementById(id);
+const lenses = [
+  ["flood_wetland", "Flood / wetland lens"],
+  ["vegetation_disturbance", "Vegetation disturbance lens"],
+  ["wildfire", "Wildfire lens"],
+  ["agriculture", "Agriculture lens"],
+];
+const choices = (id, rows, selected) => {
+  el(id).replaceChildren(...rows.map(([value, label]) => new Option(label, value, false, value === selected)));
+};
+const dates = rows => rows.map(day => [day, day]);
+const message = text => { el("message").textContent = text; };
+const seconds = () => new Promise(resolve => setTimeout(resolve, 3000));
+const request = async (url, body) => {
+  const response = await fetch(url, body === undefined ? {} : {
+    method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body),
+  });
+  const payload = await response.json();
+  if (!response.ok) throw Error(payload.message || "HTTP " + response.status);
+  return payload;
+};
+const run = (form, action) => async event => {
+  event.preventDefault();
+  const button = form.querySelector("button");
+  button.disabled = true;
+  try { await action(); } catch (error) { message(error.message); }
+  finally { button.disabled = false; }
+};
+let catalog, query, fixtures;
+function switchTab(live) {
+  el("local").hidden = live;
+  el("live").hidden = !live;
+  el("localTab").setAttribute("aria-pressed", !live);
+  el("liveTab").setAttribute("aria-pressed", live);
+  message("");
+}
+el("localTab").onclick = () => switchTab(false);
+el("liveTab").onclick = () => switchTab(true);
+const fixture = () => fixtures.find(item => item.id === el("fixture").value);
+function fixtureDates() {
+  const item = fixture();
+  if (!item) return;
+  const allowed = item.dates.filter(day => day < el("fixtureTarget").value);
+  choices("fixtureCutoff", dates(allowed), allowed.includes(item.cutoff) ? item.cutoff : allowed.at(-1));
+}
+function chooseFixture() {
+  const item = fixture();
+  if (!item) return;
+  choices("fixtureTarget", dates(item.dates.slice(1)), item.target);
+  choices("fixtureWorker", [...lenses, ["fingerprint", "Baseline fingerprint"],
+    ["analysis", "Physical / spectral / GP / Transformer"]], item.mode);
+  el("fixtureGrid").textContent = item.posting_m + " m · " + item.polarizations.join(" / ");
+  fixtureDates();
+}
+el("fixture").onchange = chooseFixture;
+el("fixtureTarget").onchange = fixtureDates;
+el("local").onsubmit = run(el("local"), async () => {
+  message("Running the science worker on measured fixture data…");
+  const result = await request("/fixture/run", {fixture: el("fixture").value, target: el("fixtureTarget").value,
+    cutoff: el("fixtureCutoff").value, operation: el("fixtureWorker").value});
+  show(result.fixture + " · " + result.worker.replaceAll("_"," "), result.status + " · " +
+    result.target + " · " + result.posting_m + " m · " + result.seconds + " s", result.images,
+    {target_gamma0_db: result.target_gamma0_db, selected_pixel: result.selected_pixel,
+      selected_point: result.selected_point, ...result.metrics}, result.report_url);
+  message("Local result ready.");
+});
+const observations = () => catalog.series.find(row => row.key === el("group").value)?.observations || [];
+function selectGroup() {
+  const rows = observations();
+  const pair = query.product === "GUNW";
+  const relevant = pair ? rows : [...new Map(rows.map(row => [row.dates[0], row])).values()];
+  const options = relevant.map(row => [row.id, row.dates.join(" → ")]);
+  choices("target", options, options.at(-1)?.[0]);
+  updateTarget();
+}
+function updateTarget() {
+  const rows = observations();
+  const target = rows.find(row => row.id === el("target").value);
+  const eligible = target ? [...new Set(rows.map(row => row.dates[0]))].filter(day => day < target.dates[0]) : [];
+  choices("before", dates(eligible), eligible.at(-1));
+  el("granules").textContent = target?.id || "";
+}
+function workerOptions() {
+  const pair = query.product === "GUNW";
+  choices("liveWorker", pair ? [["insar-pair", "GUNW pair coherence and phase"]] :
+    [["explore", "Measured comparison"], ...lenses, ["analysis", "Physical / spectral / GP / Transformer"]]);
+  el("beforeLabel").hidden = pair;
+  el("targetLabel").firstChild.textContent = pair ? "Measured GUNW interval" : "Target acquisition";
+  liveWorkerChanged();
+}
+function liveWorkerChanged() {
+  const operation = el("liveWorker").value;
+  el("opticalLabel").hidden = !["flood_wetland", "vegetation_disturbance", "wildfire"].includes(operation);
+  el("optical").checked = false;
+  if (query.product === "GCOV") {
+    el("beforeLabel").firstChild.textContent = operation === "analysis" ? "Comparison pass (unused)" :
+      operation === "explore" ? "Comparison pass" : "Baseline through";
+    el("before").disabled = operation === "analysis";
+  }
+}
+el("group").onchange = selectGroup;
+el("target").onchange = updateTarget;
+el("liveWorker").onchange = liveWorkerChanged;
+el("search").onsubmit = run(el("search"), async () => {
+  const next = {longitude: Number(el("lon").value), latitude: Number(el("lat").value),
+    start_date: el("from").value, end_date: el("to").value, product: el("product").value};
+  message("Querying the public catalog…");
+  el("liveJob").hidden = true;
+  catalog = await request("/modal/coverage?" + new URLSearchParams(next));
+  query = next;
+  el("hits").textContent = catalog.catalog_hits + " catalog hits · pixel support unchecked";
+  if (!catalog.series.length) { message("No compatible observations in this window."); return; }
+  choices("group", catalog.series.map(row => [row.key, row.key + " · " + row.observations.length]));
+  workerOptions();
+  selectGroup();
+  el("liveJob").hidden = false;
+  message("Select a group and measured pass.");
+});
+el("liveJob").onsubmit = run(el("liveJob"), async () => {
+  const target = observations().find(row => row.id === el("target").value);
+  if (!target) throw Error("Choose a measured observation.");
+  const chosen = el("liveWorker").value;
+  const body = {...query, end_date: target.dates.at(-1)};
+  if (query.product === "GUNW") Object.assign(body, {operation:"insar-pair", pair_id:target.id});
+  else {
+    body.series_key = el("group").value;
+    if (chosen === "analysis") Object.assign(body, {operation:"analysis",
+      analyses:["physical","spectral","stochastic","transformer"]});
+    else {
+      const before = el("before").value;
+      body.operation = "explore";
+      if (before) body.compare_dates = [before, target.dates[0]];
+      if (chosen !== "explore") {
+        if (!before) throw Error("Choose a baseline cutoff.");
+        body.lens = chosen;
+        body.baseline_end_date = before;
+        if (el("optical").checked) body.optical_evidence = true;
+      }
+    }
+  }
+  message("Submitting to Modal…");
+  let job = await request("/modal/jobs", body);
+  const started = Date.now();
+  const initialCache = job.cache;
+  while (["queued","running"].includes(job.status)) {
+    message(job.status + " · " + Math.round((Date.now()-started)/1000) + " s");
+    if (Date.now() - started > 400000) throw Error("Stopped polling. Job ID " + job.job_id);
+    await seconds();
+    job = await request("/modal/jobs/" + job.job_id);
+  }
+  if (job.status !== "succeeded") throw Error(job.error?.message || "The Modal job failed.");
+  const result = job.result;
+  const layers = (result.layers || []).map(layer => {
+    const original = /^display_(\d{4}-\d{2}-\d{2})_(\w+)$/.exec(layer.id);
+    const lens = /^display_baseline_change_(\w+)$/.exec(layer.id);
+    const title = original ? `Original SAR · ${original[1]} · ${original[2]}` :
+      lens ? `Lens · target minus baseline median · ${lens[1]}` : layer.id;
+    return {id:layer.id, title:title + " · " + layer.units,
+      url:"/modal" + layer.png_url, download:"/modal" + layer.cog_url};
+  });
+  if (!layers.length) for (const asset of result.artifacts || []) {
+    if (asset.media_type === "image/png") layers.push({title:asset.name,url:"/modal" + asset.href});
+  }
+  const science = result.science;
+  const bracket = science.lens?.observation_bracket;
+  if (bracket?.length === 2) {
+    const matched = (science.lens.radar?.polarizations || []).flatMap(pol => [
+      ...bracket.map(day => layers.find(layer => layer.id === `display_${day}_${pol}`)),
+      layers.find(layer => layer.id === `display_baseline_change_${pol}`),
+    ]).filter(Boolean);
+    layers.splice(0, layers.length, ...new Set([...matched, ...layers]));
+  }
+  show("Modal · " + chosen.replaceAll("_"," "), result.science_status + " · " + result.elapsed_seconds +
+    " s worker · " + initialCache, layers, science.lens || {capabilities:science.capabilities,
+    observations:science.observations, comparison:science.comparison, quality:science.quality,
+    median_coherence:science.median_coherence, los_displacement_cm:science.los_displacement_cm,
+    reason:science.reason}, "/modal/jobs/" + job.job_id);
+  message("Modal result ready.");
+});
+function show(title, meta, images, metrics, link) {
+  el("result").hidden = false;
+  el("resultTitle").textContent = title;
+  el("resultMeta").textContent = meta;
+  el("metrics").textContent = JSON.stringify(metrics, null, 2);
+  el("fullReport").href = link;
+  el("images").replaceChildren(...images.map(item => {
+    const figure = document.createElement("figure");
+    if (item.comparison) figure.className = "comparison";
+    const image = new Image(); image.src = item.url; image.alt = item.title; image.loading = "lazy";
+    const caption = document.createElement("figcaption"); caption.textContent = item.title;
+    figure.append(image, caption);
+    if (item.download) {
+      const download = document.createElement("a");
+      download.href = item.download; download.download = ""; download.textContent = "COG"; caption.append(" · ", download);
+    }
+    return figure;
+  }));
+}
+request("/fixtures").then(config => {
+  fixtures = config.fixtures;
+  choices("fixture", fixtures.map(item => [item.id, item.title]));
+  el("local").querySelector("button").disabled = !fixtures.length;
+  chooseFixture();
+  if (!fixtures.length) el("fixtureGrid").textContent =
+    "Install the science dependencies and restore the release fixtures to use this tab.";
+}).catch(error => message(error.message));
+request("/modal/capabilities").then(caps => {
+  if (Number.isInteger(caps.daily_new_jobs_per_ip) && Number.isInteger(caps.daily_new_jobs_total)) {
+    el("modalQuota").textContent =
+      `${caps.daily_new_jobs_per_ip} new jobs per IP, ${caps.daily_new_jobs_total} across the app per UTC day. Cache hits are exempt.`;
+  }
+}).catch(() => {});
+
+const modalRun = new URLSearchParams(location.search).get("modalRun");
+if (/^[a-f0-9]{32}$/.test(modalRun || "")) {
+  switchTab(true);
+  const prefix = "/runs/" + modalRun;
+  message("Loading the completed Modal run…");
+  request(prefix + "/report.json").then(result => {
+    const captions = {
+      "radar-comparison.png": "Original calibrated radar, baseline median, and lens change",
+      "model-embedding.png": "Frozen Transformer · experimental latent dimensions",
+      "model-gp.png": "Gaussian process · temporal estimate and uncertainty",
+    };
+    show(result.site + " · Live Modal comparison",
+      result.series + " · " + result.target + " · " + result.worker_seconds + " s on Modal",
+      result.assets.map(name => ({title: captions[name] || name, url: prefix + "/" + name,
+        comparison: name === "radar-comparison.png"})),
+      {source: result.source, location: result.point, passes: result.dates, radar_grid: result.target_grid,
+        original_target_gamma0_db: result.target_point_gamma0_db, baseline: result.lens.baseline_dates,
+        lens: result.lens.status, lens_point: result.lens.point, radar: result.lens.radar,
+        optical_evidence: result.lens.evidence, model: result.model, stage_seconds: result.stages},
+      prefix + "/report.json");
+    message("Completed on Modal from fresh archive reads.");
+  }).catch(error => message(error.message));
+}
+</script>
+</html>

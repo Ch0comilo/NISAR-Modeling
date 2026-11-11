@@ -62,6 +62,19 @@ class ApiTests(TestCase):
         self.assertEqual(first.json()["code"], "submit_failed")
         self.assertEqual(second.json()["code"], "daily_budget")
 
+    def test_five_new_jobs_per_ip_and_cache_hit_after_quota(self):
+        caps = self.client.get("/v2/capabilities").json()
+        self.assertEqual((caps["daily_new_jobs_per_ip"], caps["daily_new_jobs_total"]), (5, 12))
+        for longitude in range(5):
+            response = self.client.post("/v2/jobs", json={**BODY, "longitude": longitude})
+            self.assertEqual(response.status_code, 202)
+            job_id = response.json()["job_id"]
+            self.state["job:" + job_id].update(status="succeeded", result={"artifacts": []})
+        blocked = self.client.post("/v2/jobs", json={**BODY, "longitude": 5})
+        self.assertEqual((blocked.status_code, blocked.json()["code"]), (429, "rate_limited"))
+        cached = self.client.post("/v2/jobs", json={**BODY, "longitude": 0})
+        self.assertEqual((cached.status_code, cached.json()["cache"]), (200, "hit"))
+
     def test_schema_and_cors(self):
         schema = self.client.get("/v2/openapi.json").json()
         self.assertIn("/v2/jobs", schema["paths"])

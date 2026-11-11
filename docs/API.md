@@ -7,7 +7,7 @@ The API serves provisional or beta NISAR L-band observations and descriptive sci
 | Method and path | Response |
 | --- | --- |
 | GET /health | API and worker-package versions |
-| GET /v2/capabilities | Deployed revision, input limits, data band and unsupported science claims |
+| GET /v2/capabilities | Deployed revision, input limits, daily job quotas, data band and unsupported science claims |
 | GET /v2/openapi.json | Generated OpenAPI with JSON Schema components from the Pydantic models |
 | GET /v2/coverage | Public CMR footprint records grouped by compatible series, with exact acquisition dates and granule titles |
 | GET /v2/cases | Precomputed case index with query points, north-up native CRS, pixel-edge bounds, shape [height,width], and measured dates |
@@ -51,6 +51,8 @@ Submit the observed Forest River comparison from the science example.
     }
 
 A new submission returns 202. Poll the Location or status_url after three seconds and back off. A repeated active submission returns the same ID with cache=in_flight. A completed match returns 200 with cache=hit. A fresh submission has cache=miss. The measured point is snapped to a 0.001-degree lattice and returned explicitly. Cache identity includes operation, canonical arguments, date window, and the hash of the worker sources, schemas and frozen model assets. Recent catalog revisions can become visible to a repeated job after the 24-hour cache expires.
+
+The API admits five new jobs per client IP and 12 across the app per UTC day. The counters reset at midnight UTC. Catalog queries, polling, cache hits, and in-flight duplicates are exempt from these job quotas.
 
 | Operation | Inputs and result |
 | --- | --- |

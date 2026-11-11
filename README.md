@@ -219,3 +219,5 @@ python scripts/smoke_api.py <deployed-url> --live
 ```
 
 Serve opens a temporary Modal URL with reload on code changes. Run the smoke command in a second terminal and stop serve when finished. The deployed URL is printed by deploy. The --live smoke option submits one catalog-only job and verifies deduplication. The frontend must opt into the new contract before setting its base URL.
+
+Use the [observation mock](scripts/observation-mock/README.md) to try live catalog selection, lens comparisons, and the model in a browser from a local checkout.

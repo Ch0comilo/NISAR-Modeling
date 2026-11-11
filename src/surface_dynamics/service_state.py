@@ -25,7 +25,7 @@ class LocalDict(dict):
 
 
 class JobStore:
-    def __init__(self, state, spawn, revision, *, max_active=2, jobs_per_day=12, jobs_per_ip_day=3):
+    def __init__(self, state, spawn, revision, *, max_active=2, jobs_per_day=12, jobs_per_ip_day=5):
         self.state = state
         self.spawn = spawn
         self.revision = revision
@@ -47,7 +47,8 @@ class JobStore:
                     current["status"] in ACTIVE and current["deadline"] <= now
                 ):
                     return self.view(current, "in_flight" if current["status"] in ACTIVE else "hit")
-            if self.state.get(f"day:{day}", 0) >= self.jobs_per_day:
+            daily = f"day:{day}"
+            if self.state.get(daily, 0) >= self.jobs_per_day:
                 raise Rejected(429, "daily_budget", "New job capacity is exhausted for this UTC day.")
             ip = f"ip:{day}:{ip_key}"
             if self.state.get(ip, 0) >= self.jobs_per_ip_day:
@@ -63,7 +64,7 @@ class JobStore:
             self.state.put("job:" + job_id, record)
             self.state.put(cache_key, {"id": job_id, "until": now + CACHE_SECONDS})
             self.state.put("active", {**active, job_id: deadline})
-            self.state.put(f"day:{day}", self.state.get(f"day:{day}", 0) + 1)
+            self.state.put(daily, self.state.get(daily, 0) + 1)
             self.state.put(ip, self.state.get(ip, 0) + 1)
             try:
                 self.spawn(payload, job_id)
