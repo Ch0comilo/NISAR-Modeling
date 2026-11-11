@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = ["numpy>=2.1", "scipy>=1.15", "xarray>=2025.4", "h5py>=3.12", "h5netcdf", "rasterio>=1.4", "requests", "urllib3>=2.0", "matplotlib", "torch>=2.6", "jsonschema", "Pillow"]
 
 [project.optional-dependencies]
+api = ["fastapi==0.129.0", "pydantic==2.12.5", "httpx==0.28.1"]
 exploration = ["umap-learn==0.5.12", "scikit-learn>=1.6", "plotly>=6"]
 
 [project.scripts]

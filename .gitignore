@@ -1,6 +1,9 @@
 # Credentials must never be stored in this research workspace.
 .env
 .env.*
+!.env.example
+# Generated report retained locally; documentation links to the archived Git copy.
+docs/images/kumamoto_interval_dynamics_wide.png
 .secrets/
 *.dpapi
 scratch/.venv/

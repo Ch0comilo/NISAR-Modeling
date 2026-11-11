@@ -33,7 +33,7 @@ The compatible real pairs span **July 9→21**, **July 21→August 14**, and **A
 
 A separate 15 km reference-support sensitivity window finds **1,614 common pixels, or 4.57%** of the grid, at the 0.35 coherence threshold. It uses one physical pixel in the supported component of every pair, selected by maximum minimum coherence. Its stability is **not established**, and it may itself move. Different component IDs are local labels and are never matched numerically across dates.
 
-![Three real interferometric intervals on a wider reference window](images/kumamoto_interval_dynamics_wide.png)
+![Three real interferometric intervals on a wider reference window](https://raw.githubusercontent.com/Ch0comilo/NISAR-Modeling/5bf35037b3ddd47e837e958c198543ef87f9c1af/docs/images/kumamoto_interval_dynamics_wide.png)
 
 No atmospheric/ionospheric/tide corrections, phase integration, SBAS inversion, LOS/vertical displacement, magnitude estimate or confirmed earthquake attribution is performed. `los_displacement_cm` remains null. The longer middle baseline, scattering, moisture and processing are confounds; a coherence decrease alone is not an earthquake detector. The [ASF GUNW documentation](https://nisar-docs.asf.alaska.edu/gunw/) explains the supplied phase/correction layers; the [MintPy workflow](https://mintpy.readthedocs.io/en/latest/) supplies context for future corrected time-series work, not an implemented dependency.
 

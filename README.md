@@ -192,3 +192,30 @@ Git contains source, contracts, documentation, compact trained weights and selec
 ```
 
 `train_global_example.py` retrains the experimental representation; it is separate from the frozen benchmark. The model's five training geographies and two holdouts are documented in its card. Future scientific work should prioritize independent geography/season validation, native NISAR support, coherent common reference support and correction provenance before stronger model or deformation claims.
+
+## Deploy to Modal
+
+Use Python 3.13, the version exercised on Windows and the Modal Debian slim CPU runtime. The Modal worker installs the existing science lock, CPU-only PyTorch and Rasterio's system runtime dependencies, and mounts the frozen v2 checkpoint and projection assets. The gateway image contains only the HTTP dependencies. Read [the API contract](docs/API.md) and [the operator runbook](docs/MODAL_RUNBOOK.md).
+
+From the repository root, with the project Python environment active and Modal authenticated:
+
+```powershell
+python -m pip install -e ".[api]"
+python -m pip install modal
+python -m unittest discover -s tests
+python scripts/download_examples.py
+python scripts/prepare_api_cases.py --output scratch/api-seed/cases
+python -m modal volume create --env main nisar-evidence-v2
+python -m modal volume put --env main nisar-evidence-v2 scratch/api-seed/cases /
+```
+
+Use an unused staging directory for each precompute. Publish the new case bundle from verified fixtures. The generated assets live in Modal Volume, outside Git. Review the non-secret resource-name options in .env.example and make sure the configured Modal Secret contains EARTHDATA_TOKEN. On PowerShell, set PYTHONUTF8=1 in the shell if console encoding fails.
+
+```powershell
+python -m modal serve --env main modal_app.py
+python scripts/smoke_api.py <serve-url> --live
+python -m modal deploy --env main modal_app.py
+python scripts/smoke_api.py <deployed-url> --live
+```
+
+Serve opens a temporary Modal URL with reload on code changes. Run the smoke command in a second terminal and stop serve when finished. The deployed URL is printed by deploy. The --live smoke option submits one catalog-only job and verifies deduplication. The frontend must opt into the new contract before setting its base URL.
