@@ -220,4 +220,10 @@ python scripts/smoke_api.py <deployed-url> --live
 
 Serve opens a temporary Modal URL with reload on code changes. Run the smoke command in a second terminal and stop serve when finished. The deployed URL is printed by deploy. The --live smoke option submits one catalog-only job and verifies deduplication. The frontend must opt into the new contract before setting its base URL.
 
+### Automatic deployment
+
+Every push to `main` runs `.github/workflows/modal-deploy.yml`: the science checks, then `modal deploy --env main modal_app.py` under its own names (`NISAR_APP_NAME=nisar-hazard-watch-ml`, Volume `nisar-hazard-watch-chip-cache`, Secret `nisar-hazard-watch-earthdata`), then a `/health` check that the deployed `git_sha` is the pushed commit. The `nisar-evidence-api` app is never touched. Deployments queue instead of overlapping because they share the job-state Dict. It can also be started by hand from the Actions tab (Deploy to Modal, Run workflow).
+
+One-time setup by a repository admin: create an API token in the `ch0comilo` Modal workspace (Settings, API Tokens) and save it as the repository secrets `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`. Until then the deploy job stops with a clear error.
+
 The Modal science explorer shows original and derived radar views from its API. See the [visualization contract](docs/API.md#radar-visualizations), [frontend handoff](docs/FRONTEND_REQUESTS.md) and [preview guide](scripts/observation-mock/README.md).
