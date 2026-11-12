@@ -1,6 +1,8 @@
 """Bounded HTTP-to-science translation. No client-selected paths or archive URLs."""
+from csv import DictReader
 from datetime import date, timedelta
 import logging
+from math import isfinite
 import re
 from pathlib import Path
 from time import perf_counter
@@ -22,6 +24,41 @@ PREVIEWS = {
     "learned_evolution.gif": ("Learned state at observed dates", "experimental"),
     "controlled_dynamics.gif": ("Learned contrast against constant trajectory", "experimental"),
 }
+ANALYSIS_MAPS = {
+    "median_db": ("dB", "gray", (-30, 0)),
+    "mad_db": ("dB", "magma", (0, 8)),
+    "slope_db_per_day": ("dB/day", "RdBu_r", (-0.5, 0.5)),
+    "maximum_step_db": ("dB", "magma", (0, 12)),
+    "peak_normalized_power": ("normalized power", "viridis", (0, 1)),
+}
+ANALYSIS_TABLES = {
+    "regional_timeseries": ("date", "polarization"),
+    "spectral_series": (),
+    "gp_historical_series": ("date", "polarization", "status"),
+}
+
+
+def analysis_dashboard(out, dates):
+    """Expose the existing bounded CSV series as JSON with the same measured rows."""
+    series = {}
+    for name, text_fields in ANALYSIS_TABLES.items():
+        path = out / f"{name}.csv"
+        if path.is_file():
+            with path.open(newline="", encoding="utf8") as stream:
+                rows = []
+                for row in DictReader(stream):
+                    record = {}
+                    for key, value in row.items():
+                        if key in text_fields:
+                            record[key] = value
+                        else:
+                            number = float(value) if value else None
+                            record[key] = number if number is not None and isfinite(number) else None
+                    rows.append(record)
+                series[name] = rows
+    days = [date.fromisoformat(day) for day in dates]
+    gaps = [(later - earlier).days for earlier, later in zip(days, days[1:])]
+    return {"version": "1.0", "acquisition_gaps_days": gaps, "series": series}
 
 
 def run_explore(body, out, cache):
@@ -123,16 +160,18 @@ def process(body, job_id, out, cache):
             "fingerprint": process_fingerprint}[mode](request, out)
 
 
-def live_layers(out, prefix, operation, lens=None):
-    """Render continuous GCOV comparison and coherence with fixed scales."""
+def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
+    """Render the available GCOV, analysis and InSAR overlays."""
+    import numpy as np
     import rasterio
     from rasterio.transform import xy
 
     layers = data_layers(out, prefix)
     if layers:
         return layers
-    if operation not in {"explore", "insar-pair"}:
+    if operation not in {"explore", "insar-pair", "analysis"}:
         return layers
+    analysis_maps = analysis_maps or {}
     lens = lens or {}
     evidence = lens.get("evidence") or {}
     diagnostics = {
@@ -147,6 +186,8 @@ def live_layers(out, prefix, operation, lens=None):
     if optical_legend:
         diagnostics["optical_groups"] = ("optical group code", "viridis", (0, 4), optical_legend)
     for path in sorted(out.glob("*.tif")):
+        if operation == "analysis" and path.stem not in analysis_maps:
+            continue
         if path.stem in {"reference_group", "reference_groups"}:
             continue
         with rasterio.open(path) as source:
@@ -156,7 +197,9 @@ def live_layers(out, prefix, operation, lens=None):
                 suffix = source.descriptions[band - 1] or str(band)
                 name = f"display_{path.stem}_{suffix}"
                 legend = None
-                if path.stem == "coherence":
+                if path.stem in analysis_maps:
+                    units, cmap, stretch = analysis_maps[path.stem]
+                elif path.stem == "coherence":
                     units, cmap, stretch = "unitless", "cividis", (0, 1)
                 elif path.stem == "wrapped_phase_rad":
                     units, cmap, stretch = "rad", "twilight", (-3.1415926536, 3.1415926536)
@@ -168,8 +211,11 @@ def live_layers(out, prefix, operation, lens=None):
                     units, cmap, stretch, legend = diagnostics[path.stem]
                 else:
                     continue
+                values = source.read(band)
+                if operation == "analysis" and not np.isfinite(values).any():
+                    continue
                 try:
-                    layer = render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
+                    layer = render_layer(out, prefix, name, values, x, y, source.crs.to_epsg(),
                                          units=units, cmap=cmap, stretch=stretch, legend=legend)
                     if legend and path.stem != "optical_groups":
                         layer["colormap"] = "diagnostic_categories"
@@ -198,8 +244,17 @@ def execute_job(body, job_id, out, cache, revision):
     raw = process(body, job_id, out, cache)
     prefix = f"/v2/jobs/{job_id}/layers"
     render_start = perf_counter()
+    analysis_maps = None
+    if body["operation"] == "analysis" and (dates := raw.get("observations", {}).get("dates")):
+        dashboard = analysis_dashboard(out, dates)
+        raw["dashboard"] = dashboard
+        analysis_maps = {**ANALYSIS_MAPS, "valid_date_count": ("count", "viridis", (0, len(dates)))}
+        spectrum = dashboard["series"].get("spectral_series")
+        if spectrum:
+            periods = [row["period_days"] for row in spectrum]
+            analysis_maps["candidate_period_days"] = ("days", "viridis", (min(periods), max(periods)))
     try:
-        layers = live_layers(out, prefix, body["operation"], raw.get("lens"))
+        layers = live_layers(out, prefix, body["operation"], raw.get("lens"), analysis_maps=analysis_maps)
     except UnrepresentableDisplayGrid:
         layers = []
     visualizations = []

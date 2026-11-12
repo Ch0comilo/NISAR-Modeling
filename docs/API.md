@@ -96,6 +96,20 @@ Flood and agriculture can also return a versioned `science.lens.evaluation` comp
 
 For standalone spectral and stochastic results, submit the existing `operation: "analysis"` with `analyses: ["spectral", "stochastic"]`. Spectral jobs read up to three measured archive windows in parallel, with the same per-window byte limit and grid checks. When supported, `spectral_series.csv` carries the frequencies, candidate periods, sampling window and regional spectral power. A frequency is fitted jointly with a linear trend on observed timestamps. The permutation diagnostic assumes exchangeable residuals. Candidate periods from short series are tentative. `gp_historical_series.csv` carries measured means, support and conditional 80%/95% latent bands where the channel fit converges. Use the existing job layer routes and `artifacts` links for both CSV files.
 
+## Dashboard data
+
+| Panel | Read from |
+| --- | --- |
+| Prepared case timeline and evidence | Case manifest and its `series_url`. Series can include point and group dB histories, diagnostic-band counts, or GUNW pair intervals. |
+| Live radar timeline and comparison | `result.science.observations` and `result.science.comparison`. Read the actual dates, per-pass point power, source and support. |
+| Combined radar imagery | `result.visualizations` or case `visualizations` with component labels, actual dates, measured support, display PNG and numeric COG. |
+| Lens | `result.science.lens` with the lens ID, radar evidence, point readout and available `evaluation` and `temporal_analysis`. Use `result.layers` for map overlays. |
+| Standalone charts | `result.science.dashboard.series` contains JSON rows from `regional_timeseries`, `spectral_series` and `gp_historical_series` when those tables exist. Keys match the CSV column headers. Numeric gaps are null. The dashboard also supplies `acquisition_gaps_days`, in order between consecutive `science.observations.dates`. |
+| Analysis overlays | `result.layers` lists supported per-polarization median, temporal MAD, slope, largest absolute step and valid acquisition count for physical jobs. Spectral jobs can add tentative period in days and normalized spectral power. Display IDs begin with `display_` and end with the channel. Use each layer's PNG bounds, palette and range, plus its COG for native values. The period range is the job's scanned period band. |
+| Figures, downloads and scientific arrays | `result.previews` lists available figures and animations. `result.artifacts` lists CSV, PNG and georeferenced raster downloads and available NetCDF with coordinates, units and support arrays. |
+
+For standalone charts, read `science.capabilities` to decide which panels to show and `science.observations.polarizations` for channel order. Regional intervals from spatial block resampling and GP conditional bands describe different quantities. Spectral power is dimensionless and represents a fit score. The observation dates and sampling window are part of interpreting each spectrum.
+
 ## Frontend mapping
 
 | Draft field or copy | v2 rendering |

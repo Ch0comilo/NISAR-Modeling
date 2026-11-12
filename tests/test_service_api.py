@@ -141,3 +141,40 @@ class ApiTests(TestCase):
         href = "/v2/jobs/abcd/layers/2026-10-07.tif"
         science = {"observations": [{"layer": {"href": "/v1/jobs/abcd/assets/2026-10-07.tif"}}]}
         self.assertEqual(published_science(science, {"2026-10-07.tif": href})["observations"][0]["layer"]["href"], href)
+
+    def test_analysis_dashboard_publishes_numeric_rows_and_supported_map_bands(self):
+        import numpy as np
+        import rasterio
+        from surface_dynamics.engine import write_cog
+        from surface_dynamics.service_workers import execute_job
+
+        dates = ["2026-07-01", "2026-07-13", "2026-07-25", "2026-08-18", "2026-08-30", "2026-09-23"]
+        out = self.root / "result"
+
+        def science(_body, _job, folder, _cache):
+            (folder / "spectral_series.csv").write_text(
+                "frequency_cycles_day,period_days,sampling_window,HH_normalized_power,HV_normalized_power\n"
+                "0.02,50,0.3,0.8,\n0.025,40,0.6,0.4,\n", encoding="utf8")
+            (folder / "gp_historical_series.csv").write_text(
+                "date,polarization,status,observed_mean_db,conditional_95_lower_db\n"
+                "2026-07-01,HH,constant_history,-16,\n", encoding="utf8")
+            maps = np.stack([np.full((3, 3), 47), np.full((3, 3), np.nan)])
+            write_cog(folder / "candidate_period_days.tif", maps, [500000, 500040, 500080],
+                      [5300080, 5300040, 5300000], 32614, "days", ["HH", "HV"])
+            return {"status": "complete", "observations": {"dates": dates}}
+
+        with patch("surface_dynamics.service_workers.process", side_effect=science):
+            result = execute_job({**BODY, "operation": "analysis"}, "test", out, self.root / "cache", "rev")
+        dashboard = result["science"]["dashboard"]
+        self.assertEqual(dashboard["acquisition_gaps_days"], [12, 12, 24, 12, 24])
+        self.assertEqual(dashboard["series"]["spectral_series"][0]["HH_normalized_power"], .8)
+        self.assertIsNone(dashboard["series"]["spectral_series"][0]["HV_normalized_power"])
+        self.assertEqual(dashboard["series"]["gp_historical_series"][0]["status"], "constant_history")
+        self.assertIsNone(dashboard["series"]["gp_historical_series"][0]["conditional_95_lower_db"])
+        layer, = result["layers"]
+        self.assertEqual((layer["id"], layer["units"], layer["range"]),
+                         ("display_candidate_period_days_HH", "days", [40, 50]))
+        self.assertEqual(layer["crs"], "EPSG:4326")
+        with rasterio.open(out / layer["cog_url"].rsplit("/", 1)[-1]) as source:
+            self.assertEqual(source.crs.to_epsg(), 32614)
+            np.testing.assert_array_equal(source.read(1), 47)
