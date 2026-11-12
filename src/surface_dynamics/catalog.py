@@ -36,10 +36,12 @@ def group_entries(entries, product='GCOV'):
         if previous is None or title>previous['title']:groups[key][identity]=entry
     return {key:sorted(value.values(),key=lambda e:e['time_start']) for key,value in groups.items()}
 
+SCIENCE_PREFIXES=('https://nisar.asf.earthdatacloud.nasa.gov/NISAR/','https://nisar.asf.earthdatacloud.nasa.gov/NISAR-UR/')
+
 def science_url(entry):
     for link in entry['links']:
         url=link.get('href','')
-        if url.startswith('https://nisar.asf.earthdatacloud.nasa.gov/NISAR/') and url.endswith('.h5') and '_QA_' not in url:return url
+        if url.startswith(SCIENCE_PREFIXES) and url.endswith('.h5') and '_QA_' not in url:return url
     raise ValueError('No public science HDF5 asset')
 
 def choose_series(groups, min_dates=3, max_dates=10):

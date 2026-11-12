@@ -5,9 +5,9 @@ probability intervals. An observed baseline is not assumed to be undisturbed.
 """
 import json
 from pathlib import Path
+import warnings
 
 import numpy as np
-from scipy.ndimage import generic_filter
 from .analysis import measured_db, elapsed_days
 from .io import validate_cube
 
@@ -16,13 +16,18 @@ DEFAULT_POLICY = {'minimum_dates': 3, 'scale_floor_db': 1., 'departure_scale_mul
 
 
 def _neighbor(values, minimum, statistic):
-    def calculate(a):
-        a = a.copy(); a[len(a)//2] = np.nan
-        a = a[np.isfinite(a)]
-        if len(a) < minimum: return np.nan
-        median = np.median(a)
-        return median if statistic == 'median' else 1.4826*np.median(abs(a-median))
-    return generic_filter(values.astype(float), calculate, size=3, mode='constant', cval=np.nan)
+    """Median or MAD of the eight surrounding cells, ignoring gaps; the cell itself is excluded."""
+    height, width = values.shape
+    padded = np.pad(values.astype(float), 1, constant_values=np.nan)
+    ring = np.stack([padded[dy:dy + height, dx:dx + width]
+                     for dy in range(3) for dx in range(3) if (dy, dx) != (1, 1)])
+    ring[~np.isfinite(ring)] = np.nan
+    enough = np.isfinite(ring).sum(axis=0) >= minimum
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)  # windows with no finite neighbor
+        median = np.nanmedian(ring, axis=0)
+        result = median if statistic == 'median' else 1.4826*np.nanmedian(abs(ring-median), axis=0)
+    return np.where(enough, result, np.nan)
 
 
 def from_db(db, dates, before, after, policy=None):
