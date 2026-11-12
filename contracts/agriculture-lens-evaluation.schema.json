@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Explore agriculture lens evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "policy_id", "status", "reason", "target_date", "baseline_dates",
+               "assessment_dates", "grid", "point", "support", "channels", "policy", "neighborhood",
+               "matches", "series", "target_contrasts", "steps", "uncertainty", "independent_evidence",
+               "confounders", "questions", "phenomenon_class", "phenomenon_probability", "causal_attribution", "displacement_cm"],
+  "properties": {
+    "contract_version": {"const": "1.0"}, "policy_id": {"const": "explore_agriculture_observations_v1"},
+    "status": {"enum": ["evaluated", "insufficient_data"]}, "reason": {"type": ["string", "null"]},
+    "target_date": {"type": ["string", "null"], "format": "date"},
+    "baseline_dates": {"$ref": "#/$defs/dates"}, "assessment_dates": {"$ref": "#/$defs/dates"},
+    "grid": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["epsg", "width", "height", "pixel_spacing_m"],
+          "properties": {
+            "epsg": {"type": "integer"}, "width": {"type": "integer", "minimum": 1},
+            "height": {"type": "integer", "minimum": 1}, "pixel_spacing_m": {"$ref": "#/$defs/pair"}
+          }
+        }
+      ]
+    },
+    "point": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["selection", "inside_grid", "x", "y", "row", "column", "fixed_common_support"],
+          "properties": {
+            "selection": {"enum": ["requested_point", "grid_center"]}, "inside_grid": {"type": "boolean"},
+            "x": {"type": ["number", "null"]}, "y": {"type": ["number", "null"]},
+            "row": {"type": ["integer", "null"], "minimum": 0},
+            "column": {"type": ["integer", "null"], "minimum": 0}, "fixed_common_support": {"type": "boolean"}
+          }
+        }
+      ]
+    },
+    "support": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false, "required": ["dates", "common_cells", "common_mask_sha256"],
+          "properties": {
+            "dates": {"$ref": "#/$defs/dates"}, "common_cells": {"type": "integer", "minimum": 1},
+            "common_mask_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      ]
+    },
+    "channels": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/channel"}, "uniqueItems": true},
+    "policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["focal_radius_m", "comparison_annulus_m", "minimum_cells", "minimum_common_fraction",
+                   "minimum_matched_fraction", "baseline_match_tolerance_db", "maximum_control_candidates",
+                   "material_contrast_db", "cell_step_threshold_db", "synchrony_fraction",
+                   "spatial_block_pixels", "minimum_blocks_per_group", "bootstrap_draws",
+                   "minimum_assessment_intervals_for_synchrony", "step_tie_break"],
+      "properties": {
+        "focal_radius_m": {"const": 60}, "comparison_annulus_m": {"const": [120, 300]},
+        "minimum_cells": {"const": 5}, "minimum_common_fraction": {"const": 0.5},
+        "minimum_matched_fraction": {"const": 0.5}, "baseline_match_tolerance_db": {"const": 2.0},
+        "maximum_control_candidates": {"const": 128}, "material_contrast_db": {"const": 1.0},
+        "cell_step_threshold_db": {"const": 1.0}, "synchrony_fraction": {"const": 0.6},
+        "spatial_block_pixels": {"const": 8}, "minimum_blocks_per_group": {"const": 4}, "bootstrap_draws": {"const": 400},
+        "minimum_assessment_intervals_for_synchrony": {"const": 2}, "step_tie_break": {"const": "earliest_observed_interval"}
+      }
+    },
+    "neighborhood": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "focal_radius_m", "comparison_annulus_m"],
+          "properties": {
+            "status": {"enum": ["evaluated", "insufficient_data"]}, "reason": {"type": "string"},
+            "focal_radius_m": {"const": 60}, "comparison_annulus_m": {"const": [120, 300]},
+            "focal_cells": {"type": "integer", "minimum": 0}, "comparison_cells": {"type": "integer", "minimum": 0},
+            "focal_grid_cells": {"type": "integer", "minimum": 0}, "comparison_grid_cells": {"type": "integer", "minimum": 0}
+          }
+        }
+      ]
+    },
+    "matches": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["positive_pixels", "matched_control_pixels", "matched_positive_pixels", "matched_fraction"],
+          "properties": {
+            "positive_pixels": {"type": "integer", "minimum": 0}, "matched_control_pixels": {"type": "integer", "minimum": 0},
+            "matched_positive_pixels": {"type": "integer", "minimum": 0},
+            "matched_fraction": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+            "baseline_mean_positive_minus_control_db_by_channel": {"$ref": "#/$defs/nullablePair"}, "criterion": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "series": {
+      "type": "array", "maxItems": 128, "items": {
+        "type": "object", "additionalProperties": false, "required": ["date", "channels"],
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "channels": {
+            "type": "object", "propertyNames": {"$ref": "#/$defs/channel"},
+            "additionalProperties": {
+              "type": "object", "additionalProperties": false,
+              "required": ["focal_mean_db", "control_mean_db", "focal_minus_control_db", "contrast_shift_from_baseline_db"],
+              "properties": {
+                "focal_mean_db": {"type": "number"}, "control_mean_db": {"type": "number"},
+                "focal_minus_control_db": {"type": "number"}, "contrast_shift_from_baseline_db": {"type": "number"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "target_contrasts": {
+      "type": "object", "propertyNames": {"$ref": "#/$defs/channel"},
+      "additionalProperties": {
+        "type": "object", "additionalProperties": false,
+        "required": ["status", "reason", "state", "definition"],
+        "properties": {
+          "status": {"enum": ["unavailable", "descriptive_only", "conditional_spatial_resampling"]},
+          "reason": {"type": ["string", "null"]}, "state": {"$ref": "#/$defs/state"}, "definition": {"type": "string"},
+          "positive_pixels": {"type": "integer", "minimum": 1}, "control_pixels": {"type": "integer", "minimum": 1},
+          "positive_mean_db": {"type": "number"}, "control_mean_db": {"type": "number"},
+          "positive_median_db": {"type": "number"}, "control_median_db": {"type": "number"},
+          "mean_contrast_db": {"type": "number"}, "spatial_resampling_95_interval_db": {"$ref": "#/$defs/nullablePair"},
+          "positive_blocks": {"type": "integer", "minimum": 0}, "control_blocks": {"type": "integer", "minimum": 0},
+          "valid_resampling_draws": {"type": "integer", "minimum": 1}, "interval_limit": {"type": "string"}
+        }
+      }
+    },
+    "steps": {"type": "object", "propertyNames": {"$ref": "#/$defs/channel"}, "additionalProperties": {"$ref": "#/$defs/steps"}},
+    "uncertainty": {
+      "type": "object", "additionalProperties": false, "required": ["observation", "spatial", "model"],
+      "properties": {
+        "observation": {"$ref": "#/$defs/unavailable"}, "model": {"$ref": "#/$defs/unavailable"},
+        "spatial": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["status", "reason", "positive_blocks", "control_blocks", "valid_draws", "block_size_m", "scope", "limitations"],
+              "properties": {
+                "status": {"enum": ["available", "insufficient_data"]}, "reason": {"type": ["string", "null"]},
+                "positive_blocks": {"type": "integer", "minimum": 0}, "control_blocks": {"type": "integer", "minimum": 0},
+                "valid_draws": {"type": "integer", "minimum": 0, "maximum": 400}, "block_size_m": {"$ref": "#/$defs/pair"},
+                "scope": {"type": "string"}, "limitations": {"type": "string"}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "independent_evidence": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason", "needed"],
+      "properties": {
+        "status": {"const": "insufficient_data"}, "reason": {"const": "dated_parcel_or_management_reference_not_supplied"},
+        "needed": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "confounders": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "status"],
+        "properties": {"id": {"type": "string"}, "status": {"const": "unavailable"}}
+      }
+    },
+    "questions": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "string"}},
+    "phenomenon_class": {"type": "null"}, "phenomenon_probability": {"type": "null"},
+    "causal_attribution": {"type": "null"}, "displacement_cm": {"type": "null"}
+  },
+  "if": {"properties": {"status": {"const": "evaluated"}}},
+  "then": {
+    "properties": {
+      "baseline_dates": {"minItems": 3}, "assessment_dates": {"minItems": 1},
+      "channels": {"minItems": 3}, "grid": {"type": "object"}, "point": {"type": "object"},
+      "support": {"type": "object"}, "matches": {"type": "object"},
+      "series": {"minItems": 4}, "target_contrasts": {"minProperties": 3}, "steps": {"minProperties": 3}
+    }
+  },
+  "$defs": {
+    "channel": {"enum": ["HH", "HV", "VV", "VH", "HV_over_HH", "VH_over_VV"]},
+    "dates": {"type": "array", "maxItems": 128, "items": {"type": "string", "format": "date"}, "uniqueItems": true},
+    "pair": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+    "nullablePair": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/pair"}]},
+    "nullableCode": {"type": ["integer", "null"], "minimum": 1},
+    "state": {"enum": ["supports", "absent_on_sampled_support", "insufficient_data"]},
+    "unavailable": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {"status": {"const": "unavailable"}, "reason": {"type": "string"}}
+    },
+    "steps": {
+      "type": "object", "additionalProperties": false,
+      "required": ["intervals", "largest_observed_interval_code", "largest_assessment_interval_code",
+                   "bootstrap_material_step_draws", "synchrony_interval_code", "exact_event_date_estimated", "synchrony"],
+      "properties": {
+        "largest_observed_interval_code": {"$ref": "#/$defs/nullableCode"},
+        "largest_assessment_interval_code": {"$ref": "#/$defs/nullableCode"},
+        "synchrony_interval_code": {"$ref": "#/$defs/nullableCode"},
+        "bootstrap_material_step_draws": {"type": "integer", "minimum": 0, "maximum": 400},
+        "exact_event_date_estimated": {"const": false},
+        "intervals": {
+          "type": "array", "minItems": 3, "maxItems": 127, "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["code", "dates", "interval_days", "ends_in_assessment", "focal_minus_control_step_db",
+                         "focal_mean_step_db", "spatial_95_interval_db", "state", "reason", "bootstrap_largest_assessment_fraction"],
+            "properties": {
+              "code": {"type": "integer", "minimum": 1}, "dates": {"$ref": "#/$defs/dates", "minItems": 2, "maxItems": 2},
+              "interval_days": {"type": "number", "exclusiveMinimum": 0}, "ends_in_assessment": {"type": "boolean"},
+              "focal_minus_control_step_db": {"type": "number"}, "focal_mean_step_db": {"type": "number"},
+              "spatial_95_interval_db": {"$ref": "#/$defs/nullablePair"}, "state": {"$ref": "#/$defs/state"},
+              "reason": {"type": ["string", "null"]},
+              "bootstrap_largest_assessment_fraction": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+            }
+          }
+        },
+        "synchrony": {
+          "type": "object", "additionalProperties": false,
+          "required": ["state", "reason", "focal_cells", "synchronous_cells", "fraction", "spatial_95_interval", "conditioning", "blocks"],
+          "properties": {
+            "state": {"$ref": "#/$defs/state"}, "reason": {"type": ["string", "null"]},
+            "focal_cells": {"type": "integer", "minimum": 5}, "synchronous_cells": {"type": "integer", "minimum": 0},
+            "fraction": {"type": "number", "minimum": 0, "maximum": 1}, "spatial_95_interval": {"$ref": "#/$defs/nullablePair"},
+            "conditioning": {"type": "string"}, "blocks": {"type": "integer", "minimum": 1}
+          }
+        }
+      }
+    }
+  }
+}

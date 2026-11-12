@@ -14,6 +14,9 @@ from urllib3.exceptions import HTTPError, TimeoutError as RangeTimeout
 from .analysis import measured_db
 from .catalog import COLLECTIONS, group_entries, search
 from .engine import write_cog
+from .agriculture_lens import write_agriculture_layers
+from .flood_lens import with_evidence, write_signature_layer
+from .lens_temporal import temporal_analysis
 from .exploration_lenses import (
     AGRICULTURE, FLOOD_WETLAND, GROUPS, LENSES, TEMPORAL_LENSES, VEGETATION_GROUPS, WILDFIRE, WILDFIRE_PATTERNS,
     agriculture_history, empty_lens, evaluate_lens, evaluate_vegetation_evidence, find_optical_reference,
@@ -246,7 +249,7 @@ def _window(cube, db, query):
 
 
 def _layer(out, filename, cube, values, role, dates):
-    pols = cube["polarizations"].astype(str).tolist()
+    pols = list(map(str, cube["polarizations"]))
     write_cog(out / filename, values, cube["x"], cube["y"], cube["epsg"], "dB", pols)
     return {
         "role": role, "dates": dates, "polarizations": pols, "units": "dB",
@@ -320,7 +323,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False):
     lens = _radar_lens(query, dates, paths, out) if query.lens else None
     optical_pending = query.optical_evidence and lens["status"] == "evaluated"
     if optical_pending:
-        lens["evidence"] = {"status": "pending"}
+        lens = with_evidence(lens, {"status": "pending"})
     publish(status="running" if optical_pending else status,
             phase="optical_evidence" if optical_pending else None,
             observed_date_count=observed, usable_window_date_count=usable, lens=lens,
@@ -353,7 +356,9 @@ def enrich_lens(query, lens, paths, cache, out):
     if reference is None:
         return evidence
     if is_water:
-        report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date, reference=reference)
+        report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date,
+                                       reference=reference, point=(query.longitude, query.latitude),
+                                       reference_epochs=evidence.get("epochs"))
         evidence.update(report["evidence"])
         groups, legend, role = arrays["optical_groups"], GROUPS, "optical_water_class_comparison"
         if evidence["status"] != "optical_comparison_available":
@@ -404,12 +409,15 @@ def _radar_lens(query, dates, paths, out):
                 raise
             report = empty_lens(target, before, "incompatible_measured_support", query.lens)
         else:
-            report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date)
+            report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date,
+                                          point=(query.longitude, query.latitude))
             if report["status"] == "evaluated":
-                cube["polarizations"] = np.asarray(report["radar"]["polarizations"])
+                radar_cube = {**cube, "polarizations": report["radar"]["polarizations"]}
                 delta = arrays["target_change_db"]
-                window = _window(cube, delta, query)
-                bounds = _window(cube, arrays["diagnostic_half_width_db"], query)["point_db"]
+                common = np.isfinite(delta).all(axis=0)
+                report["temporal_analysis"] = temporal_analysis(cube, report, common)
+                window = _window(radar_cube, delta, query)
+                bounds = _window(radar_cube, arrays["diagnostic_half_width_db"], query)["point_db"]
                 values = window["point_db"]
                 if any(value is None for value in values.values()):
                     state = "insufficient_data"
@@ -422,11 +430,17 @@ def _radar_lens(query, dates, paths, out):
                 }
                 report["radar"]["grid"] = window["grid"]
                 report["radar"]["layer"] = _layer(
-                    out, "baseline_change.tif", cube, delta, "target_minus_observed_baseline_db", [target],
+                    out, "baseline_change.tif", radar_cube, delta, "target_minus_observed_baseline_db", [target],
                 )
+                asset_prefix = f"/v1/jobs/{out.name}/assets/"
+                if query.lens == FLOOD_WETLAND["id"]:
+                    report["radar"]["layers"] = write_signature_layer(out, arrays, cube, href_prefix=asset_prefix)
                 if query.lens == AGRICULTURE["id"]:
                     report["agriculture"] = agriculture_history(
-                        cube, report, np.isfinite(delta).all(axis=0), query.longitude, query.latitude,
+                        cube, report, common, query.longitude, query.latitude,
+                    )
+                    report["radar"]["layers"] = write_agriculture_layers(
+                        out, arrays, cube, report["evaluation"], href_prefix=asset_prefix,
                     )
                 if query.lens == WILDFIRE["id"]:
                     report["radar"]["layers"] = write_wildfire_layers(

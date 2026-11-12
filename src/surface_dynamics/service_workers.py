@@ -26,6 +26,7 @@ PREVIEWS = {
 
 def run_explore(body, out, cache):
     from .explore import discover, enrich_lens, measure, parse_request, select, select_alternate
+    from .flood_lens import with_evidence
     fields = {"longitude", "latitude", "start_date", "end_date", "series_key",
               "compare_dates", "lens", "optical_evidence", "baseline_end_date"}
     query = parse_request({**{k: v for k, v in body.items() if k in fields}, "max_dates": 5})
@@ -49,8 +50,12 @@ def run_explore(body, out, cache):
             break
     if followup:
         status, lens, paths = followup
-        evidence = enrich_lens(query, lens, paths, cache / "optical", out)
-        state.update(status=status, phase=None, lens={**lens, "evidence": evidence})
+        try:
+            evidence = enrich_lens(query, lens, paths, cache / "optical", out)
+        except Exception as exc:
+            LOG.warning("Optical evidence unavailable (%s)", type(exc).__name__)
+            evidence = {"status": "unavailable", "reason": "optical_worker_error"}
+        state.update(status=status, phase=None, lens=with_evidence(lens, evidence))
         attempts[-1]["status"] = status
     return {**state, "coverage": coverage, "series_key": key, "series_attempts": attempts}
 
@@ -97,7 +102,9 @@ def process(body, job_id, out, cache):
                                  "pair_paths": [str(p) for p in sorted((Path(staging) / "cache").glob("pair_*.npz"))]}
             return process_readiness(request, out)
     if mode == "analysis":
-        source.update(max_dates=5, native_chip_pixels=256,
+        from .spectral import MINIMUM_SPECTRAL_DATES
+
+        source.update(max_dates=MINIMUM_SPECTRAL_DATES if "spectral" in body["analyses"] else 5, native_chip_pixels=256,
                       target_posting_m=160 if "transformer" in body["analyses"] else 40)
         if "series_key" in body:
             source["series_key"] = body["series_key"]
@@ -115,7 +122,7 @@ def process(body, job_id, out, cache):
             "fingerprint": process_fingerprint}[mode](request, out)
 
 
-def live_layers(out, prefix, operation):
+def live_layers(out, prefix, operation, lens=None):
     """Render continuous GCOV comparison and coherence with fixed scales."""
     import rasterio
     from rasterio.transform import xy
@@ -125,6 +132,19 @@ def live_layers(out, prefix, operation):
         return layers
     if operation not in {"explore", "insar-pair"}:
         return layers
+    lens = lens or {}
+    evidence = lens.get("evidence") or {}
+    diagnostics = {
+        "flood_signature_flags": ("diagnostic mask", "Blues", (0, 1), {0: "absent", 1: "present"}),
+        "agriculture_populations": ("diagnostic mask", "Blues", (0, 1), {0: "outside population", 1: "in population"}),
+        "agriculture_step_magnitude_db": ("dB", "RdBu_r", (-8, 8), None),
+    }
+    for layer in (lens.get("radar") or {}).get("layers", []):
+        if layer["role"] == "cross_pol_pattern":
+            diagnostics["cross_pol_pattern"] = ("pattern code", "viridis", (0, 3), layer["legend"])
+    optical_legend = (evidence.get("layer") or {}).get("legend")
+    if optical_legend:
+        diagnostics["optical_groups"] = ("optical group code", "viridis", (0, 4), optical_legend)
     for path in sorted(out.glob("*.tif")):
         if path.stem in {"reference_group", "reference_groups"}:
             continue
@@ -134,6 +154,7 @@ def live_layers(out, prefix, operation):
             for band in range(1, source.count + 1):
                 suffix = source.descriptions[band - 1] or str(band)
                 name = f"display_{path.stem}_{suffix}"
+                legend = None
                 if path.stem == "coherence":
                     units, cmap, stretch = "unitless", "cividis", (0, 1)
                 elif path.stem == "wrapped_phase_rad":
@@ -142,11 +163,16 @@ def live_layers(out, prefix, operation):
                     units, cmap, stretch = "dB", "RdBu_r", (-8, 8)
                 elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
                     units, cmap, stretch = "dB", "gray", (-30, 0)
+                elif path.stem in diagnostics:
+                    units, cmap, stretch, legend = diagnostics[path.stem]
                 else:
                     continue
                 try:
-                    layers.append(render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
-                                               units=units, cmap=cmap, stretch=stretch))
+                    layer = render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
+                                         units=units, cmap=cmap, stretch=stretch, legend=legend)
+                    if legend and path.stem != "optical_groups":
+                        layer["colormap"] = "diagnostic_categories"
+                    layers.append(layer)
                 except UnrepresentableDisplayGrid:
                     continue
     return layers
@@ -172,7 +198,7 @@ def execute_job(body, job_id, out, cache, revision):
     prefix = f"/v2/jobs/{job_id}/layers"
     render_start = perf_counter()
     try:
-        layers = live_layers(out, prefix, body["operation"])
+        layers = live_layers(out, prefix, body["operation"], raw.get("lens"))
     except UnrepresentableDisplayGrid:
         layers = []
     visualizations = []

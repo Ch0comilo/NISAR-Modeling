@@ -63,13 +63,18 @@ def physical_figure(cube,db,stat,structure,path,title):
 def spectral_figure(cube,spectral,local,path,title):
     style();fig,axs=plt.subplots(1,3,figsize=(16,5.8));fig.subplots_adjust(top=.79,bottom=.21,wspace=.6)
     fig.suptitle(title.upper()+'  /  SPECTRAL QUESTIONS, NOT EVENT LABELS',x=.06,ha='left',fontsize=18,fontweight='bold',y=.96)
-    map_panel(fig,axs[0],spectral['candidate_period_days'][0],cube,'Strongest candidate period','turbo','days')
-    map_panel(fig,axs[1],spectral['peak_normalized_power'][0],cube,'Normalized fitted spectral power','magma','power (0–1)',0,1)
+    channel=next(i for i,values in enumerate(spectral['candidate_period_days']) if np.isfinite(values).any())
+    pol=cube['polarizations'][channel]
+    map_panel(fig,axs[0],spectral['candidate_period_days'][channel],cube,f'{pol} candidate period','turbo','days')
+    map_panel(fig,axs[1],spectral['peak_normalized_power'][channel],cube,f'{pol} partial spectral power','magma','power (0–1)',0,1)
     axs[1].set_ylabel('')
     for i,p in enumerate(cube['polarizations']):axs[2].plot(spectral['periods_days'],spectral['roi_spectra'][i],label=str(p))
     axs[2].plot(spectral['periods_days'],spectral['sampling_window'],'--',color=MUTED,label='Sampling window')
     axs[2].set_xlabel('Candidate period (days)');axs[2].set_ylabel('Normalized power');axs[2].set_title('Regional detrended periodograms',loc='left');axs[2].legend();axs[2].grid(alpha=.15)
-    p=spectral['channels'][0]['max_statistic_permutation_p'];fig.text(.06,.11,f'Regional max-statistic permutation p = {p:.3f}; null assumes exchangeable residuals. Candidate periods are not confirmed cycles.',fontsize=10)
+    p=spectral['channels'][channel]['max_statistic_permutation_p']
+    note=(f'{pol} regional permutation p = {p:.3f}; null assumes exchangeable residuals.' if p is not None
+          else f'{pol} regional candidate unresolved. Maps retain supported pixel fits.')
+    fig.text(.06,.11,note,fontsize=10)
     fig.text(.06,.055,'Actual irregular timestamps; no interpolated acquisitions. Sampling aliases, limited duration and spatially correlated pixels restrict interpretation.',color=MUTED,fontsize=10)
     save(fig,path)
     if local.get('status')=='available':
@@ -83,16 +88,19 @@ def stochastic_figure(cube,region,stochastic,path,title):
     fig.suptitle(title.upper()+'  /  STOCHASTIC HISTORICAL STATES',x=.07,ha='left',fontsize=18,fontweight='bold',y=.97)
     dates=np.array(cube['dates'],dtype='datetime64[D]');draws=stochastic['region_draws_db']
     for c,ax in enumerate(axs[:,0]):
-        quant=np.quantile(draws[:,c],[.025,.1,.25,.5,.75,.9,.975],axis=0)
-        for a,b,alpha in [(0,6,.12),(1,5,.2),(2,4,.35)]:ax.fill_between(dates,quant[a],quant[b],color='#51cfce',alpha=alpha)
-        for member in draws[:12,c]:ax.plot(dates,member,color='#51cfce',alpha=.15,lw=.7)
+        if stochastic['parameters'][c]['status']=='fit_returned':
+            quant=np.quantile(draws[:,c],[.025,.1,.25,.5,.75,.9,.975],axis=0)
+            for a,b,alpha in [(0,6,.12),(1,5,.2),(2,4,.35)]:ax.fill_between(dates,quant[a],quant[b],color='#51cfce',alpha=alpha)
+            for member in draws[:12,c]:ax.plot(dates,member,color='#51cfce',alpha=.15,lw=.7)
+            ax.plot(dates,quant[3],color='#51cfce',label='Conditional GP median and 50/80/95% bands')
+        else:
+            ax.set_title('GP unavailable · '+stochastic['parameters'][c]['status'].replace('_',' '),loc='left')
+        ax.plot(dates,stochastic['observed_mean_db'][c],'o-',color='white',label='Measured mean on GP input support')
         if region is not None:
-            ax.fill_between(dates,region['quantile_db'][0,:,c],region['quantile_db'][6,:,c],color='white',alpha=.15,label='95% spatial block interval')
-            ax.plot(dates,region['mean_db'][:,c],'o-',color='white',label='Measured regional mean dB')
-        ax.plot(dates,quant[3],color='#51cfce',label='Conditional GP median and 50/80/95% bands')
+            ax.fill_between(dates,region['quantile_db'][0,:,c],region['quantile_db'][6,:,c],color='white',alpha=.15,label='95% interval on eligible spatial blocks')
         ax.set_ylabel(str(cube['polarizations'][c])+' gamma0 (dB)');ax.grid(alpha=.15);ax.legend(fontsize=8,loc='best')
     fig.text(.07,.09,'Matérn-3/2 empirical-Bayes GP conditioned at observed dates only. Bands omit hyperparameter/model uncertainty and are not calibrated.',fontsize=10)
-    fig.text(.07,.045,'White bands describe spatial heterogeneity; turquoise bands describe the assumed latent process. Neither is a measured sensor-error interval.',fontsize=10,color=MUTED)
+    fig.text(.07,.045,'White bands resample eligible spatial blocks; turquoise bands describe the fitted latent process. Sensor error is unestimated.',fontsize=10,color=MUTED)
     save(fig,path)
 
 def learned_figure(cube,db,rgb,uncertainty,distance,path,title):

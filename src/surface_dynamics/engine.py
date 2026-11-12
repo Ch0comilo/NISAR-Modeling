@@ -10,7 +10,7 @@ from .io import load_cube,cube_from_chips,fetch_chip,save_cube
 from .catalog import search,group_entries,choose_series
 from .analysis import measured_db,elapsed_days,physical_statistics,spatial_structure,region_series,supported_reduction
 from .spectral import spectral_analysis,local_time_frequency
-from .stochastic import smooth_observations
+from .stochastic import historical_series,smooth_observations
 from . import render
 
 SCHEMAS=Path(__file__).resolve().parent/'schemas'
@@ -130,20 +130,56 @@ def analyze(request,output):
     if 'spectral' in request['analyses']:
         spectral=spectral_analysis(db,t)
         if spectral['status']=='available':
-            local=local_time_frequency(np.nanmean(db[:,0],axis=(1,2)),t)
+            channel=next(i for i in range(len(pols)) if np.isfinite(spectral['candidate_period_days'][i]).any())
+            complete=np.isfinite(db[:,channel]).all(0)
+            local=local_time_frequency(db[:,channel,complete].mean(1),t)
             render.spectral_figure(cube,spectral,local,out/'spectral.png',title);register(out/'spectral.png','actual_time_spectral_figure')
             for key in ['candidate_period_days','peak_normalized_power']:
                 data[key]=(('polarization','y','x'),spectral[key]);path=out/(key+'.tif');unit='days' if key.endswith('days') else 'normalized power';write_cog(path,spectral[key],x,y,cube['epsg'],unit,pols);register(path,'tentative_spectral_map',unit,['polarization','y','x'])
             np.savez_compressed(out/'spectral_arrays.npz',frequencies_cycles_day=spectral['frequencies_cycles_day'],roi_spectra=spectral['roi_spectra'],sampling_window=spectral['sampling_window'],spatial_fft_power=structure['spatial_fft_power'],spatial_fx_cycles_km=structure['spatial_fx_cycles_km'],spatial_fy_cycles_km=structure['spatial_fy_cycles_km'],**({'local_power':local['power'],'local_periods_days':local['periods_days']} if 'power' in local else {}));register(out/'spectral_arrays.npz','spectral_and_spatial_frequency_arrays')
             if (out/'time_frequency.png').exists() and local['status']=='available':register(out/'time_frequency.png','actual_time_local_spectral_figure')
-            result['capabilities']['spectral']={'status':'experimental','metadata':{'channels':spectral['channels'],'local_time_frequency_status':local['status'],'frequency_search_policy':'2/span through 0.5/median_cadence; conservative display band, not a universal Nyquist theorem'}}
-            p=spectral['channels'][0]['max_statistic_permutation_p'];result['insights'].append({'id':'spectral_support','observation':f'Strongest regional candidate is {spectral["channels"][0]["candidate_period_days"]:.1f} days; max-statistic permutation p={p:.3f}.','interpretation_limit':'This is not evidence of a recurring natural process by itself. Sampling, trend removal, null assumptions and record duration matter.','evidence_artifacts':['spectral','spectral_arrays']})
+            path=out/'spectral_series.csv'
+            with path.open('w',newline='',encoding='utf8') as stream:
+                writer=csv.writer(stream)
+                writer.writerow(['frequency_cycles_day','period_days','sampling_window',*[f'{pol}_normalized_power' for pol in pols]])
+                for f,period,window,scores in zip(spectral['frequencies_cycles_day'],spectral['periods_days'],
+                                                  spectral['sampling_window'],spectral['roi_spectra'].T):
+                    writer.writerow([f,period,window,*safe_json(scores)])
+            register(path,'regional_spectrum_and_sampling_window')
+            result['capabilities']['spectral']={'status':'experimental','metadata':{'channels':spectral['channels'],'local_time_frequency_status':local['status'],'frequency_search_policy':'2/span to below 0.5/median_cadence; conservative display band, not a universal Nyquist theorem'}}
+            for pol,summary in zip(pols,spectral['channels']):
+                if summary['status']=='available':
+                    result['insights'].append({'id':'spectral_support','observation':f'{pol} regional candidate is {summary["candidate_period_days"]:.1f} days; max-statistic permutation p={summary["max_statistic_permutation_p"]:.3f}.','interpretation_limit':'Sampling, trend, null assumptions and record duration limit interpretation.','evidence_artifacts':['spectral','spectral_series']})
+                    break
         else:result['capabilities']['spectral']={'status':'insufficient_data','reason':spectral['reason']}
     if 'stochastic' in request['analyses']:
-        stochastic=smooth_observations(db,t,draws=request.get('stochastic_draws',256));data['gp_latent_mean_db']=(('time','polarization','y','x'),stochastic['mean_db']);data['gp_conditional_sd_db']=(('time','polarization','y','x'),stochastic['sd_db'])
-        np.savez_compressed(out/'stochastic_draws.npz',draws_db=stochastic['region_draws_db'],dates=cube['dates'],polarizations=cube['polarizations']);register(out/'stochastic_draws.npz','conditional_historical_GP_ensemble','dB',['draw','polarization','time'])
-        render.stochastic_figure(cube,regional,stochastic,out/'stochastic.png',title);register(out/'stochastic.png','stochastic_historical_state_figure')
-        result['capabilities']['stochastic']={'status':'experimental','metadata':{'parameters':stochastic['parameters'],'draws':request.get('stochastic_draws',256),'interval_type':'conditional_empirical_Bayes_GP_latent','calibrated':False}}
+        stochastic=smooth_observations(db,t,draws=request.get('stochastic_draws',256))
+        history=historical_series(stochastic,cube['dates'],pols)
+        fit_available=any(item['status']=='fit_returned' for item in history.values())
+        capability={'status':'experimental' if fit_available else 'insufficient_data',
+                    'metadata':{'parameters':stochastic['parameters'],'draws':request.get('stochastic_draws',256),
+                                'interval_type':'conditional_empirical_Bayes_GP_latent','calibrated':False}}
+        if fit_available:
+            data['gp_latent_mean_db']=(('time','polarization','y','x'),stochastic['mean_db'])
+            data['gp_conditional_sd_db']=(('time','polarization','y','x'),stochastic['sd_db'])
+            np.savez_compressed(out/'stochastic_draws.npz',draws_db=stochastic['region_draws_db'],dates=cube['dates'],polarizations=cube['polarizations'])
+            register(out/'stochastic_draws.npz','conditional_historical_GP_ensemble','dB',['draw','polarization','time'])
+            render.stochastic_figure(cube,regional,stochastic,out/'stochastic.png',title)
+            register(out/'stochastic.png','stochastic_historical_state_figure')
+        else:
+            capability['reason']='No supported nonconstant channel produced a converged historical GP fit'
+        path=out/'gp_historical_series.csv'
+        with path.open('w',newline='',encoding='utf8') as stream:
+            writer=csv.writer(stream)
+            writer.writerow(['date','polarization','supported_cells','status','observed_mean_db','latent_median_db',
+                             'conditional_80_lower_db','conditional_80_upper_db','conditional_95_lower_db','conditional_95_upper_db'])
+            for pol,record in history.items():
+                for row in record['series']:
+                    writer.writerow([row['date'],pol,record['supported_cells'],record['status'],row['observed_mean_db'],
+                                     row['latent_median_db'],*(row['conditional_80_db'] or (None,None)),
+                                     *(row['conditional_95_db'] or (None,None))])
+        register(path,'observed_and_conditional_GP_history','dB',['time','polarization'])
+        result['capabilities']['stochastic']=capability
         result['limitations'].append(stochastic['interpretation'])
     if 'transformer' in request['analyses']:
         checkpoint=Path(request.get('transformer_checkpoint','models/global_explorer_v1/masked_temporal_transformer.pt'))

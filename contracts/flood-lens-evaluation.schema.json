@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Explore flood lens evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version", "policy_id", "status", "reason", "target_date", "baseline_dates",
+    "signature_policy", "grid", "point", "grid_signatures", "surrounding_comparison",
+    "water_comparison", "uncertainty", "confounders", "questions",
+    "phenomenon_class", "phenomenon_probability", "causal_attribution", "displacement_cm"
+  ],
+  "properties": {
+    "contract_version": {"const": "1.0"},
+    "policy_id": {"const": "explore_flood_observations_v1"},
+    "status": {"$ref": "#/$defs/status"},
+    "reason": {"type": ["string", "null"]},
+    "target_date": {"$ref": "#/$defs/nullableDate"},
+    "baseline_dates": {"type": "array", "items": {"type": "string", "format": "date"}, "uniqueItems": true},
+    "signature_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dual_darkening_max_change_db", "co_pol_brightening_min_change_db", "interpretation"],
+      "properties": {
+        "dual_darkening_max_change_db": {
+          "type": "object", "additionalProperties": false, "required": ["co", "cross"],
+          "properties": {"co": {"const": -3.0}, "cross": {"const": -1.5}}
+        },
+        "co_pol_brightening_min_change_db": {"const": 3.0},
+        "interpretation": {"type": "string"}
+      }
+    },
+    "grid": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/grid"}]},
+    "point": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/point"}]},
+    "grid_signatures": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["dual_darkening", "co_pol_brightening"],
+          "properties": {
+            "dual_darkening": {"$ref": "#/$defs/signature"},
+            "co_pol_brightening": {"$ref": "#/$defs/signature"}
+          }
+        }
+      ]
+    },
+    "surrounding_comparison": {"$ref": "#/$defs/surrounding"},
+    "water_comparison": {"$ref": "#/$defs/water"},
+    "uncertainty": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observation", "spatial_heterogeneity", "model"],
+      "properties": {
+        "observation": {"$ref": "#/$defs/unavailable"},
+        "model": {"$ref": "#/$defs/unavailable"},
+        "spatial_heterogeneity": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["kind", "scope", "units", "cells", "change_quantiles_25_50_75"],
+              "properties": {
+                "kind": {"const": "cell_distribution"}, "scope": {"const": "common_radar_grid"},
+                "units": {"const": "dB"}, "cells": {"type": "integer", "minimum": 1},
+                "change_quantiles_25_50_75": {
+                  "type": "object", "additionalProperties": {"$ref": "#/$defs/quantiles"}
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "confounders": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "status"],
+        "properties": {
+          "id": {"enum": ["existing_water", "rain_or_soil_moisture", "freeze_thaw", "wind",
+                          "incidence_and_track", "speckle_and_noise", "layover_or_shadow"]},
+          "status": {"enum": ["unavailable", "observed"]},
+          "evidence": {"type": "integer", "minimum": 0, "maximum": 4}
+        }
+      }
+    },
+    "questions": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "string"}},
+    "phenomenon_class": {"type": "null"},
+    "phenomenon_probability": {"type": "null"},
+    "causal_attribution": {"type": "null"},
+    "displacement_cm": {"type": "null"}
+  },
+  "if": {"properties": {"status": {"const": "evaluated"}}},
+  "then": {
+    "properties": {
+      "target_date": {"type": "string", "format": "date"},
+      "baseline_dates": {"minItems": 3},
+      "grid": {"$ref": "#/$defs/grid"},
+      "point": {"$ref": "#/$defs/point"},
+      "grid_signatures": {"type": "object"}
+    }
+  },
+  "else": {"properties": {"grid": {"type": "null"}, "point": {"type": "null"}, "grid_signatures": {"type": "null"}}},
+  "$defs": {
+    "status": {"enum": ["evaluated", "insufficient_data"]},
+    "state": {"enum": ["supports", "contradicts", "absent_on_sampled_support", "insufficient_data"]},
+    "nullableDate": {"type": ["string", "null"], "format": "date"},
+    "numberMap": {"type": "object", "additionalProperties": {"type": "number"}},
+    "nullableMap": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/numberMap"}]},
+    "quantiles": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}},
+    "pair": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+    "grid": {
+      "type": "object", "additionalProperties": false,
+      "required": ["epsg", "width", "height", "pixel_spacing_m"],
+      "properties": {
+        "epsg": {"type": "integer"}, "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1}, "pixel_spacing_m": {"$ref": "#/$defs/pair"}
+      }
+    },
+    "unavailable": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {"status": {"const": "unavailable"}, "reason": {"type": "string"}}
+    },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "signature_cells", "supported_cells", "fraction"],
+      "properties": {
+        "state": {"$ref": "#/$defs/state"}, "signature_cells": {"type": "integer", "minimum": 0},
+        "supported_cells": {"type": "integer", "minimum": 1}, "fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "point": {
+      "type": "object", "additionalProperties": false,
+      "required": ["selection", "inside_grid", "x", "y", "row", "column", "status", "reason",
+                   "signature_states", "baseline_db", "baseline_scaled_mad_db", "change_db",
+                   "cross_minus_co_change_db", "observation_bracket", "series"],
+      "properties": {
+        "selection": {"enum": ["requested_point", "grid_center"]}, "inside_grid": {"type": "boolean"},
+        "x": {"type": ["number", "null"]}, "y": {"type": ["number", "null"]},
+        "row": {"type": ["integer", "null"], "minimum": 0}, "column": {"type": ["integer", "null"], "minimum": 0},
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+        "signature_states": {
+          "type": "object", "additionalProperties": false, "required": ["dual_darkening", "co_pol_brightening"],
+          "properties": {"dual_darkening": {"$ref": "#/$defs/state"}, "co_pol_brightening": {"$ref": "#/$defs/state"}}
+        },
+        "baseline_db": {"$ref": "#/$defs/nullableMap"},
+        "baseline_scaled_mad_db": {"$ref": "#/$defs/nullableMap"},
+        "change_db": {"$ref": "#/$defs/nullableMap"},
+        "cross_minus_co_change_db": {"type": ["number", "null"]},
+        "observation_bracket": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "format": "date"}},
+        "series": {
+          "type": "array", "items": {
+            "type": "object", "additionalProperties": false, "required": ["date", "db"],
+            "properties": {"date": {"type": "string", "format": "date"}, "db": {"$ref": "#/$defs/numberMap"}}
+          }
+        }
+      }
+    },
+    "surrounding": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+        "definition": {"type": "string"}, "focal_radius_m": {"const": 60},
+        "comparison_annulus_m": {"const": [120, 300]}, "minimum_cells": {"const": 5},
+        "minimum_supported_fraction": {"const": 0.5}, "minimum_matched_fraction": {"const": 0.5},
+        "independently_stable_controls": {"const": false},
+        "focal_cells": {"type": "integer", "minimum": 0},
+        "surrounding_cells": {"type": "integer", "minimum": 0},
+        "focal_grid_cells": {"type": "integer", "minimum": 0},
+        "surrounding_grid_cells": {"type": "integer", "minimum": 0},
+        "matches": {"type": "object"},
+        "channels": {"type": "object", "additionalProperties": {"type": "object"}},
+        "spatial_block_size_m": {"$ref": "#/$defs/pair"},
+        "differential_darkening": {
+          "type": "object", "additionalProperties": false, "required": ["state", "reason", "claim"],
+          "properties": {
+            "state": {"$ref": "#/$defs/state"}, "reason": {"type": ["string", "null"]}, "claim": {"type": "string"}
+          }
+        },
+        "series": {
+          "type": "array", "items": {
+            "type": "object", "additionalProperties": false, "required": ["date", "focal_mean_db", "control_mean_db"],
+            "properties": {
+              "date": {"type": "string", "format": "date"},
+              "focal_mean_db": {"$ref": "#/$defs/numberMap"}, "control_mean_db": {"$ref": "#/$defs/numberMap"}
+            }
+          }
+        }
+      },
+      "if": {"properties": {"status": {"const": "evaluated"}}},
+      "then": {"required": ["matches", "channels", "series", "focal_cells", "surrounding_cells", "differential_darkening"]}
+    },
+    "water": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {
+        "status": {"enum": ["evaluated", "insufficient_data", "pending"]},
+        "reason": {"type": ["string", "null"]}, "epochs": {"type": "object"},
+        "groups": {"type": "object"}, "source": {"type": ["string", "null"]},
+        "claim": {"type": "string"}, "point_new_open_water_state": {"$ref": "#/$defs/state"},
+        "point_group_code": {"type": ["integer", "null"], "minimum": 0, "maximum": 4},
+        "point_selection": {"enum": ["requested_point", "grid_center"]}, "grid": {"$ref": "#/$defs/grid"},
+        "matched_new_water_comparison": {
+          "type": "object", "additionalProperties": false, "required": ["status", "reason", "matches", "channels"],
+          "properties": {
+            "status": {"$ref": "#/$defs/status"}, "reason": {"type": ["string", "null"]},
+            "matches": {"type": "object"}, "channels": {"type": "object", "additionalProperties": {"type": "object"}}
+          }
+        }
+      },
+      "if": {"properties": {"status": {"const": "evaluated"}}},
+      "then": {"required": ["claim", "point_new_open_water_state", "point_group_code",
+                           "point_selection", "grid", "matched_new_water_comparison", "epochs", "groups", "source"]}
+    }
+  }
+}

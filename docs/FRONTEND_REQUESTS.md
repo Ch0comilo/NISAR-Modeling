@@ -5,6 +5,7 @@
 3. Use `GET /v2/cases/{id}` for prepared views. Richmond has measured HH/HV and VV/VH. Kumamoto has coherence, adjacent-pair coherence contrast and common phase support. Label any live wrapped phase in radians and keep LOS null.
 4. Fix Qadirabad's marked-point sentence. At (73.713, 32.329) HH and HV increased +0.715 and +1.259 dB versus the baseline median. The area summary separately has 332/516 flagged new-water reference cells. Replace demo dates and bars with `diagnostic_band_timeline`. Use manifest bounds for Chókwè and Richmond.
 5. Show `previews` as figures or animations with their supplied interpretation labels. Keep GP model spread, spatial quartiles and temporal MAD distinct. Display a null observation-noise field as unestimated.
+6. Keep existing lens renderers working. When present, show `science.lens.evaluation` next to the current readout and `temporal_analysis` as a historical analysis panel. A masked point, an absent signature, an unavailable GP and missing optical evidence are different outcomes. For spectra, use the existing analysis operation and show the sampling-window curve and experimental status. [Lens and temporal evidence contract](API.md#lens-and-temporal-evidence)
 
 | Roadmap item | Science API handoff |
 | --- | --- |

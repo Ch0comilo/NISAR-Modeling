@@ -8,12 +8,14 @@ from time import monotonic
 
 import numpy as np
 import requests
-from rasterio.warp import transform
 
 from . import disturbance, optical_water
 from .analysis import measured_db
+from .agriculture_lens import evaluate_agriculture, unavailable_evaluation as unavailable_agriculture_evaluation
 from .flood_signatures import POLICY, reference_groups, spatial_contrast
-from .io import load_cube
+from .flood_lens import (optical_comparison, radar_evaluation, signature_masks, unavailable_evaluation,
+                         with_evidence, write_signature_layer)
+from .io import load_cube, local_neighborhood, point_location
 from .surface_features import DEFAULT_POLICY, fingerprint
 
 
@@ -27,6 +29,8 @@ FLOOD_WETLAND = {
     ],
     "alternatives": ["Existing water", "Wind-roughened water", "Soil moisture", "Crops", "Terrain shadow"],
     "independent_reference": "Date-matched optical open water, gauges and terrain connectivity",
+    "evaluation_contract_version": "1.0",
+    "evaluation_schema": "flood-lens-evaluation.schema.json",
 }
 VEGETATION_DISTURBANCE = {
     "id": "vegetation_disturbance",
@@ -60,6 +64,8 @@ AGRICULTURE = {
     ],
     "alternatives": ["Soil moisture", "Irrigation", "Tillage", "Mixed fields", "Viewing geometry"],
     "independent_reference": "Parcel or crop context and dated optical greenness where available",
+    "evaluation_contract_version": "1.0",
+    "evaluation_schema": "agriculture-lens-evaluation.schema.json",
 }
 LENSES = {lens["id"]: lens for lens in (FLOOD_WETLAND, VEGETATION_DISTURBANCE, WILDFIRE, AGRICULTURE)}
 TEMPORAL_LENSES = {WILDFIRE["id"], AGRICULTURE["id"]}
@@ -85,32 +91,35 @@ OPTICAL_MAX_CANDIDATES_PER_EPOCH = 3
 
 
 def empty_lens(target_date, baseline_dates, reason, lens_id=FLOOD_WETLAND["id"]):
-    return {
+    report = {
         "id": lens_id, "version": "1.0", "status": "insufficient_data",
         "reason": reason, "target_date": target_date, "baseline_dates": list(baseline_dates),
         "radar": None, "evidence": {"status": "unavailable"}, "point": None,
     }
+    if lens_id == FLOOD_WETLAND["id"]:
+        report["evaluation"] = unavailable_evaluation(target_date, baseline_dates, reason)
+    if lens_id == AGRICULTURE["id"]:
+        report["evaluation"] = unavailable_agriculture_evaluation(target_date, baseline_dates, reason)
+    return report
 
 
-def evaluate_flood_wetland(cube, target_date, reference=None):
-    return evaluate_lens(cube, target_date, FLOOD_WETLAND["id"], reference=reference)
+def evaluate_flood_wetland(cube, target_date, reference=None, *, point=None, reference_epochs=None):
+    return evaluate_lens(cube, target_date, FLOOD_WETLAND["id"], reference=reference,
+                         point=point, reference_epochs=reference_epochs)
 
 
-def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=None):
+def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=None, point=None, reference_epochs=None):
     """Return the lens report and its arrays on one measured, compatible grid."""
     dates = cube["dates"].astype(str)
     prior = dates[(dates < target_date) & (dates <= (baseline_end or target_date))].tolist()
     report = empty_lens(target_date, prior, None, lens_id)
     if target_date not in dates:
-        report["reason"] = "target_unavailable"
-        return report, {}
+        return empty_lens(target_date, prior, "target_unavailable", lens_id), {}
     if len(prior) < DEFAULT_POLICY["minimum_dates"]:
-        report["reason"] = "fewer_than_three_prior_dates"
-        return report, {}
+        return empty_lens(target_date, prior, "fewer_than_three_prior_dates", lens_id), {}
     polarizations = set(cube["polarizations"])
     if not ({"HH", "HV"} <= polarizations or {"VV", "VH"} <= polarizations):
-        report["reason"] = "paired_polarizations_unavailable"
-        return report, {}
+        return empty_lens(target_date, prior, "paired_polarizations_unavailable", lens_id), {}
 
     fire = lens_id == WILDFIRE["id"]
     temporal = lens_id in TEMPORAL_LENSES
@@ -121,8 +130,7 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
     support = maps["common_support"]
     count = int(support.sum())
     if count == 0:
-        report["reason"] = "no_fixed_common_support"
-        return report, {}
+        return empty_lens(target_date, prior, "no_fixed_common_support", lens_id), {}
     pols = features["polarizations"]
     if temporal:
         pols_in_cube = list(cube["polarizations"])
@@ -134,8 +142,7 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
     departure = maps["assessment_departure_mask"][-1]
     water = lens_id == FLOOD_WETLAND["id"]
     if water:
-        darkening = support & (delta[0] <= -CO_DARKENING) & (delta[1] <= -CROSS_DARKENING)
-        brightening = support & (delta[0] >= CO_DARKENING)
+        darkening, brightening = signature_masks(delta, support)
 
     def summarize(mask):
         cells = int(mask.sum())
@@ -168,6 +175,13 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
             co_pol_brightening_min_delta_db=CO_DARKENING,
         )
     arrays = {"target_change_db": delta, "diagnostic_half_width_db": maps["diagnostic_half_width_db"]}
+    if water:
+        report["evaluation"], arrays["flood_signature_flags"] = radar_evaluation(
+            cube, features, delta, target_date, prior, point,
+        )
+    if lens_id == AGRICULTURE["id"]:
+        report["evaluation"], agriculture_arrays = evaluate_agriculture(cube, features, target_date, point)
+        arrays.update(agriculture_arrays)
     if temporal:
         report["assessment_dates"] = assessment.tolist()
     if fire:
@@ -180,6 +194,8 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
     if water and reference is not None:
         groups = reference_groups(reference)
         if groups.shape != support.shape:
+            raise ValueError("The optical reference must be aligned to the measured radar grid.")
+        if any(key in reference and not np.array_equal(reference[key], cube[key]) for key in ("x", "y", "epsg")):
             raise ValueError("The optical reference must be aligned to the measured radar grid.")
         groups = np.where(support, groups, 255)
         joint = int((groups != 255).sum())
@@ -194,29 +210,21 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
             "interpretation": "Groups compare optical water classes at two snapshots. Mixed cells are descriptive.",
         }
         arrays["optical_groups"] = np.where(groups == 255, np.nan, groups)
+        report["evidence"]["epochs"] = reference_epochs or {}
+        report["evidence"]["comparison"] = optical_comparison(
+            cube, features, delta, groups, target_date, prior[-1], report["evidence"]["epochs"], point,
+        )
+        report = with_evidence(report, report["evidence"])
     return report, arrays
 
 
 def agriculture_history(cube, report, common, longitude, latitude):
     """Compare fixed geometric neighborhoods using measured dB on identical dates."""
-    x, y = cube["x"], cube["y"]
-    dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
-    qx, qy = transform("EPSG:4326", f"EPSG:{int(cube['epsg'])}", [longitude], [latitude])
-    qx, qy = qx[0], qy[0]
-    radius, inner, outer = 60, 120, 300
-    history = {"status": "insufficient_data", "focal_radius_m": radius,
-               "comparison_annulus_m": [inner, outer]}
-    if min(qx - x[0] + dx/2, x[-1] + dx/2 - qx, qy - y[-1] + dy/2, y[0] + dy/2 - qy) < outer:
-        return {**history, "reason": "neighborhood_outside_grid"}
-    distance = np.hypot(x[None, :] - qx, y[:, None] - qy)
-    focal, ring = distance <= radius, (distance >= inner) & (distance <= outer)
-    selected = [focal & common, ring & common]
-    counts = [int(mask.sum()) for mask in selected]
-    eligible = [int(mask.sum()) for mask in (focal, ring)]
-    history.update(focal_cells=counts[0], comparison_cells=counts[1],
-                   focal_grid_cells=eligible[0], comparison_grid_cells=eligible[1])
-    if min(counts) < 5 or any(count / total < .5 for count, total in zip(counts, eligible)):
-        return {**history, "reason": "insufficient_common_neighborhood_support"}
+    location = point_location(cube, (longitude, latitude))
+    history, focal, ring = local_neighborhood(cube, location, common)
+    if history["status"] != "evaluated":
+        return history
+    selected = [focal, ring]
 
     pols = report["radar"]["polarizations"]
     channels = [list(cube["polarizations"]).index(pol) for pol in pols]
@@ -438,15 +446,15 @@ def prepare_flood_lens_case(case_dir, output):
                 raise ValueError(f"Measured case checksum mismatch: {name}")
     cube = load_cube(case_dir / "cube.npz")
     target = admission["metadata"]["target_date"]
-    with np.load(case_dir / "reference.npz", allow_pickle=False) as reference:
-        report, arrays = evaluate_flood_wetland(cube, target, reference)
-    report["case_id"] = admission["case_id"]
-    report["series_key"] = admission["metadata"]["series_key"]
-    report["granule_titles"] = admission["metadata"]["selected_radar"]
-    report["evidence"]["epochs"] = {
+    epochs = {
         phase: {"source_id": epoch["source"]["source_id"], "date": epoch["source"]["observation_time"][:10]}
         for phase, epoch in admission["reference_epochs"].items() if epoch.get("source")
     }
+    with np.load(case_dir / "reference.npz", allow_pickle=False) as reference:
+        report, arrays = evaluate_flood_wetland(cube, target, reference, reference_epochs=epochs)
+    report["case_id"] = admission["case_id"]
+    report["series_key"] = admission["metadata"]["series_key"]
+    report["granule_titles"] = admission["metadata"]["selected_radar"]
     _write_case(report, arrays, cube, output, GROUPS)
     return report
 
@@ -495,9 +503,9 @@ def _write_case(report, arrays, cube, output, legend):
         "pixel_spacing_m": [float(cube["x"][1] - cube["x"][0]), float(cube["y"][0] - cube["y"][1])],
     }
     output.mkdir(parents=True, exist_ok=True)
-    report["layers"] = write_wildfire_layers(output, arrays, cube)
+    report["layers"] = write_wildfire_layers(output, arrays, cube) + write_signature_layer(output, arrays, cube)
     for key, data in arrays.items():
-        if key.startswith("_") or key in {"cross_pol_decline_count", "cross_pol_pattern"}:
+        if key.startswith("_") or key in {"cross_pol_decline_count", "cross_pol_pattern", "flood_signature_flags"}:
             continue
         category = key == "optical_groups"
         filename = f"{key}.tif"

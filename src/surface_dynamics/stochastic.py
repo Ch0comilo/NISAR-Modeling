@@ -7,33 +7,89 @@ def matern(t,ell,amplitude):
     distance=np.sqrt(3)*abs(t[:,None]-t[None,:])/ell
     return amplitude**2*(1+distance)*np.exp(-distance)
 
-def smooth_observations(db,t,draws=256,seed=31):
-    rng=np.random.default_rng(seed);T,C,H,W=db.shape
-    means=np.full_like(db,np.nan);sd=np.full_like(db,np.nan);roi_draws=[];parameters=[]
-    for c in range(C):
-        flat=db[:,c].reshape(T,-1);complete=np.isfinite(flat).all(0)
-        values=flat[:,complete]
-        if values.shape[1]<8:
-            roi_draws.append(np.full((draws,T),np.nan));parameters.append({'status':'insufficient_support'});continue
-        offset=values.mean(0);z=values-offset
-        sample=z[:,np.linspace(0,z.shape[1]-1,min(64,z.shape[1]),dtype=int)]
-        cadence=float(np.median(np.diff(t)));span=float(t[-1]-t[0]);amp=max(float(np.sqrt(np.mean(sample**2))),.1)
+def smooth_observations(db, t, draws=256, seed=31):
+    rng = np.random.default_rng(seed)
+    dates, channels, _, _ = db.shape
+    t = np.asarray(t, dtype=float)
+    if (len(t) != dates or dates < 3 or not np.isfinite(t).all() or np.any(np.diff(t) <= 0)):
+        raise ValueError("GP smoothing requires at least three matching finite, increasing observation times.")
+    means = np.full(db.shape, np.nan, dtype=float)
+    sd = np.full_like(means, np.nan)
+    roi_draws = np.full((draws, channels, dates), np.nan)
+    observed_means = np.full((channels, dates), np.nan)
+    parameters = []
+    cadence, span = float(np.median(np.diff(t))), float(t[-1] - t[0])
+    eye = np.eye(dates)
+    bounds = np.log([[cadence / 2, span * 2], [.05, 20], [.05, 10]])
+    for channel in range(channels):
+        flat = db[:, channel].reshape(dates, -1)
+        complete = np.isfinite(flat).all(axis=0)
+        values = flat[:, complete].astype(float)
+        count = values.shape[1]
+        if count:
+            observed_means[channel] = values.mean(axis=1)
+        if count < 8:
+            parameters.append({"status": "insufficient_support", "supported_cells": count})
+            continue
+        offset = values.mean(axis=0)
+        centered = values - offset
+        if np.max(np.ptp(values, axis=0)) < 1e-6:
+            parameters.append({"status": "constant_history", "supported_cells": count})
+            continue
+        sample = centered[:, np.linspace(0, count - 1, min(64, count), dtype=int)]
+        amplitude = max(float(np.sqrt(np.mean(sample ** 2))), .1)
+
         def loss(logp):
-            ell,a,noise=np.exp(logp);K=matern(t,ell,a)+np.eye(T)*(noise**2+1e-6)
-            cf=cho_factor(K,lower=True);sol=cho_solve(cf,sample)
-            return float(.5*np.sum(sample*sol)/sample.shape[1]+np.log(np.diag(cf[0])).sum())
-        fit=minimize(loss,np.log([max(cadence,span/5),amp,max(.1,amp/3)]),method='L-BFGS-B',bounds=np.log([[cadence/2,span*2],[.05,20],[.05,10]]),options={'maxiter':80})
-        ell,a,noise=np.exp(fit.x);signal=matern(t,ell,a);K=signal+np.eye(T)*(noise**2+1e-6)
-        cf=cho_factor(K,lower=True);A=signal@cho_solve(cf,np.eye(T))
-        cov=signal-A@signal;cov=(cov+cov.T)/2
-        eig,V=np.linalg.eigh(cov);L=V@np.diag(np.sqrt(np.maximum(eig,0)))
-        out=offset+A@z
-        means[:,c].reshape(T,-1)[:,complete]=out
-        sd[:,c].reshape(T,-1)[:,complete]=np.sqrt(np.maximum(np.diag(cov),0))[:,None]
-        # Representative ROI posterior uses the same fitted covariance; it is not a sampling-error CI.
-        roi=out.mean(1);roi_draws.append(roi[None]+rng.standard_normal((draws,T))@L.T)
-        parameters.append({'status':'fit_returned','optimizer_success':bool(fit.success),'length_days':float(ell),'signal_sd_db':float(a),'residual_sd_db':float(noise),'residual_at_lower_bound':bool(noise<.0501),'fit_pixels':sample.shape[1],'kernel':'Matern32','covariance_min_eigenvalue':float(eig.min())})
-    return {'mean_db':means,'sd_db':sd,'region_draws_db':np.stack(roi_draws,axis=1),'parameters':parameters,'interpretation':'Conditional empirical-Bayes latent-state distribution at observed dates. Regional mean is treated as one scalar process with the shared fitted pixel covariance; its variance is not reduced by pixel count. Hyperparameter, mean and model uncertainty are omitted; residual variance is not identified speckle noise. Not calibrated sensor uncertainty.'}
+            length, signal_sd, noise = np.exp(logp)
+            covariance = matern(t, length, signal_sd) + eye * (noise ** 2 + 1e-6)
+            factor = cho_factor(covariance, lower=True)
+            solved = cho_solve(factor, sample)
+            return float(.5 * np.sum(sample * solved) / sample.shape[1] + np.log(np.diag(factor[0])).sum())
+
+        initial = np.log([max(cadence, span / 5), amplitude, max(.1, amplitude / 3)])
+        fit = minimize(loss, initial, method="L-BFGS-B", bounds=bounds, options={"maxiter": 80})
+        if not fit.success or not np.isfinite(fit.x).all():
+            parameters.append({"status": "fit_unavailable", "optimizer_success": False,
+                               "supported_cells": count})
+            continue
+        length, signal_sd, noise = np.exp(fit.x)
+        signal = matern(t, length, signal_sd)
+        factor = cho_factor(signal + eye * (noise ** 2 + 1e-6), lower=True)
+        weights = cho_solve(factor, signal).T
+        covariance = signal - weights @ signal
+        covariance = (covariance + covariance.T) / 2
+        eigenvalues, vectors = np.linalg.eigh(covariance)
+        lower = vectors * np.sqrt(np.maximum(eigenvalues, 0))
+        fitted = offset + weights @ centered
+        means[:, channel].reshape(dates, -1)[:, complete] = fitted
+        sd[:, channel].reshape(dates, -1)[:, complete] = np.sqrt(np.maximum(np.diag(covariance), 0))[:, None]
+        roi_draws[:, channel] = fitted.mean(axis=1) + rng.standard_normal((draws, dates)) @ lower.T
+        parameters.append({"status": "fit_returned", "optimizer_success": True, "length_days": float(length),
+                           "signal_sd_db": float(signal_sd), "residual_sd_db": float(noise),
+                           "residual_at_lower_bound": bool(noise < .0501), "fit_pixels": sample.shape[1],
+                           "supported_cells": count, "kernel": "Matern32",
+                           "covariance_min_eigenvalue": float(eigenvalues.min())})
+    return {"mean_db": means, "sd_db": sd, "region_draws_db": roi_draws, "observed_mean_db": observed_means,
+            "parameters": parameters,
+            "interpretation": "Conditional empirical-Bayes latent-state distribution at observed dates. The representative regional process uses the fitted pixel covariance. Bands omit parameter and model uncertainty. Residual scale is not measured sensor noise."}
+
+
+def historical_series(result, dates, polarizations):
+    """Machine-readable measured means and conditional latent bands on the fit support."""
+    records = {}
+    for index, pol in enumerate(polarizations):
+        parameters = result["parameters"][index]
+        measured = result["observed_mean_db"][index]
+        quantiles = None
+        if parameters["status"] == "fit_returned":
+            quantiles = np.quantile(result["region_draws_db"][:, index], [.025, .1, .5, .9, .975], axis=0)
+        records[str(pol)] = {"status": parameters["status"], "supported_cells": parameters["supported_cells"],
+                             "series": [{"date": str(day), "observed_mean_db": float(measured[i]),
+                                         "latent_median_db": float(quantiles[2, i]) if quantiles is not None else None,
+                                         "conditional_80_db": quantiles[[1, 3], i].tolist() if quantiles is not None else None,
+                                         "conditional_95_db": quantiles[[0, 4], i].tolist() if quantiles is not None else None}
+                                        for i, day in enumerate(dates) if np.isfinite(measured[i])]}
+    return records
 
 
 def reconstruct_internal_gp(values,present,t,hidden):

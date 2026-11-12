@@ -25,13 +25,15 @@ def reference_groups(reference,policy=POLICY):
     return groups
 
 
-def match_controls(baseline_db,positive,dry,tolerance_db=2.):
+def match_controls(baseline_db,positive,dry,tolerance_db=2.,*,maximum_candidates=16):
     """Unique nearest neighbors using *baseline only*, never post-event SAR."""
+    if type(maximum_candidates) is not int or not 1 <= maximum_candidates <= 128:
+        raise ValueError('Choose 1 to 128 control candidates')
     features=baseline_db.reshape(baseline_db.shape[0],-1).T
     valid=np.isfinite(features).all(1);positive_ids=np.flatnonzero(positive.ravel()&valid);dry_ids=np.flatnonzero(dry.ravel()&valid)
     matched=np.zeros(positive.shape,bool);matched_positive=np.zeros_like(matched)
     if not len(positive_ids) or not len(dry_ids):return matched,matched_positive,{'positive_pixels':len(positive_ids),'matched_control_pixels':0,'matched_positive_pixels':0,'matched_fraction':0. if len(positive_ids) else None}
-    tree=cKDTree(features[dry_ids]);distances,neighbors=tree.query(features[positive_ids],k=min(16,len(dry_ids)))
+    tree=cKDTree(features[dry_ids]);distances,neighbors=tree.query(features[positive_ids],k=min(maximum_candidates,len(dry_ids)))
     if distances.ndim==1:distances=distances[:,None];neighbors=neighbors[:,None]
     used=set();differences=[]
     for row in np.argsort(distances[:,0],kind='stable'):
@@ -43,7 +45,7 @@ def match_controls(baseline_db,positive,dry,tolerance_db=2.):
     matched.ravel()[list(used)]=True
     return matched,matched_positive,{'positive_pixels':len(positive_ids),'matched_control_pixels':len(used),'matched_positive_pixels':int(matched_positive.sum()),'matched_fraction':len(used)/len(positive_ids),
                     'baseline_mean_positive_minus_control_db_by_channel':np.mean(differences,axis=0).tolist() if differences else None,
-                    'criterion':'unique baseline co-/cross-pol levels within declared dB tolerance; at most 16 nearest candidates; contrast uses matched positives only; not causal matching on all confounders'}
+                    'criterion':f'unique baseline co-/cross-pol levels within declared dB tolerance; at most {maximum_candidates} nearest candidates; contrast uses matched positives only; not causal matching on all confounders'}
 
 
 def spatial_contrast(delta,positive,control,policy=POLICY):
