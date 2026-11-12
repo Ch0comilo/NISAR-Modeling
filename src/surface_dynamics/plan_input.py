@@ -8,11 +8,6 @@ from datetime import datetime
 import logging
 import re
 
-import numpy as np
-from rasterio.features import geometry_mask
-from rasterio.transform import from_origin
-from rasterio.warp import transform_geom
-
 LOG = logging.getLogger(__name__)
 HOST = "https://nisar.asf.earthdatacloud.nasa.gov"
 COLLECTION_PATHS = {
@@ -83,6 +78,12 @@ def prefetch_chips(entries, chip_path, fetch, workers=None):
 
 def summarize_aoi(cube, arrays, geometry, polarizations):
     """Count the cells of the lens window inside a polygon: measured, and departing the baseline."""
+    # The gateway image has no numpy or rasterio and imports this module through the contracts.
+    import numpy as np
+    from rasterio.features import geometry_mask
+    from rasterio.transform import from_origin
+    from rasterio.warp import transform_geom
+
     x, y, epsg = np.asarray(cube["x"]), np.asarray(cube["y"]), int(cube["epsg"])
     dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
     grid = from_origin(x[0] - dx / 2, y[0] + dy / 2, dx, dy)

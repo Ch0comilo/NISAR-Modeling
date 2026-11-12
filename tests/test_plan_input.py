@@ -248,3 +248,14 @@ class AoiPathTests(AoiSummaryTests):
                  patch("surface_dynamics.explore.measure", side_effect=measure):
                 result = run_explore({**BODY, "aoi": self.polygon(499995, 2999800, 500200, 3000005)}, out, cache)
         self.assertNotIn("aoi_summary", result)
+
+
+class GatewayImageTests(TestCase):
+    def test_the_contracts_import_without_numpy_or_rasterio(self):
+        import subprocess
+        import sys
+        code = ("import sys, surface_dynamics.service_contracts; "
+                "heavy = {'numpy', 'rasterio', 'scipy'} & set(sys.modules); "
+                "sys.exit(1 if heavy else 0)")
+        done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stderr)
