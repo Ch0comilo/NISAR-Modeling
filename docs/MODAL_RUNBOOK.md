@@ -1,5 +1,11 @@
 # Modal runbook
 
+## Stage and verify a case bundle
+
+Build the prepared case directory with `python scripts/prepare_api_cases.py --output <directory>` after restoring release fixtures. Use a separate staging app and job Dict. Upload the generated directory to the test Volume under a new `cases-...` name, then set `NISAR_CASES_PATH` to that name in the deploying shell. Defaults continue to read `/cases`. A versioned directory lets a later deployment switch the case set while keeping older files available.
+
+Deploy a clean commit and compare `/health` and `/v2/capabilities` to the local Git SHA and normalized build fingerprint. The fingerprint covers shipped Python, schemas, model assets, pinned dependencies and the science explorer HTML. CRLF and LF text normalize to the same hash. Verify prepared PNG/COG assets, a measured job and its cache replay on staging before promotion.
+
 ## Verify and rotate the Earthdata secret
 
 The worker expects EARTHDATA_TOKEN in a Modal Secret. The gateway uses public catalog reads. The project default points to the existing nisar-explorer-preview secret in main. Use a new Secret name if the old one is shared. Enter the new value in Modal's Secret UI, set NISAR_EARTHDATA_SECRET to that resource name in the deployment shell and redeploy. Run a bounded measured job, check its science_status and revoke the old token after verification. Keep token values out of Git, job JSON, terminal command arguments and logs. The local DPAPI provider is Windows-only.

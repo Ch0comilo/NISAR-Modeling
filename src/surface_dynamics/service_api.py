@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from threading import RLock
 from time import monotonic
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from fastapi import FastAPI, Path as ApiPath, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -18,13 +18,14 @@ import requests
 from . import __version__
 from .catalog import group_entries, search
 from .service_artifacts import ASSET_LIMIT
-from .service_contracts import ApiError, Case, CoverageQuery, Hazard, Job, JobRequest, LegacyEvidence, Latitude, Longitude
+from .service_contracts import (ApiError, Case, CoverageQuery, Hazard, Job, JobRequest,
+                                LegacyEvidence, Latitude, Longitude, VisualizationRecipe)
 from .service_state import Rejected
 
 
 CaseID = Annotated[str, ApiPath(pattern=r"^[a-z][a-z0-9-]{0,63}$")]
 JobID = Annotated[str, ApiPath(pattern=r"^[a-f0-9]{32}$")]
-AssetName = Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9_-]{1,180}\.(png|tif|nc|csv|geojson)$")]
+AssetName = Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9_-]{1,180}\.(png|gif|tif|nc|csv|geojson)$")]
 ORIGINS = ["https://nisar-hazard-watch.vercel.app", "http://localhost:5173"]
 PUBLIC_CACHE = "public, max-age=300"
 MAX_BODY = 8192
@@ -101,7 +102,8 @@ def artifact_response(body, asset, request):
     return Response(body, headers=headers, media_type=asset["media_type"])
 
 
-def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str | None = None):
+def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str | None = None,
+               git_sha: str | None = None, cases_path: str = "cases"):
     results = Results(root, reload)
     rate = OrderedDict()
     rate_lock = RLock()
@@ -160,7 +162,8 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "api_version": "2.0", "science_version": __version__}
+        return {"status": "ok", "api_version": "2.0", "science_version": __version__,
+                "revision": jobs.revision, "git_sha": git_sha}
 
     if observation_page is not None:
         @app.get("/mock", response_class=HTMLResponse, include_in_schema=False)
@@ -169,11 +172,12 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
 
     @app.get("/v2/capabilities")
     def capabilities():
-        return {"api_version": "2.0", "science_version": __version__, "revision": jobs.revision,
+        return {"api_version": "2.0", "science_version": __version__, "revision": jobs.revision, "git_sha": git_sha,
                 "radar_band": "L", "window_days_limit": 366, "live_date_limit": 5,
                 "gunw_pair_limit": 3, "public_job_timeout_seconds": 240,
                 "daily_new_jobs_per_ip": jobs.jobs_per_ip_day, "daily_new_jobs_total": jobs.jobs_per_day,
                 "measurement": ["GCOV gamma0", "signed dB change", "GUNW coherence", "wrapped phase"],
+                "visualization_recipes": list(get_args(VisualizationRecipe)),
                 "forecast": None, "classification": None, "los_displacement_cm": None,
                 "origins": ORIGINS, "case_mode": "precomputed", "point_shape": "native square window"}
 
@@ -193,17 +197,17 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
     @app.get("/v2/cases", response_model=list[Case])
     def cases(response: Response):
         response.headers["Cache-Control"] = PUBLIC_CACHE
-        return results.json("cases/index.json")
+        return results.json(f"{cases_path}/index.json")
 
     @app.get("/v2/cases/{case_id}", response_model=Case)
     def case(case_id: CaseID, response: Response):
         response.headers["Cache-Control"] = PUBLIC_CACHE
-        return results.json(f"cases/{case_id}/manifest.json")
+        return results.json(f"{cases_path}/{case_id}/manifest.json")
 
     @app.get("/v2/cases/{case_id}/series")
     def series(case_id: CaseID, response: Response):
         response.headers["Cache-Control"] = PUBLIC_CACHE
-        return results.json(f"cases/{case_id}/series.json")
+        return results.json(f"{cases_path}/{case_id}/series.json")
 
     @app.post("/v2/jobs", response_model=Job, status_code=202, responses={200: {"model": Job}})
     def submit(body: JobRequest, request: Request, response: Response):
@@ -228,7 +232,7 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
 
     @app.get("/v2/cases/{case_id}/layers/{name}")
     def case_layer(case_id: CaseID, name: AssetName, request: Request):
-        folder = f"cases/{case_id}"
+        folder = f"{cases_path}/{case_id}"
         return serve_artifact(folder, results.json(f"{folder}/assets.json"), name, request)
 
     @app.get("/v2/jobs/{job_id}/layers/{name}")
@@ -246,7 +250,7 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
             raise Rejected(409, "contract_upgrade_required", "Opt into contract=2 and render measured evidence.")
         if (lon is None) != (lat is None):
             raise Rejected(422, "invalid_request", "Supply both lon and lat, or omit both.")
-        for row in results.json("cases/index.json"):
+        for row in results.json(f"{cases_path}/index.json"):
             t, _, f, *_ = row["series_key"].split("_")
             if (track, frame) != (int(t), int(f)):
                 continue

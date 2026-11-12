@@ -1,6 +1,6 @@
 # NISAR observation mock
 
-Open the [hosted observation mock](https://ch0comilo--nisar-evidence-api.us-east.modal.run/mock) in a phone or desktop browser. The hosted mock uses the public Modal API from the same address.
+Open `/mock` on the deployed science API in a phone or desktop browser. The science explorer uses that API from the same address. Choose a prepared case to view the published layers without submitting a new job. Richmond includes both HH/HV and VV/VH combinations.
 
 1. Tap **Search catalog** with the default Forest River point and date window.
 2. Choose series `099_D_064_4005_DHDH`, baseline through **2026-10-07**, and target **2026-10-19**.

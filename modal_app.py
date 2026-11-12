@@ -3,7 +3,9 @@ from hashlib import sha256
 import logging
 import os
 from pathlib import Path
+import re
 from shutil import copy2
+from subprocess import CalledProcessError, check_output
 from tempfile import TemporaryDirectory
 
 import modal
@@ -15,6 +17,9 @@ APP_NAME = os.environ.get("NISAR_APP_NAME", "nisar-evidence-api")
 VOLUME_NAME = os.environ.get("NISAR_VOLUME", "nisar-evidence-v2")
 SECRET_NAME = os.environ.get("NISAR_EARTHDATA_SECRET", "nisar-explorer-preview")
 STATE_NAME = os.environ.get("NISAR_STATE_DICT", f"{APP_NAME}-jobs")
+CASES_PATH = os.environ.get("NISAR_CASES_PATH", "cases")
+if not re.fullmatch(r"cases(?:-[a-z0-9-]{1,60})?", CASES_PATH):
+    raise ValueError("Use a cases directory name such as cases or cases-2026-11.")
 DEPS = ("fastapi==0.129.0", "pydantic==2.12.5", "requests==2.34.2")
 app = modal.App(APP_NAME)
 volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
@@ -23,22 +28,40 @@ state = modal.Dict.from_name(STATE_NAME, create_if_missing=True)
 def revision():
     digest = sha256()
     for item in [ROOT / "modal_app.py", ROOT / "requirements-lock.txt",
+                 ROOT / "scripts" / "observation-mock" / "index.html",
                  *sorted((ROOT / "src" / "surface_dynamics").rglob("*.py")),
                  *sorted((ROOT / "src" / "surface_dynamics" / "schemas").glob("*.json")),
                  *sorted((ROOT / "models" / "global_explorer_v2").glob("*.npz")),
                  ROOT / "models" / "global_explorer_v2" / "masked_temporal_transformer.pt"]:
         digest.update(item.relative_to(ROOT).as_posix().encode())
-        digest.update(sha256(item.read_bytes()).digest())
+        payload = item.read_bytes()
+        if item.suffix in {".py", ".json", ".html", ".txt"}:
+            payload = payload.replace(b"\r\n", b"\n")
+        digest.update(sha256(payload).digest())
     return digest.hexdigest()[:24]
+
+def git_sha():
+    try:
+        dirty = check_output(["git", "status", "--porcelain", "--untracked-files=all", "--",
+                              "modal_app.py", "requirements-lock.txt", "scripts/observation-mock/index.html",
+                              "src/surface_dynamics", "models/global_explorer_v2"], cwd=ROOT)
+        if not dirty:
+            return check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    except (OSError, CalledProcessError):
+        pass
+    return None
+
 
 # The SDK evaluates this module in the container too, where the revision comes from the image.
 REVISION = os.environ.get("NISAR_BUILD_REVISION") or revision()
+GIT_SHA = (os.environ["NISAR_BUILD_GIT_SHA"] or None) if "NISAR_BUILD_GIT_SHA" in os.environ else git_sha()
 common = modal.Image.debian_slim(python_version="3.13").env(
     {"PYTHONPATH": "/opt/nisar", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MPLBACKEND": "Agg"}
 )
 runtime_config = {
     "NISAR_BUILD_REVISION": REVISION, "NISAR_APP_NAME": APP_NAME, "NISAR_VOLUME": VOLUME_NAME,
     "NISAR_STATE_DICT": STATE_NAME, "NISAR_EARTHDATA_SECRET": SECRET_NAME,
+    "NISAR_BUILD_GIT_SHA": GIT_SHA or "", "NISAR_CASES_PATH": CASES_PATH,
 }
 package = ROOT / "src" / "surface_dynamics"
 MOCK_HTML = "/opt/nisar/observation-mock.html"
@@ -97,10 +120,11 @@ def worker(body, job_id):
 @app.function(image=gateway_image, volumes={str(STORAGE): volume}, cpu=(.125, .25), memory=(256, 512),
               timeout=20, max_containers=1, scaledown_window=5)
 @modal.concurrent(max_inputs=16)
-@modal.asgi_app(label="nisar-evidence-api")
+@modal.asgi_app(label=APP_NAME)
 def api():
     from surface_dynamics.service_api import create_app
     from surface_dynamics.service_state import JobStore
 
     return create_app(STORAGE, JobStore(state, worker.spawn, REVISION), reload=volume.reload,
-                      observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"))
+                      observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"),
+                      git_sha=GIT_SHA, cases_path=CASES_PATH)

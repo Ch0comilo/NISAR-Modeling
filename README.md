@@ -126,7 +126,7 @@ Restore the regional cubes and InSAR pairs from the checksummed release asset, t
 .venv\Scripts\python.exe -m surface_dynamics probe contracts\examples\hokkaido-v2-probe.json --output products\probes\hokkaido-v2.json
 ```
 
-No Earthdata credentials are needed for these downloaded fixtures. The release ZIP also contains the source, wheel, model weights, provenance and offline examples. The helper verifies its checksum and restores only measured fixtures; it refuses to overwrite different existing measurements.
+No Earthdata credentials are needed for these downloaded fixtures. The release ZIP also contains the source, wheel, model weights, provenance and offline examples. The helper verifies its checksum and restores only measured fixtures. It refuses to overwrite different existing measurements. The Hokkaido probe reads `surface_dynamics.nc` from the analysis output path above. Run the analysis before probing.
 
 For a live worldwide point/date request:
 
@@ -220,4 +220,4 @@ python scripts/smoke_api.py <deployed-url> --live
 
 Serve opens a temporary Modal URL with reload on code changes. Run the smoke command in a second terminal and stop serve when finished. The deployed URL is printed by deploy. The --live smoke option submits one catalog-only job and verifies deduplication. The frontend must opt into the new contract before setting its base URL.
 
-Use the [hosted observation mock](https://ch0comilo--nisar-evidence-api.us-east.modal.run/mock) to try live catalog selection, lens comparisons, and the model in a browser. The [mock guide](scripts/observation-mock/README.md) also covers running measured fixtures from a checkout.
+The Modal science explorer shows original and derived radar views from its API. See the [visualization contract](docs/API.md#radar-visualizations), [frontend handoff](docs/FRONTEND_REQUESTS.md) and [preview guide](scripts/observation-mock/README.md).

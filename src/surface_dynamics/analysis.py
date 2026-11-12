@@ -3,6 +3,9 @@ import numpy as np
 from scipy.ndimage import gaussian_filter
 
 
+POLARIZATION_PAIRS = (("HH", "HV"), ("VV", "VH"))
+
+
 def supported_reduction(values,function):
     support=np.isfinite(values).any(0)
     result=np.full(values.shape[1:],np.nan,dtype='float64')

@@ -255,7 +255,7 @@ class Handler(BaseHTTPRequestHandler):
             if match:
                 return self.modal("/v2/jobs/" + match[1])
             match = re.fullmatch(
-                r"/modal(/v2/jobs/[a-f0-9]{32}/layers/[A-Za-z0-9_-]{1,180}\.(?:png|tif|nc|csv|geojson))", url.path,
+                r"/modal(/v2/jobs/[a-f0-9]{32}/layers/[A-Za-z0-9_-]{1,180}\.(?:png|gif|tif|nc|csv|geojson))", url.path,
             )
             if match:
                 return self.modal(match[1], artifact=True)

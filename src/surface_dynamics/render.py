@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from PIL import Image
 from io import BytesIO
+from .analysis import POLARIZATION_PAIRS
 
 BG='#0b1221';FG='#e9eef7';MUTED='#a7b6ce'
 
@@ -17,12 +18,20 @@ def extent(cube):
     return [(x[0]-dx/2)/1000,(x[-1]+dx/2)/1000,(y[-1]-dy/2)/1000,(y[0]+dy/2)/1000]
 
 def rgb_power(db,pols):
-    names=list(map(str,pols));co=names.index('HH') if 'HH' in names else names.index('VV') if 'VV' in names else 0
-    cross=names.index('HV') if 'HV' in names else names.index('VH') if 'VH' in names else None
-    a=db[co];scale=lambda v,lo,hi:np.clip((v-lo)/(hi-lo),0,1)
-    if cross is None:rgb=np.repeat(scale(a,-25,0)[...,None],3,-1)
-    else:rgb=np.stack([scale(a,-25,0),scale(db[cross],-32,-5),scale(db[cross]-a,-18,-2)],-1)
-    rgb[~np.isfinite(db).all(0)]=[.03,.04,.07]
+    names = list(map(str, pols))
+    pair = next(((co, cross) for co, cross in POLARIZATION_PAIRS if co in names and cross in names), None)
+    if pair is None:
+        band = next((name for name in ("HH", "VV") if name in names), names[0])
+        values = db[names.index(band)]
+        rgb = np.repeat(np.clip((values + 25) / 25, 0, 1)[..., None], 3, axis=-1)
+        support = np.isfinite(values)
+    else:
+        co, cross = (db[names.index(name)] for name in pair)
+        rgb = np.stack([np.clip((co + 25) / 25, 0, 1),
+                        np.clip((cross + 32) / 27, 0, 1),
+                        np.clip((cross - co + 18) / 16, 0, 1)], axis=-1)
+        support = np.isfinite(co) & np.isfinite(cross)
+    rgb[~support] = [.03, .04, .07]
     return rgb
 
 def save(fig,path):

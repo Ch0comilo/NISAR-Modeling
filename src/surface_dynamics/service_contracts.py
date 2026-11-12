@@ -12,6 +12,8 @@ SeriesKey = Annotated[str, Field(pattern=r"^\d{3}_[AD]_\d{3}_\d{4}_[A-Z0-9]{2,4}
 PairID = Annotated[str, Field(pattern=r"^NISAR_L2_[A-Za-z0-9_]{1,170}$")]
 Hazard = Literal["wildfire", "flood", "deforestation", "earthquake"]
 Lens = Literal["flood_wetland", "vegetation_disturbance", "wildfire", "agriculture"]
+VisualizationRecipe = Literal["polarization_rgb", "cross_co_ratio", "cross_co_ratio_change",
+                              "three_date_rgb", "temporal_median", "temporal_mad"]
 
 
 class Contract(BaseModel):
@@ -113,6 +115,30 @@ class Layer(Contract):
     legend: dict[str, str] | None = None
 
 
+class VisualizationComponent(Contract):
+    band: str
+    label: str
+    polarizations: list[str]
+    display_db: tuple[float, float]
+
+
+class Visualization(Contract):
+    id: str
+    recipe: VisualizationRecipe
+    title: str
+    dates: list[date]
+    interpretation: str
+    components: list[VisualizationComponent]
+    colormap: str
+    supported_cells: int
+    total_cells: int
+    grid: Grid
+    bounds: tuple[float, float, float, float]
+    crs: Literal["EPSG:4326"] = "EPSG:4326"
+    png_url: str
+    cog_url: str
+
+
 class Case(Contract):
     api_version: Literal["2.0"] = "2.0"
     id: str
@@ -125,6 +151,7 @@ class Case(Contract):
     status: str
     evidence: dict
     layers: list[Layer]
+    visualizations: list[Visualization] = Field(default_factory=list)
     series_url: str
     isDemo: Literal[False] = False
 

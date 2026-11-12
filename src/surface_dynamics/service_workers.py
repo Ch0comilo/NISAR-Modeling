@@ -6,11 +6,22 @@ from pathlib import Path
 from time import perf_counter
 from tempfile import TemporaryDirectory
 
-from .service_artifacts import data_layers, publish_files, render_layer, write_json
+from .service_artifacts import (UnrepresentableDisplayGrid, data_layers, publish_files, published_layers,
+                                render_layer, write_json)
 
 
 LOG = logging.getLogger(__name__)
 MODEL = "models/global_explorer_v2/masked_temporal_transformer.pt"
+PREVIEWS = {
+    "physical.png": ("Observed surface dynamics", "descriptive"),
+    "observed_evolution.gif": ("Measured acquisition animation", "descriptive"),
+    "spectral.png": ("Candidate temporal and spatial frequencies", "experimental"),
+    "time_frequency.png": ("Candidate time-frequency structure", "experimental"),
+    "stochastic.png": ("Historical Gaussian-process fit", "conditional_model"),
+    "learned.png": ("Frozen Transformer representation", "experimental"),
+    "learned_evolution.gif": ("Learned state at observed dates", "experimental"),
+    "controlled_dynamics.gif": ("Learned contrast against constant trajectory", "experimental"),
+}
 
 
 def run_explore(body, out, cache):
@@ -39,7 +50,8 @@ def run_explore(body, out, cache):
     if followup:
         status, lens, paths = followup
         evidence = enrich_lens(query, lens, paths, cache / "optical", out)
-        state.update(status=status, lens={**lens, "evidence": evidence})
+        state.update(status=status, phase=None, lens={**lens, "evidence": evidence})
+        attempts[-1]["status"] = status
     return {**state, "coverage": coverage, "series_key": key, "series_attempts": attempts}
 
 
@@ -132,8 +144,11 @@ def live_layers(out, prefix, operation):
                     units, cmap, stretch = "dB", "gray", (-30, 0)
                 else:
                     continue
-                layers.append(render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
-                                           units=units, cmap=cmap, stretch=stretch))
+                try:
+                    layers.append(render_layer(out, prefix, name, source.read(band), x, y, source.crs.to_epsg(),
+                                               units=units, cmap=cmap, stretch=stretch))
+                except UnrepresentableDisplayGrid:
+                    continue
     return layers
 
 
@@ -155,17 +170,43 @@ def execute_job(body, job_id, out, cache, revision):
     cache.mkdir(parents=True, exist_ok=True)
     raw = process(body, job_id, out, cache)
     prefix = f"/v2/jobs/{job_id}/layers"
-    layers = live_layers(out, prefix, body["operation"])
+    render_start = perf_counter()
+    try:
+        layers = live_layers(out, prefix, body["operation"])
+    except UnrepresentableDisplayGrid:
+        layers = []
+    visualizations = []
+    if body["operation"] == "explore" and raw.get("observations"):
+        from .service_visualizations import gcov_tiff_frames, render_gcov_visualizations
+
+        observations = raw["observations"]
+        pair = raw.get("comparison") or {}
+        requested_dates = body.get("compare_dates")
+        target = requested_dates[-1] if requested_dates else observations[-1]["date"]
+        comparison_dates = pair["dates"] if pair.get("status") == "available" else ()
+        try:
+            visualizations = render_gcov_visualizations(out, prefix, gcov_tiff_frames(out, observations),
+                                                        target, comparison_dates)
+        except UnrepresentableDisplayGrid:
+            pass
+    visualization_seconds = perf_counter() - render_start
     assets = publish_files(out, prefix)
-    allowed = {asset["href"] for asset in assets}
-    layers = [layer for layer in layers if {layer["png_url"], layer["cog_url"]} <= allowed]
-    raw.pop("artifacts", None)
+    science_artifacts = {asset["href"]: asset for asset in raw.pop("artifacts", [])}
+    previews = []
+    for asset in assets:
+        name = asset["name"]
+        if name in PREVIEWS and name in science_artifacts:
+            title, interpretation = PREVIEWS[name]
+            previews.append({"href": asset["href"], "title": title, "interpretation": interpretation,
+                             "legend": science_artifacts[name].get("legend")})
     raw = published_science(raw, {asset["name"]: asset["href"] for asset in assets})
     if raw.get("status") in {"failed", "unavailable"}:
         raise RuntimeError("The scientific source could not be read.")
     result = {"operation": body["operation"], "science_status": raw["status"], "revision": revision,
               "point": [body["longitude"], body["latitude"]], "isDemo": False if assets else None,
-              "science": raw, "layers": layers, "artifacts": assets,
+              "science": raw, "layers": published_layers(layers, assets), "artifacts": assets,
+              "visualizations": published_layers(visualizations, assets), "previews": previews,
+              "visualization_seconds": round(visualization_seconds, 3),
               "elapsed_seconds": round(perf_counter() - start, 3)}
     write_json(out / "manifest.json", result)
     LOG.info("job=%s operation=%s science_status=%s assets=%d seconds=%.3f",

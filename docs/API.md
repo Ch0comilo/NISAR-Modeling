@@ -6,8 +6,8 @@ The API serves provisional or beta NISAR L-band observations and descriptive sci
 
 | Method and path | Response |
 | --- | --- |
-| GET /health | API and worker-package versions |
-| GET /v2/capabilities | Deployed revision, input limits, daily job quotas, data band and unsupported science claims |
+| GET /health | API and worker versions, normalized build fingerprint in `revision`, and source `git_sha` when available |
+| GET /v2/capabilities | Deployed identity, supported visualization recipes, input limits, quotas and unsupported science claims |
 | GET /v2/openapi.json | Generated OpenAPI with JSON Schema components from the Pydantic models |
 | GET /v2/coverage | Public CMR footprint records grouped by compatible series, with exact acquisition dates and granule titles |
 | GET /v2/cases | Precomputed case index with query points, north-up native CRS, pixel-edge bounds, shape [height,width], and measured dates |
@@ -18,6 +18,27 @@ The API serves provisional or beta NISAR L-band observations and descriptive sci
 | GET /v2/jobs/{job_id} | Job status, error or result manifest |
 | GET /v2/jobs/{job_id}/layers/{name} | An artifact listed in the job manifest |
 | GET /frames/{track}-{frame}/analysis | Curated legacy URL with explicit contract=2 opt-in |
+
+## Radar visualizations
+
+Prepared GCOV case manifests and completed `explore` job results include `visualizations`. Each view supplies `id`, `recipe`, `title`, actual UTC `dates`, `interpretation`, `components`, `colormap`, `supported_cells` and `total_cells`. The counts are on the native grid before display reprojection. A cell must be valid for all inputs to the recipe. `grid` describes the numeric COG's native CRS, pixel-edge bounds, [height,width] and [x,y] posting in metres. `bounds` and `crs` describe the north-up display PNG in EPSG:4326. Use the individual PNG bounds when draping.
+
+| Recipe | Computation and display |
+| --- | --- |
+| `polarization_rgb` | On the target date, R = co-pol dB [−25,0], G = cross-pol dB [−32,−5], B = cross-pol minus co-pol dB [−18,−2]. Each measured HH/HV or VV/VH pair can produce its own view. This is false color for scattering balance. |
+| `cross_co_ratio` | Cross-pol dB minus co-pol dB, equivalent to 10 log₁₀(cross/co linear power). Viridis [−18,0] dB. |
+| `cross_co_ratio_change` | Later cross/co log ratio minus earlier cross/co log ratio on same-grid joint support across both dates and channels. Diverging [−8,+8] dB. The prepared case uses its last baseline pass and first assessment. The live job uses its measured A/B pair. |
+| `three_date_rgb` | Assign co-pol to R/G/B at the first, lower middle and target usable acquisitions. Each display range is [−25,0] dB. Three distinct dates are required. |
+| `temporal_median` | Per-channel median over at least three usable dates through the target, on complete per-channel support. Grayscale [−30,0] dB. |
+| `temporal_mad` | 1.4826 × median absolute deviation over the same dates and support. Magma [0,8] dB. This describes observed temporal variability. |
+
+`components` gives band order, label, source polarizations and fixed `display_db` range. RGB COGs carry three unclipped float dB bands for client-side mixing. Scalar COGs carry one unclipped float band. `png_url` and `cog_url` are relative to the API origin. NoData is transparent in PNGs. Live `artifacts` includes content hashes and sizes. Layer responses carry ETags.
+
+Unavailable recipes are omitted. A missing target does not borrow a different date. An HH/VH-only observation has no matched co-/cross-pol view. Incompatible native grids withhold cross-date combinations. Original measurements and signed channel differences remain in `layers`. Derived views describe measured L-band inputs and cannot identify a material or validate a hazard.
+
+`analysis` jobs can return `previews` with `href`, `title`, `interpretation` and optional `legend`. Available figures can include the physical dashboard, observed-date GIF, historical GP fit and experimental spectra or learned-model views. GIF playback spacing is cosmetic. The five-date live cap can withhold spectral products. Prepared Kumamoto also includes a common phase-support mask and adjacent-pair coherence contrasts. Pair durations may differ. Live GUNW wrapped phase is in radians. LOS displacement remains null.
+
+`visualization_seconds` measures job layer rendering from existing inputs. Derived views do not trigger archive reads. The one-minute roadmap target requires measurement by request tier, including archive retrieval and queue time.
 
 The CORS allowlist is https://nisar-hazard-watch.vercel.app and http://localhost:5173. All layer URLs are relative to the API origin. Use a fetch wrapper that preserves an AbortSignal and parses JSON errors with message and code. The API permits byte ranges and serves ETag and If-None-Match on artifacts. Case metadata and assets use public max-age=300. Coverage uses max-age=60. Job and error responses use no-store.
 

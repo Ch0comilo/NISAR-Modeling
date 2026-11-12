@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NISAR observation mock</title>
+<title>NISAR science explorer</title>
 <style>
 :root{font:16px/1.55 system-ui,sans-serif;color:#e4edf0;background:#111a20;color-scheme:dark}
 [hidden]{display:none!important}
@@ -19,10 +19,11 @@ pre,code{font:13px/1.5 ui-monospace,monospace}.muted{color:#aabdc7;font-size:.9r
 figcaption{font-size:.9rem}figure img{width:100%;max-height:320px;object-fit:contain;background:#0b1319;border:1px solid #394c57;border-radius:.35rem}
 #images .comparison{grid-column:1/-1}#images .comparison img{max-height:none}
 #images{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));margin-top:1rem}a{color:#a4dacc}
+#images h3{grid-column:1/-1;margin:.75rem 0 0}figcaption details{margin-top:.4rem}
 #granules{overflow-wrap:anywhere}
 @media(max-width:480px){body{padding:1rem}}
 </style>
-<h1>NISAR observation mock</h1>
+<h1>NISAR science explorer</h1>
 <nav id="sourceTabs" aria-label="Data source" hidden>
   <button id="liveTab" aria-pressed="true">Live catalog and Modal</button>
   <button id="localTab" aria-pressed="false">Measured fixtures</button>
@@ -42,6 +43,13 @@ figcaption{font-size:.9rem}figure img{width:100%;max-height:320px;object-fit:con
 </form>
 
 <section id="live">
+  <form id="prepared" hidden>
+    <fieldset>
+      <legend>Prepared NISAR measurements</legend>
+      <label>Case<select id="preparedCase"></select></label>
+      <div class="actions"><button>View case</button></div>
+    </fieldset>
+  </form>
   <form id="search">
     <fieldset>
       <legend>Find acquisition groups at a point</legend>
@@ -246,7 +254,12 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
     return {id:layer.id, title:title + " · " + layer.units,
       url:artifactUrl(layer.png_url), download:artifactUrl(layer.cog_url)};
   });
-  if (!layers.length) for (const asset of result.artifacts || []) {
+  const previews = (result.previews || []).map(preview => ({
+    title: preview.title + " · " + preview.interpretation.replaceAll("_", " "),
+    url: artifactUrl(preview.href),
+    details: preview.legend && Object.entries(preview.legend).map(([key, value]) => key + " · " + value),
+  }));
+  if (!layers.length && !previews.length) for (const asset of result.artifacts || []) {
     if (asset.media_type === "image/png") layers.push({title:asset.name,url:artifactUrl(asset.href)});
   }
   const science = result.science;
@@ -259,12 +272,47 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
     layers.splice(0, layers.length, ...new Set([...matched, ...layers]));
   }
   show("Modal · " + chosen.replaceAll("_"," "), result.science_status + " · " + result.elapsed_seconds +
-    " s worker · " + initialCache, layers, science.lens || {capabilities:science.capabilities,
+    " s worker · " + initialCache, gallery(result.visualizations, layers, previews),
+    science.lens || {capabilities:science.capabilities,
     observations:science.observations, comparison:science.comparison, quality:science.quality,
     median_coherence:science.median_coherence, los_displacement_cm:science.los_displacement_cm,
     reason:science.reason}, api + "/jobs/" + job.job_id);
   message("Modal result ready.");
 });
+function gallery(views, layers, previews = []) {
+  const derived = (views || []).map(view => ({
+    title: view.title,
+    url: artifactUrl(view.png_url),
+    download: artifactUrl(view.cog_url),
+    details: [view.interpretation, view.dates.join(" · "),
+      view.supported_cells + " of " + view.total_cells + " native cells",
+      ...view.components.map(item => item.band + " · " + item.label + " · display " +
+        item.display_db.join(" to ") + " dB")],
+  }));
+  return [
+    ["Combined radar views", derived],
+    ["Measurement layers", layers],
+    ["Scientific figures and animations", previews],
+  ].flatMap(([heading, images]) => images.length ? [{heading}, ...images] : []);
+}
+if (hosted) {
+  request(api + "/cases").then(cases => {
+    choices("preparedCase", cases.map(item => [item.id, item.title]));
+    el("prepared").hidden = !cases.length;
+  }).catch(() => {});
+  el("prepared").onsubmit = run(el("prepared"), async () => {
+    const link = api + "/cases/" + el("preparedCase").value;
+    const item = await request(link);
+    const series = await request(item.series_url);
+    const layers = item.layers.map(layer => ({
+      title: layer.id.replaceAll("_", " ") + " · " + layer.units,
+      url: layer.png_url, download: layer.cog_url,
+    }));
+    show(item.title, "Prepared measurement · " + item.status,
+      gallery(item.visualizations, layers), {evidence:item.evidence, series}, link);
+    message("");
+  });
+}
 function show(title, meta, images, metrics, link) {
   el("result").hidden = false;
   el("resultTitle").textContent = title;
@@ -272,6 +320,11 @@ function show(title, meta, images, metrics, link) {
   el("metrics").textContent = JSON.stringify(metrics, null, 2);
   el("fullReport").href = link;
   el("images").replaceChildren(...images.map(item => {
+    if (item.heading) {
+      const heading = document.createElement("h3");
+      heading.textContent = item.heading;
+      return heading;
+    }
     const figure = document.createElement("figure");
     if (item.comparison) figure.className = "comparison";
     const image = new Image(); image.src = item.url; image.alt = item.title; image.loading = "lazy";
@@ -280,6 +333,19 @@ function show(title, meta, images, metrics, link) {
     if (item.download) {
       const download = document.createElement("a");
       download.href = item.download; download.download = ""; download.textContent = "COG"; caption.append(" · ", download);
+    }
+    if (item.details?.length) {
+      const details = document.createElement("details");
+      const summary = document.createElement("summary");
+      summary.textContent = "Dates, support and color recipe";
+      const list = document.createElement("ul");
+      list.append(...item.details.map(text => {
+        const row = document.createElement("li");
+        row.textContent = text;
+        return row;
+      }));
+      details.append(summary, list);
+      caption.append(details);
     }
     return figure;
   }));

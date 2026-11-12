@@ -13,19 +13,14 @@ from surface_dynamics.analysis import measured_db
 from surface_dynamics.flood import process_flood
 from surface_dynamics.insar_stack import process_stack
 from surface_dynamics.io import load_cube
-from surface_dynamics.service_artifacts import data_layers, publish_files, write_json
+from surface_dynamics.service_artifacts import data_layers, native_grid, publish_files, published_layers, write_json
 from surface_dynamics.service_contracts import Case
+from surface_dynamics.service_visualizations import gcov_dataset_frames, render_gcov_visualizations
 from surface_dynamics.surface_features import from_db
 
 
 def read(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
-
-
-def native_grid(x, y, epsg):
-    dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
-    return {"crs": f"EPSG:{int(epsg)}", "bounds": [float(x[0]-dx/2), float(y[-1]-dy/2),
-            float(x[-1]+dx/2), float(y[0]+dy/2)], "shape": [len(y), len(x)], "posting_m": [dx, dy]}
 
 
 def series(cube, grid, point, observed, reference_groups, signature):
@@ -135,11 +130,19 @@ def build(root, output):
 def publish(destination, case_id, title, point, grid, key, before, after, status, evidence, *, coherence_index=0):
     prefix = f"/v2/cases/{case_id}"
     layers = data_layers(destination, prefix + "/layers", coherence_index=coherence_index)
+    visualizations = []
+    arrays = destination / "characterization_arrays.nc"
+    if arrays.is_file():
+        with xr.open_dataset(arrays, engine="h5netcdf") as ds:
+            visualizations = render_gcov_visualizations(destination, prefix + "/layers", gcov_dataset_frames(ds),
+                                                        after[0], (before[-1], after[0]))
+    assets = publish_files(destination, prefix + "/layers")
     manifest = Case(id=case_id, title=title, point=point, grid=grid, series_key=key,
                     baseline_dates=before, assessment_dates=after, status=status, evidence=evidence,
-                    layers=layers, series_url=prefix + "/series").model_dump(mode="json")
+                    layers=published_layers(layers, assets), visualizations=published_layers(visualizations, assets),
+                    series_url=prefix + "/series").model_dump(mode="json")
     write_json(destination / "manifest.json", manifest)
-    write_json(destination / "assets.json", publish_files(destination, prefix + "/layers"))
+    write_json(destination / "assets.json", assets)
     return manifest
 
 
