@@ -100,6 +100,39 @@ class ContractTests(TestCase):
         with self.assertRaises(ValidationError):
             JobRequest(**{**BODY, "scenes": SCENES + [SCENES[0]]})
 
+    def test_the_plan_must_agree_with_the_request_dates(self):
+        days = ["2026-06-20", "2026-07-25", "2026-08-30", "2026-10-05", "2026-11-10"]
+        bad = {
+            "scenes before the window": {"start_date": "2026-07-01"},
+            "scenes after the window": {"end_date": "2026-11-01"},
+            "comparison dates that are not planned days": {"compare_dates": ["2026-07-01", "2026-11-10"]},
+            "a baseline cutoff after every scene": {"baseline_end_date": "2026-11-10"},
+        }
+        for label, change in bad.items():
+            with self.subTest(label), self.assertRaises(ValidationError):
+                JobRequest(**{**BODY, **change})
+        good = JobRequest(**{**BODY, "compare_dates": [days[0], days[-1]], "baseline_end_date": days[2]})
+        self.assertEqual(good.baseline_end_date.isoformat(), days[2])
+
+    def test_an_area_needs_a_lens_and_a_closed_ring_and_the_window_is_a_multiple_of_eight(self):
+        ring = [[73.7, 32.3], [73.75, 32.3], [73.75, 32.34], [73.7, 32.3]]
+        polygon = {"type": "Polygon", "coordinates": [ring]}
+        no_lens = {key: value for key, value in BODY.items() if key != "lens"}
+        with self.assertRaises(ValidationError):
+            JobRequest(**{**no_lens, "aoi": polygon})
+        for bad_ring in (ring[:-1], ring[:3] + [[73.7, 32.31]], [[73.7, 32.3], [73.7, 32.3]]):
+            with self.subTest(ring=bad_ring), self.assertRaises(ValidationError):
+                JobRequest(**{**BODY, "aoi": {"type": "Polygon", "coordinates": [bad_ring]}})
+        with self.assertRaises(ValidationError):
+            JobRequest(**{**BODY, "window_pixels": 65})
+        with self.assertRaises(ValidationError):
+            JobRequest(**{**BODY, "aoi": {"type": "Polygon", "coordinates": [[[0, 89], [1, 89], [1, 90], [0, 89]]]}})
+
+    def test_the_scene_order_does_not_change_the_job_identity(self):
+        forward = JobRequest(**BODY)
+        backward = JobRequest(**{**BODY, "scenes": list(reversed(SCENES))})
+        self.assertEqual(canonical_job(forward, "r")[0], canonical_job(backward, "r")[0])
+
     def test_window_pixels_and_aoi_are_bounded_and_explore_only(self):
         polygon = {"type": "Polygon", "coordinates": [[[73.7, 32.3], [73.75, 32.3], [73.75, 32.34], [73.7, 32.3]]]}
         request = JobRequest(**{**BODY, "window_pixels": 512, "aoi": polygon})
@@ -199,6 +232,7 @@ class AoiSummaryTests(TestCase):
         everywhere = summarize_aoi(self.cube, self.arrays, whole, ["HH", "HV"])
         left = summarize_aoi(self.cube, self.arrays, half, ["HH", "HV"])
         self.assertEqual(everywhere["cells_in_area"], 400)
+        self.assertGreater(everywhere["area_covered_fraction"], .9)
         self.assertEqual(everywhere["cells_with_measurement"], 380)
         self.assertEqual(everywhere["cells_departing_from_baseline"], 190)
         self.assertAlmostEqual(everywhere["departing_fraction"], .5)
@@ -206,10 +240,17 @@ class AoiSummaryTests(TestCase):
         self.assertEqual(left["cells_departing_from_baseline"], 190)
         self.assertEqual(left["median_target_minus_baseline_db"], {"HH": -6.0, "HV": -6.0})
 
+    def test_an_area_larger_than_the_window_says_how_little_of_it_was_analysed(self):
+        huge = self.polygon(499000, 2999000, 501000, 3001000)
+        summary = summarize_aoi(self.cube, self.arrays, huge, ["HH", "HV"])
+        self.assertEqual(summary["cells_in_area"], 400)
+        self.assertAlmostEqual(summary["area_covered_fraction"], .01, places=3)
+
     def test_an_area_outside_the_window_reports_no_cells(self):
         outside = self.polygon(600000, 2900000, 600100, 2900100)
         summary = summarize_aoi(self.cube, self.arrays, outside, ["HH", "HV"])
         self.assertEqual(summary["cells_in_area"], 0)
+        self.assertEqual(summary["reason"], "the area lies outside the analysed window")
         self.assertIsNone(summary["departing_fraction"])
         self.assertEqual(summary["median_target_minus_baseline_db"], {"HH": None, "HV": None})
 

@@ -76,6 +76,16 @@ def prefetch_chips(entries, chip_path, fetch, workers=None):
     return failures
 
 
+def _projected_area(geometry):
+    """Shoelace area of the outer rings of a projected Polygon or MultiPolygon, in square metres."""
+    polygons = [geometry["coordinates"]] if geometry["type"] == "Polygon" else geometry["coordinates"]
+    total = 0.0
+    for polygon in polygons:
+        ring = polygon[0]
+        total += abs(sum(x1 * y2 - x2 * y1 for (x1, y1), (x2, y2) in zip(ring, ring[1:]))) / 2
+    return total
+
+
 def summarize_aoi(cube, arrays, geometry, polarizations):
     """Count the cells of the lens window inside a polygon: measured, and departing the baseline."""
     # The gateway image has no numpy or rasterio and imports this module through the contracts.
@@ -89,12 +99,16 @@ def summarize_aoi(cube, arrays, geometry, polarizations):
     grid = from_origin(x[0] - dx / 2, y[0] + dy / 2, dx, dy)
     inside = geometry_mask([transform_geom("EPSG:4326", f"EPSG:{epsg}", geometry)],
                            out_shape=(len(y), len(x)), transform=grid, invert=True)
+    area_m2 = _projected_area(transform_geom("EPSG:4326", f"EPSG:{epsg}", geometry))
     delta, half_width = arrays["target_change_db"], arrays["diagnostic_half_width_db"]
     measured = inside & np.isfinite(delta).all(axis=0)
     departing = measured & (np.abs(delta) > half_width).any(axis=0)
     count = int(measured.sum())
+    covered = float(min(1.0, inside.sum() * abs(dx * dy) / area_m2)) if area_m2 else 0.0
     return {
         "cells_in_area": int(inside.sum()),
+        "area_covered_fraction": round(covered, 4),
+        "reason": None if inside.any() else "the area lies outside the analysed window",
         "cells_with_measurement": count,
         "cells_departing_from_baseline": int(departing.sum()),
         "departing_fraction": float(departing.sum() / count) if count else None,

@@ -45,3 +45,10 @@ class NeighborFilterTests(TestCase):
         _neighbor(values, 4, "median")
         _neighbor(values, 4, "mad")
         self.assertLess(time.perf_counter() - started, 20)
+
+    def test_infinite_values_are_treated_like_gaps(self):
+        values = np.full((3, 3), 5.0)
+        values[0, 0] = np.inf
+        values[2, 2] = -np.inf
+        result = _neighbor(values, 4, "median")
+        self.assertEqual(result[1, 1], 5.0)

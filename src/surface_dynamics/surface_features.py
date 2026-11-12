@@ -21,6 +21,7 @@ def _neighbor(values, minimum, statistic):
     padded = np.pad(values.astype(float), 1, constant_values=np.nan)
     ring = np.stack([padded[dy:dy + height, dx:dx + width]
                      for dy in range(3) for dx in range(3) if (dy, dx) != (1, 1)])
+    ring[~np.isfinite(ring)] = np.nan
     enough = np.isfinite(ring).sum(axis=0) >= minimum
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)  # windows with no finite neighbor

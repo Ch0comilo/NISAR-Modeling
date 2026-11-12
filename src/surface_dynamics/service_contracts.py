@@ -42,15 +42,23 @@ class AoiGeometry(Contract):
         depth = 3 if self.type == "Polygon" else 4
         count = 0
 
+        def check_ring(ring):
+            if len(ring) < 4 or ring[0] != ring[-1]:
+                raise ValueError("Area rings need at least four positions and must be closed.")
+
         def walk(value, level):
             nonlocal count
             if level == 1:
                 if (not isinstance(value, list) or len(value) != 2 or
                         not all(type(item) in (int, float) and isfinite(item) for item in value) or
-                        not -180 <= value[0] <= 180 or not -90 <= value[1] <= 90):
+                        not -180 <= value[0] <= 180 or not -85 <= value[1] <= 85):
                     raise ValueError("Area positions must be finite [longitude, latitude] pairs.")
                 count += 1
                 return
+            if level == 2:
+                if not isinstance(value, list):
+                    raise ValueError("Area coordinates are malformed.")
+                check_ring(value)
             if not isinstance(value, list) or not value:
                 raise ValueError("Area coordinates are malformed.")
             for item in value:
@@ -89,7 +97,7 @@ class JobRequest(CoverageQuery):
     analyses: Annotated[list[Literal["physical", "spectral", "stochastic", "transformer"]],
                         Field(min_length=1, max_length=4)] = Field(default_factory=lambda: ["physical"])
     scenes: Annotated[list[PlannedScene], Field(min_length=1, max_length=5)] | None = None
-    window_pixels: Annotated[int, Field(ge=64, le=1024)] | None = None
+    window_pixels: Annotated[int, Field(ge=64, le=1024, multiple_of=8)] | None = None
     aoi: AoiGeometry | None = None
 
     @model_validator(mode="after")
@@ -108,7 +116,18 @@ class JobRequest(CoverageQuery):
         if self.scenes:
             if self.series_key:
                 raise ValueError("A scene plan already fixes the series.")
-            entries_from_scenes([scene.model_dump() for scene in self.scenes])
+            _, entries = entries_from_scenes([scene.model_dump() for scene in self.scenes])
+            days = [entry["time_start"][:10] for entry in entries]
+            if not self.start_date.isoformat() <= days[0] or not days[-1] <= self.end_date.isoformat():
+                raise ValueError("Every planned scene must fall inside the date window.")
+            if self.compare_dates and not {d.isoformat() for d in self.compare_dates} <= set(days):
+                raise ValueError("The comparison dates must be days of the scene plan.")
+            if self.baseline_end_date and not (
+                days[0] <= self.baseline_end_date.isoformat() < days[-1]
+            ):
+                raise ValueError("The baseline cutoff must leave planned scenes before and after it.")
+        if self.aoi and not self.lens:
+            raise ValueError("An area summary needs a lens.")
         if self.optical_evidence and self.lens not in {"flood_wetland", "vegetation_disturbance", "wildfire"}:
             raise ValueError("Optical evidence requires a supported optical lens.")
         if self.baseline_end_date and not self.start_date <= self.baseline_end_date < (
@@ -229,6 +248,8 @@ class LegacyEvidence(Contract):
 
 def canonical_job(request: JobRequest, revision: str) -> tuple[str, dict]:
     payload = request.model_dump(mode="json", exclude_none=True)
+    if "scenes" in payload:
+        payload["scenes"] = sorted(payload["scenes"], key=lambda scene: scene["granule_id"])
     # This tile center is the measured point, so the same key cannot represent different reads.
     for axis in ("longitude", "latitude"):
         snapped = round(payload[axis], 3)
