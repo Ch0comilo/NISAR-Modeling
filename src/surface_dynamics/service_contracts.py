@@ -2,9 +2,12 @@
 from datetime import date
 from hashlib import sha256
 import json
+from math import isfinite
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from .plan_input import entries_from_scenes
 
 Longitude = Annotated[float, Field(ge=-180, le=180, allow_inf_nan=False)]
 Latitude = Annotated[float, Field(ge=-90, le=90, allow_inf_nan=False)]
@@ -18,6 +21,45 @@ VisualizationRecipe = Literal["polarization_rgb", "cross_co_ratio", "cross_co_ra
 
 class Contract(BaseModel):
     model_config = ConfigDict(extra="forbid")
+
+
+Collection = Literal["PROVISIONAL", "VALIDATED", "BETA", "UR"]
+MAX_AOI_VERTICES = 200
+
+
+class PlannedScene(Contract):
+    """A scene chosen by the backend planner; the archive location is built server-side."""
+    granule_id: Annotated[str, Field(min_length=40, max_length=200)]
+    collection: Collection
+
+
+class AoiGeometry(Contract):
+    type: Literal["Polygon", "MultiPolygon"]
+    coordinates: list
+
+    @model_validator(mode="after")
+    def valid_positions(self):
+        depth = 3 if self.type == "Polygon" else 4
+        count = 0
+
+        def walk(value, level):
+            nonlocal count
+            if level == 1:
+                if (not isinstance(value, list) or len(value) != 2 or
+                        not all(type(item) in (int, float) and isfinite(item) for item in value) or
+                        not -180 <= value[0] <= 180 or not -90 <= value[1] <= 90):
+                    raise ValueError("Area positions must be finite [longitude, latitude] pairs.")
+                count += 1
+                return
+            if not isinstance(value, list) or not value:
+                raise ValueError("Area coordinates are malformed.")
+            for item in value:
+                walk(item, level - 1)
+
+        walk(self.coordinates, depth)
+        if count > MAX_AOI_VERTICES:
+            raise ValueError(f"An area holds at most {MAX_AOI_VERTICES} vertices.")
+        return self
 
 
 class CoverageQuery(Contract):
@@ -46,6 +88,9 @@ class JobRequest(CoverageQuery):
     coherence_threshold: Annotated[float, Field(ge=.1, le=.9, allow_inf_nan=False)] = .35
     analyses: Annotated[list[Literal["physical", "spectral", "stochastic", "transformer"]],
                         Field(min_length=1, max_length=4)] = Field(default_factory=lambda: ["physical"])
+    scenes: Annotated[list[PlannedScene], Field(min_length=1, max_length=5)] | None = None
+    window_pixels: Annotated[int, Field(ge=64, le=1024)] | None = None
+    aoi: AoiGeometry | None = None
 
     @model_validator(mode="after")
     def operation_fields(self):
@@ -58,6 +103,12 @@ class JobRequest(CoverageQuery):
             raise ValueError("Exactly insar-pair requires a catalog pair_id.")
         if self.operation != "explore" and fields & {"lens", "optical_evidence"}:
             raise ValueError("Lens and optical evidence options apply to explore.")
+        if self.operation != "explore" and fields & {"scenes", "window_pixels", "aoi"}:
+            raise ValueError("A scene plan, window size and area apply to explore.")
+        if self.scenes:
+            if self.series_key:
+                raise ValueError("A scene plan already fixes the series.")
+            entries_from_scenes([scene.model_dump() for scene in self.scenes])
         if self.optical_evidence and self.lens not in {"flood_wetland", "vegetation_disturbance", "wildfire"}:
             raise ValueError("Optical evidence requires a supported optical lens.")
         if self.baseline_end_date and not self.start_date <= self.baseline_end_date < (

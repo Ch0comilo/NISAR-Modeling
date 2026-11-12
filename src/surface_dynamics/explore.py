@@ -41,6 +41,7 @@ class ExploreRequest:
     lens: str | None = None
     optical_evidence: bool = False
     baseline_end_date: str | None = None
+    chip_pixels: int = CHIP_PIXELS
 
 
 def _iso_day(value):
@@ -217,7 +218,7 @@ def select_alternate(query, groups, primary_key):
 
 def _chip_path(query, entry, cache):
     identity = [1, COLLECTIONS["GCOV"], entry.get("id"), entry["title"], "A",
-                query.longitude, query.latitude, CHIP_PIXELS]
+                query.longitude, query.latitude, query.chip_pixels]
     key = sha256(json.dumps(identity).encode()).hexdigest()
     return cache / (key + ".npz")
 
@@ -273,7 +274,7 @@ def _read_error(exc):
     return "archive_read_failed"
 
 
-def measure(query, entries, cache, out, publish, *, cache_only=False):
+def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None):
     """Fetch the newest preview first and publish progress after every acquisition."""
     paths, rows = {}, {}
     dates = [_day(entry) for entry in entries]
@@ -288,7 +289,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False):
         path = _chip_path(query, entry, cache)
         try:
             metadata = fetch_chip(entry, query.longitude, query.latitude, path,
-                                  pixels=CHIP_PIXELS, cache_only=cache_only)
+                                  pixels=query.chip_pixels, cache_only=cache_only)
         except (OSError, ValueError, KeyError, RuntimeError, requests.RequestException, HTTPError) as exc:
             reason = _read_error(exc)
             row.update(status="outside_grid" if reason == "outside_quantitative_grid" else "unavailable",
@@ -320,7 +321,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False):
         status = "partial"
     else:
         status = "complete"
-    lens = _radar_lens(query, dates, paths, out) if query.lens else None
+    lens = _radar_lens(query, dates, paths, out, sink) if query.lens else None
     optical_pending = query.optical_evidence and lens["status"] == "evaluated"
     if optical_pending:
         lens = with_evidence(lens, {"status": "pending"})
@@ -338,7 +339,7 @@ def enrich_lens(query, lens, paths, cache, out):
     """Evaluate optional optical evidence on a coarser grid, keeping native radar intact."""
     spacing = min(lens["radar"]["grid"]["pixel_spacing_m"])
     factor = 1
-    while spacing * factor < 30 and factor < CHIP_PIXELS // 2:
+    while spacing * factor < 30 and factor < getattr(query, "chip_pixels", CHIP_PIXELS) // 2:
         factor *= 2
     if spacing * factor < 30:
         return {"status": "unavailable", "reason": "optical_grid_unavailable"}
@@ -386,7 +387,7 @@ def enrich_lens(query, lens, paths, cache, out):
     return evidence
 
 
-def _radar_lens(query, dates, paths, out):
+def _radar_lens(query, dates, paths, out, sink=None):
     target = query.compare_dates[1] if query.compare_dates else dates[-1]
     prior = [day for day in dates if day < target and day <= (query.baseline_end_date or target)]
     before = [day for day in prior if day in paths]
@@ -411,6 +412,8 @@ def _radar_lens(query, dates, paths, out):
         else:
             report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date,
                                           point=(query.longitude, query.latitude))
+            if sink is not None:
+                sink.update(cube=cube, report=report, arrays=arrays)
             if report["status"] == "evaluated":
                 radar_cube = {**cube, "polarizations": report["radar"]["polarizations"]}
                 delta = arrays["target_change_db"]
