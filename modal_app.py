@@ -96,6 +96,7 @@ worker_image = (
               timeout=240, max_containers=WORKER_CONTAINERS, scaledown_window=10, retries=0,
               secrets=[modal.Secret.from_name(SECRET_NAME, required_keys=["EARTHDATA_TOKEN"])])
 def worker(body, job_id):
+    from surface_dynamics.service_state import plain_json
     from surface_dynamics.service_workers import execute_job
 
     key = "job:" + job_id
@@ -119,7 +120,7 @@ def worker(body, job_id):
             for artifact in result["artifacts"]:
                 copy2(out / artifact["name"], dest / artifact["name"])
             volume.commit()
-        state.put(key, {**record, "status": "succeeded", "result": result})
+        state.put(key, {**record, "status": "succeeded", "result": plain_json(result)})
     except Exception as exc:
         logging.getLogger(__name__).warning("job=%s operation=%s failure=%s", job_id,
                                             body["operation"], type(exc).__name__)
