@@ -49,3 +49,4 @@ class TemporalDiagnosticsTests(TestCase):
                 body = JobRequest.model_validate({**request, "analyses": analyses}).model_dump(mode="json", exclude_none=True)
                 process(body, "job", Path(temp), Path(temp))
                 self.assertEqual(analyze.call_args.args[0]["source"]["max_dates"], expected)
+                self.assertEqual(analyze.call_args.kwargs["archive_read_workers"], 3 if "spectral" in analyses else 1)

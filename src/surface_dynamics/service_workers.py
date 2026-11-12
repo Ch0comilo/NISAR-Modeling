@@ -104,14 +104,15 @@ def process(body, job_id, out, cache):
     if mode == "analysis":
         from .spectral import MINIMUM_SPECTRAL_DATES
 
-        source.update(max_dates=MINIMUM_SPECTRAL_DATES if "spectral" in body["analyses"] else 5, native_chip_pixels=256,
+        spectral = "spectral" in body["analyses"]
+        source.update(max_dates=MINIMUM_SPECTRAL_DATES if spectral else 5, native_chip_pixels=256,
                       target_posting_m=160 if "transformer" in body["analyses"] else 40)
         if "series_key" in body:
             source["series_key"] = body["series_key"]
         request["analyses"] = body["analyses"]
         if "transformer" in body["analyses"]:
             request["transformer_checkpoint"] = MODEL
-        return analyze(request, out)
+        return analyze(request, out, archive_read_workers=3 if spectral else 1)
     source.pop("start_date")
     source.pop("end_date")
     source.update(max_dates=5, native_chip_pixels=256, target_posting_m=40)

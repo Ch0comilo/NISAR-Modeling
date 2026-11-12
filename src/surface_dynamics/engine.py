@@ -1,6 +1,10 @@
 """Science artifact jobs. A web/backend team can call these functions or the CLI."""
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+from time import perf_counter
 import csv,hashlib,json
+import logging
 import numpy as np
 import xarray as xr
 import rasterio
@@ -14,6 +18,7 @@ from .stochastic import historical_series,smooth_observations
 from . import render
 
 SCHEMAS=Path(__file__).resolve().parent/'schemas'
+LOG = logging.getLogger(__name__)
 BASE_LIMITS=[
  'Descriptive observed states only; no future forecasts, event labels or hazard probabilities.',
  'Native focused-support masks do not replace SNR, layover/shadow or radiometric QA. Thermal-noise correction is not performed here.',
@@ -49,7 +54,7 @@ def write_cog(path,array,x,y,epsg,units,descriptions=None,angular=False):
         dst.write(a);dst.update_tags(units=units,interpretation='descriptive measured radar features; no event class')
         for i in range(a.shape[0]):dst.set_band_description(i+1,(descriptions or [f'band_{j+1}' for j in range(a.shape[0])])[i])
 
-def analyze(request,output):
+def analyze(request,output,*,archive_read_workers=1):
     validate_request(request);out=Path(output);out.mkdir(parents=True,exist_ok=True)
     (out/'request.json').write_text(json.dumps(request,indent=2,allow_nan=False))
     result={'contract_version':'1.0','request_id':request['request_id'],'status':'complete','scope':'descriptive_observed_surface_dynamics','observations':{'dates':[],'polarizations':[],'grid':{}},'capabilities':{m:{'status':'not_requested'} for m in ['physical','spectral','stochastic','transformer']},'artifacts':[],'insights':[],'limitations':BASE_LIMITS.copy()}
@@ -75,9 +80,24 @@ def analyze(request,output):
             result['observations']['selection']={'catalog_hits':catalog['hits'],'groups':{k:len(v) for k,v in groups.items()}}
             for m in request['analyses']:result['capabilities'][m]={'status':'insufficient_data','reason':'No compatible measured time series'}
             return finish(result,out)
-        paths=[]
-        for entry in entries:
-            path=out/'cache'/(entry['time_start'][:10]+'.npz');fetch_chip(entry,source['longitude'],source['latitude'],path,source.get('native_chip_pixels',512));paths.append(path)
+        paths = [out / 'cache' / (entry['time_start'][:10] + '.npz') for entry in entries]
+        chip_arguments = [
+            (entry, source['longitude'], source['latitude'], path, source.get('native_chip_pixels', 512))
+            for entry, path in zip(entries, paths)
+        ]
+        started_reads = perf_counter()
+        if archive_read_workers > 1 and len(paths) > 1:
+            # h5py holds a process-wide lock while its file object waits for HTTP ranges.
+            with ProcessPoolExecutor(max_workers=min(archive_read_workers, len(paths)),
+                                     mp_context=get_context('spawn')) as pool:
+                reads = [pool.submit(fetch_chip, *args) for args in chip_arguments]
+                for read in reads:
+                    read.result()
+        else:
+            for args in chip_arguments:
+                fetch_chip(*args)
+        LOG.info('job=%s gcov_dates=%d read_workers=%d archive_seconds=%.3f', request['request_id'],
+                 len(paths), archive_read_workers, perf_counter() - started_reads)
         aggregate=source.get('aggregate_pixels',4)
         if 'target_posting_m' in source:
             if 'aggregate_pixels' in source:raise ValueError('Choose target_posting_m or aggregate_pixels, not both')
