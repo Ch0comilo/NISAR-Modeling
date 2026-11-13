@@ -6,7 +6,7 @@ from time import perf_counter, sleep
 import requests
 
 
-def smoke(url, live, measurement):
+def smoke(url, live, measurement, *, require_choco=False):
     session = requests.Session()
     session.headers["Origin"] = "https://nisar-hazard-watch.vercel.app"
     timings = []
@@ -28,7 +28,22 @@ def smoke(url, live, measurement):
     fetch("GET", "/v2/openapi.json")
     fetch("GET", "/v2/capabilities")
     cases = fetch("GET", "/v2/cases").json()
-    assert {case["id"] for case in cases} == {"chokwe", "qadirabad", "richmond", "kumamoto"}
+    initial_cases = {"chokwe", "qadirabad", "richmond", "kumamoto"}
+    case_ids = {case["id"] for case in cases}
+    assert case_ids in (initial_cases, initial_cases | {"choco"}), case_ids
+    if require_choco:
+        assert "choco" in case_ids, case_ids
+    if "choco" in case_ids:
+        choco = fetch("GET", "/v2/cases/choco").json()
+        series = fetch("GET", choco["series_url"]).json()
+        pair = choco["evidence"]["pair"]
+        assert choco["status"] == "not_displacement_ready" and choco["evidence"]["los_displacement_cm"] is None
+        assert series["intervals"][0] == pair
+        assert (pair["reference_date"], pair["secondary_date"]) == ("2026-07-18", "2026-08-11")
+        assert pair["finite_cells"] == 3844 and round(pair["median_coherence"], 3) == 0.247
+        coherence = next(layer for layer in choco["layers"] if layer["id"] == "coherence")
+        assert coherence["colormap"] == "cividis" and coherence["range"] == [0, 1]
+        assert fetch("GET", coherence["png_url"]).content.startswith(b"\x89PNG")
     case = fetch("GET", "/v2/cases/chokwe").json()
     assert case["grid"]["shape"] == [128, 128] and case["isDemo"] is False
     fetch("GET", case["series_url"])
@@ -79,5 +94,6 @@ if __name__ == "__main__":
     parser.add_argument("url")
     parser.add_argument("--live", action="store_true", help="Use one quota slot to test a catalog-only job.")
     parser.add_argument("--measurement", action="store_true", help="Use one quota slot to verify the measured Forest River job.")
+    parser.add_argument("--require-choco", action="store_true", help="Require the five-case production bundle.")
     args = parser.parse_args()
-    smoke(args.url, args.live, args.measurement)
+    smoke(args.url, args.live, args.measurement, require_choco=args.require_choco)

@@ -23,7 +23,8 @@ job was `b2d15c0f87794b758f8becc603fc81f1`. Its source array SHA-256 is
 The builder checks the source array against the job manifest before reading it.
 The deployment selects this directory using `NISAR_CASES_PATH`. Confirm the
 deployed index, each manifest and series, and sample PNG hashes against the
-corresponding `assets.json`. The existing `/cases` directory remains available
+corresponding `assets.json`. Run `python scripts/smoke_api.py <deployed-url> --require-choco`
+after deployment to check the published Chocó contract. The existing `/cases` directory remains available
 for rollback. Report figures displayed by the website require separate written
 permission or a figure-specific license from the rights holder.
 
