@@ -1,8 +1,8 @@
-"""Build a versioned precomputed case bundle from the verified release fixtures."""
+"""Build a versioned precomputed case bundle from verified measurements."""
 import argparse
 import json
 from pathlib import Path
-from shutil import copy2
+from shutil import copy2, copytree
 from tempfile import TemporaryDirectory
 
 import numpy as np
@@ -17,7 +17,7 @@ from surface_dynamics.network import acquisition_dates
 from surface_dynamics.service_artifacts import (
     checksum, data_layers, native_grid, publish_files, published_layers, render_layer, write_json,
 )
-from surface_dynamics.service_contracts import Case
+from surface_dynamics.service_contracts import Case, Grid
 from surface_dynamics.service_visualizations import gcov_dataset_frames, render_gcov_visualizations
 from surface_dynamics.surface_features import from_db
 
@@ -186,6 +186,113 @@ def prepare_choco(source, output):
                    reference_dates[:1], secondary_dates, status, evidence, layers=[layer])
 
 
+def prepare_san_marcos(source, output):
+    manifest_path = source / "manifest.json"
+    if checksum(manifest_path) != "a14af0f01624b689b4208515007bfc9e5acbba1a89b28eac3d550a94d70e8dab":
+        raise ValueError("Expected the verified San Marcos explore job manifest.")
+    result = read(manifest_path)
+    science = result["science"]
+    lens = science["lens"]
+    radar = lens["radar"]
+    optical = lens["evidence"]
+    case_id = "san-marcos"
+    prefix = f"/v2/cases/{case_id}"
+    layer_prefix = prefix + "/layers"
+    source_job = "411f19fff5d04e73961af97cc101cccf"
+    source_prefix = f"/v2/jobs/{source_job}/layers"
+
+    destination = output / case_id
+    destination.mkdir()
+    for asset in result["artifacts"]:
+        name = asset["name"]
+        path = source / name
+        if (Path(name).name != name or asset["href"] != f"{source_prefix}/{name}"
+                or path.stat().st_size != asset["bytes"] or checksum(path) != asset["sha256"]):
+            raise ValueError(f"San Marcos asset does not match the verified job manifest: {name}")
+        copy2(path, destination / name)
+    assets = publish_files(destination, layer_prefix)
+    if len(assets) != len(result["artifacts"]):
+        raise ValueError("The case delivery budget must cover every verified San Marcos asset.")
+
+    def case_layers(layers):
+        return [{**layer, "png_url": layer["png_url"].replace(source_prefix, layer_prefix, 1),
+                 "cog_url": layer["cog_url"].replace(source_prefix, layer_prefix, 1)}
+                for layer in layers]
+
+    grid = Grid(crs=f'EPSG:{radar["grid"]["epsg"]}', bounds=radar["grid"]["bounds_native"],
+                shape=(radar["grid"]["height"], radar["grid"]["width"]),
+                posting_m=radar["grid"]["pixel_spacing_m"])
+    observations = [
+        {"date": row["date"], "sensing_start_utc": row["sensing_start_utc"],
+         "polarization": pol, "gamma0_db": value, "source": row["granule_title"],
+         "granule_id": row["granule_id"], "valid_radar_cells": row["valid_pixel_count_by_pol"][pol]}
+        for row in science["observations"] for pol, value in row["point_db"].items()
+    ]
+    evidence = {
+        "state": "optical_no_new_open_water_on_sampled_support",
+        "lens_id": lens["id"],
+        "source_job_id": source_job,
+        "source_revision": result["revision"],
+        "radar_support_cells": radar["common_cells"],
+        "radar_comparator": radar["comparator"],
+        "median_target_minus_baseline_db": radar["median_target_minus_baseline_db"],
+        "radar_signatures": lens["evaluation"]["grid_signatures"],
+        "signature_policy": lens["evaluation"]["signature_policy"],
+        "independent_reference": {key: optical[key] for key in (
+            "status", "source", "epochs", "grid", "joint_usable_cells", "radar_denominator_cells",
+            "joint_usable_fraction", "max_offset_days", "min_joint_usable_fraction", "groups", "point_group",
+        )},
+        "regional_context": {
+            "source": "IDEAM hydrological bulletin 853",
+            "date": "2026-10-12",
+            "url": "https://ideam.gov.co/sites/default/files/prensa/boletines/2026-10-11/853_bch_octubre_12_2026_0000.pdf",
+            "scope": "Persistent inundation reported for Bajo San Jorge–La Mojana, including San Marcos municipality.",
+        },
+        "causal_attribution": None,
+        "flood_probability": None,
+        "flood_depth_m": None,
+        "limitations": [
+            "The regional bulletin provides municipality-scale context. The measurements cover a 640 m square.",
+            "The October 3 radar pass is available as context and is outside the three-pass baseline.",
+            "The optical result describes strict open-water transitions between two snapshots on the 40 m comparison grid.",
+            "Mixed water, inundation beneath vegetation, and changes between the snapshots remain unresolved.",
+            "Radar signatures describe where the backscatter met the selected thresholds. Flood probability is unavailable.",
+        ],
+    }
+    manifest = Case(id=case_id, title="La Mojana · San Marcos, Colombia", point=result["point"],
+                    grid=grid, series_key=science["series_key"], baseline_dates=lens["baseline_dates"],
+                    assessment_dates=[lens["target_date"]], status=lens["status"], evidence=evidence,
+                    layers=published_layers(case_layers(result["layers"]), assets),
+                    visualizations=published_layers(case_layers(result["visualizations"]), assets),
+                    series_url=prefix + "/series").model_dump(mode="json")
+    if (len(manifest["layers"]) != len(result["layers"])
+            or len(manifest["visualizations"]) != len(result["visualizations"])):
+        raise ValueError("The San Marcos case is missing a display or numeric layer.")
+    write_json(destination / "manifest.json", manifest)
+    write_json(destination / "assets.json", assets)
+    write_json(destination / "series.json", {
+        "api_version": "2.0", "point": result["point"], "observations": observations,
+        "observation_noise_db": None, "gp_conditional_latent_band_db": None,
+    })
+    return manifest
+
+
+def append_san_marcos(base, output, source):
+    cases = read(base / "index.json")
+    if any(case["id"] == "san-marcos" for case in cases):
+        raise ValueError("The base bundle already contains San Marcos.")
+    if output.exists():
+        raise FileExistsError(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(dir=output.parent) as work:
+        bundle = Path(work) / output.name
+        copytree(base, bundle)
+        cases.append(prepare_san_marcos(source, bundle))
+        write_json(bundle / "index.json", cases)
+        bundle.rename(output)
+    print(json.dumps({"cases": len(cases), "directory": str(output)}))
+
+
 def publish(destination, case_id, title, point, grid, key, before, after, status, evidence, *,
             coherence_index=0, layers=None):
     prefix = f"/v2/cases/{case_id}"
@@ -212,5 +319,12 @@ if __name__ == "__main__":
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--choco-readiness", type=Path, help="Verified Chocó readiness job artifact directory.")
+    parser.add_argument("--base-bundle", type=Path, help="Existing published bundle to extend.")
+    parser.add_argument("--san-marcos-explore", type=Path, help="Verified San Marcos explore job artifact directory.")
     arguments = parser.parse_args()
-    build(arguments.root, arguments.output, choco_readiness=arguments.choco_readiness)
+    if arguments.base_bundle or arguments.san_marcos_explore:
+        if not arguments.base_bundle or not arguments.san_marcos_explore or arguments.choco_readiness:
+            parser.error("Pass --base-bundle and --san-marcos-explore together to extend a published bundle.")
+        append_san_marcos(arguments.base_bundle, arguments.output, arguments.san_marcos_explore)
+    else:
+        build(arguments.root, arguments.output, choco_readiness=arguments.choco_readiness)

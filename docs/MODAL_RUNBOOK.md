@@ -6,6 +6,22 @@ Build the prepared case directory with `python scripts/prepare_api_cases.py --ou
 
 Deploy a clean commit and compare `/health` and `/v2/capabilities` to the local Git SHA and normalized build fingerprint. The fingerprint covers shipped Python, schemas, model assets, pinned dependencies and the science explorer HTML. CRLF and LF text normalize to the same hash. Verify prepared PNG/COG assets, a measured job and its cache replay on staging before promotion.
 
+### Rebuild the San Marcos bundle
+
+Download the prior published bundle and the recorded San Marcos exploration from the production Volume. Use a fresh local directory for each download. The packager checks the recorded manifest and each published asset against their SHA-256 digests.
+
+```sh
+mkdir -p case-input/base case-input/job
+modal volume get --env main nisar-hazard-watch-chip-cache /cases-v8-20261113/ case-input/base
+modal volume get --env main nisar-hazard-watch-chip-cache /jobs/411f19fff5d04e73961af97cc101cccf/ case-input/job
+python scripts/prepare_api_cases.py \
+  --base-bundle case-input/base/cases-v8-20261113 \
+  --san-marcos-explore case-input/job/411f19fff5d04e73961af97cc101cccf \
+  --output cases-v8-20261113-san-marcos
+```
+
+Verify the index, manifest, point series and PNG/COG checksums on a staging deployment. Upload the verified bundle to `/cases-v8-20261113-san-marcos` in the production Volume before merging the release PR. The deployment workflow reads that versioned path. To roll back the bundle, set `NISAR_CASES_PATH` in the workflow back to `cases-v8-20261113` and deploy through the same reviewed workflow.
+
 ### Rebuild the production bundle with Chocó
 
 Restore the pinned measured fixtures using `scripts/download_examples.py`. Submit
