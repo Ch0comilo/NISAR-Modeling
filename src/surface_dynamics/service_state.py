@@ -1,6 +1,7 @@
 """Admission and persistent job identity. The ASGI deployment uses one gateway."""
 from datetime import datetime, timezone
 import json
+import os
 from threading import RLock
 from time import time
 from uuid import uuid4
@@ -8,7 +9,7 @@ from uuid import uuid4
 from .service_contracts import Job, canonical_job
 
 ACTIVE = {"queued", "running"}
-LEASE_SECONDS = 360
+LEASE_SECONDS = int(os.environ.get("NISAR_JOB_LEASE_SECONDS", "360"))
 CACHE_SECONDS = 86400
 
 

@@ -193,7 +193,8 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
     def capabilities():
         return {"api_version": "2.0", "science_version": __version__, "revision": jobs.revision, "git_sha": git_sha,
                 "radar_band": "L", "window_days_limit": 366, "live_date_limit": 5,
-                "gunw_pair_limit": 3, "public_job_timeout_seconds": 240,
+                "gunw_pair_limit": 3,
+                "public_job_timeout_seconds": int(os.environ.get("NISAR_WORKER_TIMEOUT_SECONDS", "240")),
                 "daily_new_jobs_per_ip": jobs.jobs_per_ip_day, "daily_new_jobs_total": jobs.jobs_per_day,
                 "measurement": ["GCOV gamma0", "signed dB change", "GUNW coherence", "wrapped phase"],
                 "visualization_recipes": list(get_args(VisualizationRecipe)),

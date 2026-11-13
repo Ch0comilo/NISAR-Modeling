@@ -40,6 +40,9 @@ jobs:
       NISAR_WORKER_CONTAINERS: "5"
       NISAR_JOBS_PER_DAY: "300"
       NISAR_JOBS_PER_IP_DAY: "300"
+      # Measured 2026-11-13: fresh areas took 3.5 to 4 minutes with three jobs at once and the
+      # default 240 s limit killed the busier ones, leaving their slots taken until the lease ended.
+      NISAR_WORKER_TIMEOUT_SECONDS: "420"
       PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v7

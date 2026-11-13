@@ -27,6 +27,9 @@ MAX_ACTIVE_JOBS = int(os.environ.get("NISAR_MAX_ACTIVE_JOBS", "2"))
 JOBS_PER_DAY = int(os.environ.get("NISAR_JOBS_PER_DAY", "12"))
 JOBS_PER_IP_DAY = int(os.environ.get("NISAR_JOBS_PER_IP_DAY", "5"))
 WORKER_CONTAINERS = int(os.environ.get("NISAR_WORKER_CONTAINERS", "1"))
+# A worker killed by this timeout never writes its own failure, so the job lease must outlive it.
+WORKER_TIMEOUT_SECONDS = int(os.environ.get("NISAR_WORKER_TIMEOUT_SECONDS", "240"))
+JOB_LEASE_SECONDS = int(os.environ.get("NISAR_JOB_LEASE_SECONDS", str(WORKER_TIMEOUT_SECONDS + 120)))
 WORKER_MEMORY_MB = int(os.environ.get("NISAR_WORKER_MEMORY_MB", "2048"))
 app = modal.App(APP_NAME)
 volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
@@ -72,6 +75,8 @@ runtime_config = {
     "NISAR_CORS_ORIGINS": CORS_ORIGINS,
     "NISAR_MAX_ACTIVE_JOBS": str(MAX_ACTIVE_JOBS), "NISAR_JOBS_PER_DAY": str(JOBS_PER_DAY),
     "NISAR_JOBS_PER_IP_DAY": str(JOBS_PER_IP_DAY),
+    "NISAR_WORKER_TIMEOUT_SECONDS": str(WORKER_TIMEOUT_SECONDS),
+    "NISAR_JOB_LEASE_SECONDS": str(JOB_LEASE_SECONDS),
 }
 package = ROOT / "src" / "surface_dynamics"
 MOCK_HTML = "/opt/nisar/observation-mock.html"
@@ -95,7 +100,8 @@ worker_image = (
 
 @app.function(image=worker_image, volumes={str(STORAGE): volume}, cpu=(1.0, 1.0),
               memory=(WORKER_MEMORY_MB, WORKER_MEMORY_MB),
-              timeout=240, max_containers=WORKER_CONTAINERS, scaledown_window=10, retries=0,
+              timeout=WORKER_TIMEOUT_SECONDS, max_containers=WORKER_CONTAINERS,
+              scaledown_window=10, retries=0,
               secrets=[modal.Secret.from_name(SECRET_NAME, required_keys=["EARTHDATA_TOKEN"])])
 def worker(body, job_id):
     from surface_dynamics.service_state import plain_json
