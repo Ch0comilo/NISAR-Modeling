@@ -13,7 +13,7 @@ import urllib.request
 
 KUMAMOTO = (130.65, 32.65)
 CATALOG_WINDOW_DAYS = 150
-HEALTH_ATTEMPTS = 6
+HEALTH_ATTEMPTS = 12
 HEALTH_WAIT_SECONDS = 10
 POLL_SECONDS = 6
 JOB_BUDGET_SECONDS = 420
@@ -31,20 +31,19 @@ def request(url, body=None):
 
 
 def wait_for_health(base, expected_sha):
+    """A redeploy can keep answering from the previous version for a while, so wait for the new one."""
     last = None
     for _ in range(HEALTH_ATTEMPTS):
         try:
             last = request(f"{base}/health")
-            if last.get("status") == "ok":
-                break
+            if last.get("status") == "ok" and last.get("git_sha") == expected_sha:
+                return last
         except (urllib.error.URLError, TimeoutError, ValueError):
             pass
         time.sleep(HEALTH_WAIT_SECONDS)
     if not last or last.get("status") != "ok":
         raise SystemExit(f"/health did not answer ok: {last}")
-    if last.get("git_sha") != expected_sha:
-        raise SystemExit(f"/health reports {last.get('git_sha')}, expected {expected_sha}")
-    return last
+    raise SystemExit(f"/health reports {last.get('git_sha')}, expected {expected_sha}")
 
 
 def first_pair(coverage):
