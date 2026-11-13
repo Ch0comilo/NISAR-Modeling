@@ -120,6 +120,26 @@ class ApiTests(TestCase):
         self.assertEqual(self.client.get(asset, headers={"If-None-Match": response.headers["etag"]}).status_code, 304)
         self.assertEqual(self.client.get(asset, headers={"Range": "bytes=10-12"}).status_code, 416)
 
+    def test_coherence_case_is_not_exposed_as_legacy_flood(self):
+        folder = self.root / "cases-v8-20261113" / "choco"
+        folder.mkdir(parents=True)
+        case = {"id": "choco", "title": "Chocó, Colombia", "point": [-76.256, 4.86],
+                "grid": {"crs": "EPSG:32618", "bounds": [358240, 534880, 363200, 539840],
+                         "shape": [62, 62], "posting_m": [80, 80]},
+                "series_key": "148_A_004_2000_SH", "baseline_dates": ["2026-07-18"],
+                "assessment_dates": ["2026-08-11", "2026-08-23"], "status": "not_displacement_ready",
+                "evidence": {"los_displacement_cm": None}, "layers": [], "series_url": "/v2/cases/choco/series"}
+        (folder.parent / "index.json").write_text(json.dumps([case]), encoding="utf8")
+        (folder / "manifest.json").write_text(json.dumps(case), encoding="utf8")
+        client = TestClient(create_app(self.root, self.jobs, cases_path=folder.parent.name))
+
+        result = client.get("/v2/cases/choco")
+        legacy = client.get("/frames/148-4/analysis?hazard=flood&before=2026-07-18&after=2026-08-11&contract=2")
+
+        self.assertEqual(result.json()["status"], "not_displacement_ready")
+        self.assertIsNone(result.json()["evidence"]["los_displacement_cm"])
+        self.assertEqual((legacy.status_code, legacy.json()["code"]), (404, "case_not_available"))
+
     @patch("surface_dynamics.service_api.search", side_effect=__import__("requests").Timeout)
     def test_catalog_error(self, _search):
         response = self.client.get("/v2/coverage", params={"longitude": 0, "latitude": 0,
