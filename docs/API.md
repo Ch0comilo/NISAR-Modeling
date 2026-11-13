@@ -112,6 +112,22 @@ For standalone spectral and stochastic results, submit the existing `operation: 
 | Analysis overlays | `result.layers` lists supported per-polarization median, temporal MAD, slope, largest absolute step and valid acquisition count for physical jobs. Spectral jobs can add tentative period in days and normalized spectral power. Display IDs begin with `display_` and end with the channel. Use each layer's PNG bounds, palette and range, plus its COG for native values. The period range is the job's scanned period band. |
 | Figures, downloads and scientific arrays | `result.previews` lists available figures and animations. `result.artifacts` lists CSV, PNG and georeferenced raster downloads and available NetCDF with coordinates, units and support arrays. |
 
+### Observed passes for the time-lapse
+
+In a live `explore` result, select `result.layers[]` by the exact ID
+`display_<YYYY-MM-DD>_<pol>`, for example `display_2026-10-19_HH` or
+`display_2026-10-19_HV`. The date is the measured UTC acquisition date and
+`<pol>` is the uppercase channel (`HH`, `HV`, `VV`, or `VH`) when delivered.
+Match the acquisition against `result.science.observations.dates` and use the
+layer's `png_url`, `bounds`, and `crs` for the overlay. Observed-pass layers
+have `units: "dB"`, `colormap: "gray"`, and `range: [-30, 0]` across dates and
+polarizations. Pixels without valid data are transparent. Use the published
+`cog_url`, when available, for numeric values.
+
+Treat a missing date/channel layer as unavailable for playback. The `display_`
+prefix also appears on change and diagnostic layers, so match the full date
+and channel ID when looking up an observed pass.
+
 For standalone charts, read `science.capabilities` to decide which panels to show and `science.observations.polarizations` for channel order. Regional intervals from spatial block resampling and GP conditional bands describe different quantities. Spectral power is dimensionless and represents a fit score. The observation dates and sampling window are part of interpreting each spectrum.
 
 Spectral requests can publish `spatial_spectrum.png` independently of temporal period support.
