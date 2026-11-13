@@ -178,7 +178,7 @@ function updateTarget() {
 }
 function workerOptions() {
   const pair = query.product === "GUNW";
-  choices("liveWorker", pair ? [["insar-pair", "GUNW pair coherence and phase"]] :
+  choices("liveWorker", pair ? [["insar-pair", "Earthquake lens · coherence and wrapped phase"]] :
     [["explore", "Measured comparison"], ...lenses, ["analysis", "Physical / spectral / GP / Transformer"]]);
   el("beforeLabel").hidden = pair;
   el("targetLabel").firstChild.textContent = pair ? "Measured GUNW interval" : "Target acquisition";
@@ -273,7 +273,8 @@ el("liveJob").onsubmit = run(el("liveJob"), async () => {
   }
   show("Modal · " + chosen.replaceAll("_"," "), result.science_status + " · " + result.elapsed_seconds +
     " s worker · " + initialCache, gallery(result.visualizations, layers, previews),
-    science.lens || {capabilities:science.capabilities,
+    science.lens?.id === "earthquake" ? {...science.lens, median_coherence:science.median_coherence,
+      point:science.point} : science.lens || {capabilities:science.capabilities,
     observations:science.observations, comparison:science.comparison, quality:science.quality,
     median_coherence:science.median_coherence, los_displacement_cm:science.los_displacement_cm,
     reason:science.reason}, api + "/jobs/" + job.job_id);

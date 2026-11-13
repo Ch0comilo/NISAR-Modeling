@@ -7,6 +7,7 @@
 5. Show `previews` as figures or animations with their supplied interpretation labels. Keep GP model spread, spatial quartiles and temporal MAD distinct. Display a null observation-noise field as unestimated.
 6. Keep existing lens renderers working. When present, show `science.lens.evaluation` next to the current readout and `temporal_analysis` as a historical analysis panel. A masked point, an absent signature, an unavailable GP and missing optical evidence are different outcomes. For spectra, use the existing analysis operation and show the sampling-window curve and experimental status. [Lens and temporal evidence contract](API.md#lens-and-temporal-evidence)
 7. Populate standalone analysis charts from `science.dashboard.series` and availability from `science.capabilities`. Add spectral and physical overlays from `result.layers`. Preserve relative asset paths and the original Modal job ID if relaying through a backend. [Dashboard field mapping](API.md#dashboard-data)
+8. For the earthquake lens, request GUNW coverage and submit the selected catalog `pair_id` with `operation: "insar-pair"`. Show the two acquisition dates with the coherence, wrapped phase and phase-support overlays. Use `insar-readiness` for the correction gates and support counts. [Earthquake lens contract](API.md#earthquake-lens)
 
 | Roadmap item | Science API handoff |
 | --- | --- |

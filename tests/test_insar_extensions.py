@@ -8,7 +8,7 @@ import numpy as np
 from surface_dynamics.network import build_network, plan_network
 from surface_dynamics.insar import validate_pair, analyze_pair, NoCoherentSupport, fetch_pair, wrapped_products
 from surface_dynamics.explore import parse_request
-from surface_dynamics.exploration_insar import discover_pairs
+from surface_dynamics.exploration_insar import discover_pairs, measure_pair, parse_pair_request
 from surface_dynamics.benchmark import interpolation_baseline
 from surface_dynamics.engine import analyze_insar
 
@@ -84,6 +84,36 @@ class InSARExtensionTests(unittest.TestCase):
         strict_coherence, strict_phase = wrapped_products(value, .9)
         np.testing.assert_allclose(strict_coherence, coherence)
         self.assertTrue(np.isnan(strict_phase).all())
+
+    def test_earthquake_lens_preserves_coherence_and_maps_missing_phase(self):
+        import rasterio
+        from surface_dynamics.service_workers import live_layers
+
+        data = pair()
+        data["wrapped_mask"][0, 0] = 255
+        data["wrapped_complex"][0, 1] = 0
+        data["wrapped_coherence"][0, 2] = .1
+        row = entry("20260101", "20260113")
+        query = parse_pair_request({"longitude": -99, "latitude": 48, "start_date": "2026-01-01",
+                                    "end_date": "2026-01-13", "pair_id": row["title"]})
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder)
+            path = out / "chip.npz"
+            np.savez(path, **data)
+            path.with_suffix(".json").write_text(json.dumps({"polarization": "HH"}))
+            with patch("surface_dynamics.exploration_insar.fetch_pair", return_value=path):
+                result = measure_pair(query, row, path, out)
+            lens = result["lens"]
+            self.assertEqual(lens["intervals"][0]["interval_days"], 12)
+            support = lens["support"]
+            self.assertEqual(sum(support["coherence_histogram_cells"]), 15)
+            self.assertEqual(support["coherence_at_or_above_threshold_cells"], 14)
+            self.assertEqual(support["wrapped_phase_cells"], 13)
+            self.assertIsNone(lens["los_displacement_cm"])
+            layers = live_layers(out, "/v2/jobs/test/layers", "insar-pair", lens)
+            self.assertIn("display_wrapped_phase_support", [layer["id"] for layer in layers])
+            with rasterio.open(out / "display_wrapped_phase_support.tif") as dataset:
+                np.testing.assert_array_equal(dataset.read(1)[0], [np.nan, 0, 0, 1])
 
     def test_inventory_requires_both_dates_and_deduplicates_revisions(self):
         point = parse_request(dict(longitude=0, latitude=0, start_date="2026-01-01", end_date="2026-01-13"))

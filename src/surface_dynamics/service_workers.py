@@ -113,31 +113,37 @@ def process(body, job_id, out, cache):
               ("longitude", "latitude", "start_date", "end_date")}}
     request = {"contract_version": "1.0", "request_id": job_id, "source": source}
     if mode == "insar-pair":
+        from .earthquake_lens import report
         from .exploration_insar import discover_pairs, measure_pair, pair_cache_path, parse_pair_request
         query = parse_pair_request({k: body[k] for k in
             ("longitude", "latitude", "start_date", "end_date", "pair_id", "coherence_threshold")})
         coverage, entries = discover_pairs(query.point)
         entry = entries.get(query.pair_id)
-        if not entry:
-            return {"status": "no_data", "reason": "pair_unavailable", "coverage": coverage}
-        result = measure_pair(query, entry, pair_cache_path(query, entry, cache), out)
+        result = (measure_pair(query, entry, pair_cache_path(query, entry, cache), out) if entry else
+                  {"status": "no_data", "reason": "pair_unavailable", "coverage": coverage})
+        if "lens" not in result:
+            result["lens"] = report("insufficient_data", reason=result.get("reason"))
         return {**result, "pair_id": query.pair_id}
     if mode == "insar-network":
         return plan_network(request, out)
     if mode.startswith("insar"):
+        from .earthquake_lens import stack_support
+
         request["coherence_threshold"] = body["coherence_threshold"]
         source.update(max_pairs=3, extent_km=5)
         if "series_key" in body:
             source["series_key"] = body["series_key"]
         if mode == "insar-stack":
-            return process_stack(request, out)
+            stack = process_stack(request, out)
+            return {**stack, "lens": stack_support(stack)}
         with TemporaryDirectory() as staging:
             stack = process_stack(request, staging)
             if stack["status"] == "no_data":
-                return stack
+                return {**stack, "lens": stack_support(stack)}
             request["source"] = {"mode": "local_pairs",
                                  "pair_paths": [str(p) for p in sorted((Path(staging) / "cache").glob("pair_*.npz"))]}
-            return process_readiness(request, out)
+            readiness = process_readiness(request, out)
+            return {**readiness, "lens": stack_support(stack, readiness)}
     if mode == "analysis":
         from .spectral import MINIMUM_SPECTRAL_DATES
 
@@ -195,7 +201,7 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
             _, y = xy(source.transform, range(source.height), [0] * source.height)
             for band in range(1, source.count + 1):
                 suffix = source.descriptions[band - 1] or str(band)
-                name = f"display_{path.stem}_{suffix}"
+                name = "display_wrapped_phase_support" if path.stem == "wrapped_phase_support" else f"display_{path.stem}_{suffix}"
                 legend = None
                 if path.stem in analysis_maps:
                     units, cmap, stretch = analysis_maps[path.stem]
@@ -203,6 +209,8 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
                     units, cmap, stretch = "unitless", "cividis", (0, 1)
                 elif path.stem == "wrapped_phase_rad":
                     units, cmap, stretch = "rad", "twilight", (-3.1415926536, 3.1415926536)
+                elif path.stem == "wrapped_phase_support":
+                    units, cmap, stretch = "diagnostic mask", "Blues", (0, 1)
                 elif "change" in path.stem or "delta" in path.stem:
                     units, cmap, stretch = "dB", "RdBu_r", (-8, 8)
                 elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):

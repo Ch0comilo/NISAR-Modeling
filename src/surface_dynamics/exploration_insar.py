@@ -84,6 +84,8 @@ def pair_cache_path(query, entry, cache):
 
 def measure_pair(query, entry, path, out):
     """Read one bounded wrapped grid and publish coherence and phase independently."""
+    from .earthquake_lens import pair_support
+
     point = query.point
     try:
         fetch_pair(entry, point.longitude, point.latitude, path, EXTENT_KM, wrapped_only=True)
@@ -106,6 +108,10 @@ def measure_pair(query, entry, path, out):
                 "polarizations": ["coherence", "wrapped_phase_rad"]}
         window = _window(grid, np.stack((coherence, phase)), point)
     counts = window["valid_pixel_count_by_pol"]
+    lens, support_mask = pair_support(query.pair_id, coherence, phase, query.coherence_threshold)
+    if counts["coherence"]:
+        write_cog(out / "wrapped_phase_support.tif", support_mask, grid["x"], grid["y"],
+                  grid["epsg"], "diagnostic mask", ["wrapped_phase_support"], angular=True)
     layers = []
     for values, key, units, angular in (
         (coherence, "coherence", "unitless", False),
@@ -133,4 +139,5 @@ def measure_pair(query, entry, path, out):
         "coherence_threshold": query.coherence_threshold, "corrections_applied": [],
         "phase_reference": "Angle of the native wrapped interferogram",
         "los_displacement_cm": None,
+        "lens": lens,
     }

@@ -124,7 +124,7 @@ def data_layers(output, prefix, *, coherence_index=0):
                 "diagnostic mask", "Blues", (0, 1))
         return layers
 
-    for name in ("interferometric_interval_dynamics.nc", "correction_readiness_arrays.nc"):
+    for name in ("correction_readiness_arrays.nc", "interferometric_interval_dynamics.nc"):
         path = output / name
         if path.is_file():
             with xr.open_dataset(path, engine="h5netcdf") as ds:
@@ -138,5 +138,11 @@ def data_layers(output, prefix, *, coherence_index=0):
                     layers.append(render_layer(output, prefix, f"display_coherence_contrast_{index}",
                                                values, x, y, epsg, units="coherence difference",
                                                cmap="RdBu_r", stretch=(-1, 1)))
+                if "common_correction_input_eligible" in ds:
+                    eligible = np.where(ds.common_coherence_support.values,
+                                        ds.common_correction_input_eligible.values, np.nan)
+                    layers.append(render_layer(output, prefix, "display_common_correction_input_eligible",
+                                               eligible, x, y, epsg, units="diagnostic mask",
+                                               cmap="Blues", stretch=(0, 1)))
                 return layers
     return []

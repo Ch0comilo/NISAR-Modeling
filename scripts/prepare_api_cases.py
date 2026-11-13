@@ -10,7 +10,9 @@ from rasterio.warp import transform
 import xarray as xr
 
 from surface_dynamics.analysis import measured_db
+from surface_dynamics.earthquake_lens import stack_support
 from surface_dynamics.flood import process_flood
+from surface_dynamics.insar_readiness import process_readiness
 from surface_dynamics.insar_stack import process_stack
 from surface_dynamics.io import load_cube
 from surface_dynamics.service_artifacts import data_layers, native_grid, publish_files, published_layers, write_json
@@ -108,14 +110,18 @@ def build(root, output):
     request["source"]["pair_paths"] = [str(root / p) for p in request["source"]["pair_paths"]]
     with TemporaryDirectory() as work:
         result = process_stack(request, work)
-        name = "interferometric_interval_dynamics.nc"
-        for filename in (name, "minimum_coherence.tif", "coherence_interval_contrast.tif", "common_phase_support.tif"):
+        readiness = process_readiness(request, Path(work) / "readiness")
+        name = "correction_readiness_arrays.nc"
+        copy2(Path(work) / "readiness" / name, destination / name)
+        for filename in ("interferometric_interval_dynamics.nc", "minimum_coherence.tif",
+                         "coherence_interval_contrast.tif", "common_phase_support.tif"):
             copy2(Path(work) / filename, destination / filename)
     with xr.open_dataset(destination / name, engine="h5netcdf") as ds:
         grid = native_grid(ds.x.values, ds.y.values, ds.attrs["epsg_code"])
     pair = result["observations"][1]
     evidence = {"state": result["quality"]["phase_comparison_status"], "pair": pair,
                 "los_displacement_cm": None, "common_support": result["quality"],
+                "lens": stack_support(result, readiness),
                 "limitations": result["limitations"]}
     write_json(destination / "series.json", {"api_version": "2.0", "intervals": result["observations"],
                                              "observation_noise_db": None, "gp_conditional_latent_band_db": None})
