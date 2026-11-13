@@ -3,6 +3,8 @@ from collections import OrderedDict
 from functools import lru_cache
 from hashlib import sha256
 import json
+import os
+import re
 from pathlib import Path
 from threading import RLock
 from time import monotonic
@@ -26,7 +28,24 @@ from .service_state import Rejected
 CaseID = Annotated[str, ApiPath(pattern=r"^[a-z][a-z0-9-]{0,63}$")]
 JobID = Annotated[str, ApiPath(pattern=r"^[a-f0-9]{32}$")]
 AssetName = Annotated[str, ApiPath(pattern=r"^[A-Za-z0-9_-]{1,180}\.(png|gif|tif|nc|csv|geojson)$")]
-ORIGINS = ["https://nisar-hazard-watch.vercel.app", "http://localhost:5173"]
+DEFAULT_ORIGINS = (
+    "https://nisar-hazard-watch.vercel.app",
+    "https://nisar-hazard-watch-nine.vercel.app",
+    "http://localhost:5173",
+)
+ORIGIN_PATTERN = re.compile(r"https?://[A-Za-z0-9.-]+(:\d{1,5})?")
+
+
+def configured_origins(extra=""):
+    """Browser origins allowed to call the API: the defaults plus a comma-separated NISAR_CORS_ORIGINS."""
+    listed = [origin.strip().rstrip("/") for origin in extra.split(",") if origin.strip()]
+    for origin in listed:
+        if not ORIGIN_PATTERN.fullmatch(origin):
+            raise ValueError("NISAR_CORS_ORIGINS holds origins such as https://app.example.com, no paths or wildcards.")
+    return list(dict.fromkeys([*DEFAULT_ORIGINS, *listed]))
+
+
+ORIGINS = configured_origins(os.environ.get("NISAR_CORS_ORIGINS", ""))
 PUBLIC_CACHE = "public, max-age=300"
 MAX_BODY = 8192
 

@@ -18,9 +18,16 @@ VOLUME_NAME = os.environ.get("NISAR_VOLUME", "nisar-evidence-v2")
 SECRET_NAME = os.environ.get("NISAR_EARTHDATA_SECRET", "nisar-explorer-preview")
 STATE_NAME = os.environ.get("NISAR_STATE_DICT", f"{APP_NAME}-jobs")
 CASES_PATH = os.environ.get("NISAR_CASES_PATH", "cases")
+CORS_ORIGINS = os.environ.get("NISAR_CORS_ORIGINS", "")
 if not re.fullmatch(r"cases(?:-[a-z0-9-]{1,60})?", CASES_PATH):
     raise ValueError("Use a cases directory name such as cases or cases-2026-11.")
 DEPS = ("fastapi==0.129.0", "pydantic==2.12.5", "requests==2.34.2")
+# Public defaults protect the shared workspace budget; another deployment can raise them.
+MAX_ACTIVE_JOBS = int(os.environ.get("NISAR_MAX_ACTIVE_JOBS", "2"))
+JOBS_PER_DAY = int(os.environ.get("NISAR_JOBS_PER_DAY", "12"))
+JOBS_PER_IP_DAY = int(os.environ.get("NISAR_JOBS_PER_IP_DAY", "5"))
+WORKER_CONTAINERS = int(os.environ.get("NISAR_WORKER_CONTAINERS", "1"))
+WORKER_MEMORY_MB = int(os.environ.get("NISAR_WORKER_MEMORY_MB", "2048"))
 app = modal.App(APP_NAME)
 volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 state = modal.Dict.from_name(STATE_NAME, create_if_missing=True)
@@ -62,6 +69,9 @@ runtime_config = {
     "NISAR_BUILD_REVISION": REVISION, "NISAR_APP_NAME": APP_NAME, "NISAR_VOLUME": VOLUME_NAME,
     "NISAR_STATE_DICT": STATE_NAME, "NISAR_EARTHDATA_SECRET": SECRET_NAME,
     "NISAR_BUILD_GIT_SHA": GIT_SHA or "", "NISAR_CASES_PATH": CASES_PATH,
+    "NISAR_CORS_ORIGINS": CORS_ORIGINS,
+    "NISAR_MAX_ACTIVE_JOBS": str(MAX_ACTIVE_JOBS), "NISAR_JOBS_PER_DAY": str(JOBS_PER_DAY),
+    "NISAR_JOBS_PER_IP_DAY": str(JOBS_PER_IP_DAY),
 }
 package = ROOT / "src" / "surface_dynamics"
 MOCK_HTML = "/opt/nisar/observation-mock.html"
@@ -83,10 +93,12 @@ worker_image = (
 )
 
 
-@app.function(image=worker_image, volumes={str(STORAGE): volume}, cpu=(1.0, 1.0), memory=(2048, 2048),
-              timeout=240, max_containers=1, scaledown_window=10, retries=0,
+@app.function(image=worker_image, volumes={str(STORAGE): volume}, cpu=(1.0, 1.0),
+              memory=(WORKER_MEMORY_MB, WORKER_MEMORY_MB),
+              timeout=240, max_containers=WORKER_CONTAINERS, scaledown_window=10, retries=0,
               secrets=[modal.Secret.from_name(SECRET_NAME, required_keys=["EARTHDATA_TOKEN"])])
 def worker(body, job_id):
+    from surface_dynamics.service_state import plain_json
     from surface_dynamics.service_workers import execute_job
 
     key = "job:" + job_id
@@ -110,7 +122,7 @@ def worker(body, job_id):
             for artifact in result["artifacts"]:
                 copy2(out / artifact["name"], dest / artifact["name"])
             volume.commit()
-        state.put(key, {**record, "status": "succeeded", "result": result})
+        state.put(key, {**record, "status": "succeeded", "result": plain_json(result)})
     except Exception as exc:
         logging.getLogger(__name__).warning("job=%s operation=%s failure=%s", job_id,
                                             body["operation"], type(exc).__name__)
@@ -125,6 +137,8 @@ def api():
     from surface_dynamics.service_api import create_app
     from surface_dynamics.service_state import JobStore
 
-    return create_app(STORAGE, JobStore(state, worker.spawn, REVISION), reload=volume.reload,
+    jobs = JobStore(state, worker.spawn, REVISION, max_active=MAX_ACTIVE_JOBS,
+                    jobs_per_day=JOBS_PER_DAY, jobs_per_ip_day=JOBS_PER_IP_DAY)
+    return create_app(STORAGE, jobs, reload=volume.reload,
                       observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"),
                       git_sha=GIT_SHA, cases_path=CASES_PATH)

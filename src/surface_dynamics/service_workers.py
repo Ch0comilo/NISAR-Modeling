@@ -61,30 +61,71 @@ def analysis_dashboard(out, dates):
     return {"version": "1.0", "acquisition_gaps_days": gaps, "series": series}
 
 
+def planned_coverage(query, key, entries):
+    """Coverage metadata for a backend scene plan; nothing was searched."""
+    from .catalog import COLLECTIONS
+    from .explore import CONTRACT_VERSION
+    return {
+        "contract_version": CONTRACT_VERSION,
+        "point": {"longitude": query.longitude, "latitude": query.latitude},
+        "date_window": [query.start_date, query.end_date],
+        "collection": COLLECTIONS["GCOV"],
+        "catalog_queried_at_utc": None,
+        "catalog_hits": len(entries),
+        "coverage_status": "planned_scenes",
+        "pixel_support": "unchecked",
+        "series": [{"key": key, "dates": [entry["time_start"][:10] for entry in entries],
+                    "frequency_a_supported": True}],
+    }
+
+
 def run_explore(body, out, cache):
+    from dataclasses import replace
+
+    from . import explore as exploration
     from .explore import discover, enrich_lens, measure, parse_request, select, select_alternate
     from .flood_lens import with_evidence
     fields = {"longitude", "latitude", "start_date", "end_date", "series_key",
               "compare_dates", "lens", "optical_evidence", "baseline_end_date"}
     query = parse_request({**{k: v for k, v in body.items() if k in fields}, "max_dates": 5})
-    coverage, groups = discover(query)
-    key, entries, reason = select(query, groups)
-    if not entries:
-        return {"status": "no_data", "reason": reason, "coverage": coverage}
-    choices = [(key, entries)]
-    alternate = select_alternate(query, groups, key)
-    if alternate:
-        choices.append(alternate)
+    if body.get("window_pixels"):
+        query = replace(query, chip_pixels=body["window_pixels"])
+    started = perf_counter()
+    timings, sink = {}, {}
+    if body.get("scenes"):
+        from .plan_input import entries_from_scenes, prefetch_chips
+
+        key, entries = entries_from_scenes(body["scenes"])
+        coverage = planned_coverage(query, key, entries)
+        choices = [(key, entries)]
+        prefetch_start = perf_counter()
+        prefetch_chips(
+            entries, lambda entry: exploration._chip_path(query, entry, cache),
+            lambda entry, path: exploration.fetch_chip(
+                entry, query.longitude, query.latitude, path, pixels=query.chip_pixels, cache_only=False),
+        )
+        timings["prefetch_s"] = round(perf_counter() - prefetch_start, 3)
+    else:
+        coverage, groups = discover(query)
+        key, entries, reason = select(query, groups)
+        if not entries:
+            return {"status": "no_data", "reason": reason, "coverage": coverage}
+        choices = [(key, entries)]
+        alternate = select_alternate(query, groups, key)
+        if alternate:
+            choices.append(alternate)
     attempts = []
+    measure_start = perf_counter()
     for key, entries in choices:
         state = {}
         def record(**fields):
             state.update(fields)
-        followup = measure(query, entries, cache, out, record)
+        followup = measure(query, entries, cache, out, record, **({"sink": sink} if body.get("aoi") else {}))
         attempts.append({"series_key": key, "status": state["status"],
                          "usable_window_date_count": state["usable_window_date_count"]})
         if state["status"] != "no_data":
             break
+    timings["measure_s"] = round(perf_counter() - measure_start, 3)
     if followup:
         status, lens, paths = followup
         try:
@@ -94,7 +135,13 @@ def run_explore(body, out, cache):
             evidence = {"status": "unavailable", "reason": "optical_worker_error"}
         state.update(status=status, phase=None, lens=with_evidence(lens, evidence))
         attempts[-1]["status"] = status
-    return {**state, "coverage": coverage, "series_key": key, "series_attempts": attempts}
+    if body.get("aoi") and sink.get("report", {}).get("status") == "evaluated":
+        from .plan_input import summarize_aoi
+
+        state["aoi_summary"] = summarize_aoi(sink["cube"], sink["arrays"], body["aoi"],
+                                             sink["report"]["radar"]["polarizations"])
+    timings["total_s"] = round(perf_counter() - started, 3)
+    return {**state, "coverage": coverage, "series_key": key, "series_attempts": attempts, "timings": timings}
 
 
 def process(body, job_id, out, cache):
