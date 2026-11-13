@@ -148,6 +148,13 @@ def analyze(request,output,*,archive_read_workers=1):
         render.observed_gif(cube,db,out/'observed_evolution.gif',title);register(out/'observed_evolution.gif','observed_acquisition_animation',legend={'red':'co-pol dB [-25,0]','green':'cross-pol dB [-32,-5] when present','blue':'cross/co ratio dB [-18,-2] when present','time':'measured dates only; uniform playback is not uniform sampling'})
         result['capabilities']['physical']={'status':'available','metadata':{'common_support_fraction':float(common.mean()),'native_quality_scope':'focused sample support only','pod_variance_fraction':stat.get('variance_fraction',[]).tolist() if 'variance_fraction' in stat else []}}
     if 'spectral' in request['analyses']:
+        if render.spatial_spectrum_figure(structure, pols[0], out/'spatial_spectrum.png', title):
+            register(out/'spatial_spectrum.png', 'spatial_image_spectrum', legend={
+                'polarization': pols[0],
+                'support': f'{structure["spatial_fft_supported_cells"]} of {structure["spatial_fft_total_cells"]} cells with a finite temporal median',
+                'axes': 'Native grid east and north, cycles/km',
+                'power': 'Peak-relative dB, clipped below −45 dB for display',
+            })
         spectral=spectral_analysis(db,t)
         if spectral['status']=='available':
             channel=next(i for i in range(len(pols)) if np.isfinite(spectral['candidate_period_days'][i]).any())

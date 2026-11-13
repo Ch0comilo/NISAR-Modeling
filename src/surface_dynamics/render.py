@@ -83,6 +83,33 @@ def spectral_figure(cube,spectral,local,path,title):
         ax.set_xticks(t[::2],list(cube['dates'][::2]),rotation=40,ha='right');fig.text(.01,.01,'Actual times used in fitting; unsupported edges/local windows are blank. This is weighted sinusoidal analysis, not a regular-grid CWT.',fontsize=8);fig.subplots_adjust(bottom=.27)
         save(fig,Path(path).with_name('time_frequency.png'))
 
+def spatial_spectrum_figure(structure, polarization, path, title):
+    """Plot the spatial FFT of the temporal-median image in native-grid coordinates."""
+    power = structure["spatial_fft_power"]
+    peak = np.max(power)
+    if not np.isfinite(peak) or peak <= 0:
+        return False
+    fx = structure["spatial_fx_cycles_km"]
+    # Image rows increase toward grid south. Reverse the axis and rows to plot north-up.
+    fy = -structure["spatial_fy_cycles_km"][::-1]
+    with np.errstate(divide="ignore"):
+        relative_db = np.maximum(10 * np.log10(power[::-1] / peak), -45)
+    style()
+    fig, ax = plt.subplots(figsize=(8, 7))
+    fig.subplots_adjust(bottom=.2)
+    image = ax.pcolormesh(fx, fy, relative_db, shading="nearest", cmap="magma", vmin=-45, vmax=0)
+    ax.set_aspect("equal")
+    ax.set_xlabel("Grid east spatial frequency (cycles/km)")
+    ax.set_ylabel("Grid north spatial frequency (cycles/km)")
+    ax.set_title(f"{title} · {polarization} spatial image spectrum")
+    fig.colorbar(image, ax=ax, label="Power relative to peak (dB)")
+    fig.text(.09, .07, "Temporal-median image; missing cells filled with its median.\n"
+             "Mean removed, Hann tapered, DC excluded. Texture and boundaries both contribute.",
+             fontsize=9, color=MUTED)
+    save(fig, path)
+    return True
+
+
 def stochastic_figure(cube,region,stochastic,path,title):
     style();C=len(cube['polarizations']);fig,axs=plt.subplots(C,1,figsize=(12,3.5*C+1.5),squeeze=False);fig.subplots_adjust(top=.85,bottom=.20,hspace=.35)
     fig.suptitle(title.upper()+'  /  STOCHASTIC HISTORICAL STATES',x=.07,ha='left',fontsize=18,fontweight='bold',y=.97)

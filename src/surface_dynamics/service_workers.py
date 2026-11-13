@@ -17,7 +17,8 @@ MODEL = "models/global_explorer_v2/masked_temporal_transformer.pt"
 PREVIEWS = {
     "physical.png": ("Observed surface dynamics", "descriptive"),
     "observed_evolution.gif": ("Measured acquisition animation", "descriptive"),
-    "spectral.png": ("Candidate temporal and spatial frequencies", "experimental"),
+    "spectral.png": ("Candidate temporal periods and their mapped distribution", "experimental"),
+    "spatial_spectrum.png": ("Spatial image spectrum", "descriptive"),
     "time_frequency.png": ("Candidate time-frequency structure", "experimental"),
     "stochastic.png": ("Historical Gaussian-process fit", "conditional_model"),
     "learned.png": ("Frozen Transformer representation", "experimental"),
@@ -250,6 +251,8 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
                     units, cmap, stretch = "unitless", "cividis", (0, 1)
                 elif path.stem == "wrapped_phase_rad":
                     units, cmap, stretch = "rad", "twilight", (-3.1415926536, 3.1415926536)
+                elif path.stem == "cross_pol_decline_count" and lens.get("assessment_dates"):
+                    units, cmap, stretch = "observations", "viridis", (0, len(lens["assessment_dates"]))
                 elif "change" in path.stem or "delta" in path.stem:
                     units, cmap, stretch = "dB", "RdBu_r", (-8, 8)
                 elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):

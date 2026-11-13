@@ -110,6 +110,14 @@ For standalone spectral and stochastic results, submit the existing `operation: 
 
 For standalone charts, read `science.capabilities` to decide which panels to show and `science.observations.polarizations` for channel order. Regional intervals from spatial block resampling and GP conditional bands describe different quantities. Spectral power is dimensionless and represents a fit score. The observation dates and sampling window are part of interpreting each spectrum.
 
+Spectral requests can publish `spatial_spectrum.png` independently of temporal period support.
+This preview shows a 2D FFT of the first measured channel's temporal-median image. Its axes are
+native grid east and north in cycles/km. The worker fills missing cells with the image median,
+removes the mean, applies a Hann taper and excludes DC. The legend reports finite-median support
+and the display shows power relative to the peak, clipped below −45 dB. Flat or unsupported
+images omit the figure. The temporal `spectral.png` and `spectral_series` describe candidate
+periods in days and retain their separate temporal support gates.
+
 ## Frontend mapping
 
 | Draft field or copy | v2 rendering |
