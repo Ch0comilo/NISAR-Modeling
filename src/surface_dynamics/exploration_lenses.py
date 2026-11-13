@@ -16,6 +16,7 @@ from .flood_signatures import POLICY, reference_groups, spatial_contrast
 from .flood_lens import (optical_comparison, radar_evaluation, signature_masks, unavailable_evaluation,
                          with_evidence, write_signature_layer)
 from .io import load_cube, local_neighborhood, point_location
+from .surroundings import surrounding_comparison
 from .surface_features import DEFAULT_POLICY, fingerprint
 
 
@@ -69,6 +70,7 @@ AGRICULTURE = {
 }
 LENSES = {lens["id"]: lens for lens in (FLOOD_WETLAND, VEGETATION_DISTURBANCE, WILDFIRE, AGRICULTURE)}
 TEMPORAL_LENSES = {WILDFIRE["id"], AGRICULTURE["id"]}
+SCATTERING_LENSES = {VEGETATION_DISTURBANCE["id"], WILDFIRE["id"]}
 GROUPS = {
     0: "stable_nonwater", 1: "new_open_water", 2: "stable_open_water",
     3: "open_water_loss", 4: "mixed_or_partial",
@@ -100,6 +102,8 @@ def empty_lens(target_date, baseline_dates, reason, lens_id=FLOOD_WETLAND["id"])
         report["evaluation"] = unavailable_evaluation(target_date, baseline_dates, reason)
     if lens_id == AGRICULTURE["id"]:
         report["evaluation"] = unavailable_agriculture_evaluation(target_date, baseline_dates, reason)
+    if lens_id in SCATTERING_LENSES:
+        report["evaluation"] = {"surrounding_comparison": {"status": "insufficient_data", "reason": reason}}
     return report
 
 
@@ -182,6 +186,10 @@ def evaluate_lens(cube, target_date, lens_id, *, baseline_end=None, reference=No
     if lens_id == AGRICULTURE["id"]:
         report["evaluation"], agriculture_arrays = evaluate_agriculture(cube, features, target_date, point)
         arrays.update(agriculture_arrays)
+    if lens_id in SCATTERING_LENSES:
+        report["evaluation"]["surrounding_comparison"] = surrounding_comparison(
+            cube, features, delta, point_location(cube, point),
+        )
     if temporal:
         report["assessment_dates"] = assessment.tolist()
     if fire:
