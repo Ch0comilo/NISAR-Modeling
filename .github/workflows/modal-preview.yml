@@ -1,0 +1,154 @@
+name: Modal preview
+
+# Every pull request that changes the service gets its own temporary Modal app,
+# nisar-hazard-watch-ml-pr-<number>, with its own job Dict and a preview-only Volume, so a broken
+# change is found before it reaches production. The app is stopped and its Dict deleted when the
+# pull request is closed, merged or not, and a daily sweep removes any that were missed, so
+# nothing is left behind in the Modal workspace. Pull requests from forks get no secrets and are
+# skipped. The production app, the dev app and the other apps of the workspace are never touched.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - modal_app.py
+      - requirements-lock.txt
+      - src/**
+      - models/**
+      - scripts/observation-mock/**
+      - scripts/modal_preview_*.py
+      - .github/workflows/modal-preview.yml
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# One run per pull request, queued rather than cancelled, so a close always runs after a deploy.
+concurrency:
+  group: modal-preview-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+  MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+  MODAL_ENVIRONMENT: main
+  PYTHONUTF8: "1"
+
+jobs:
+  preview:
+    if: >-
+      github.event_name == 'pull_request' && github.event.action != 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      NISAR_APP_NAME: nisar-hazard-watch-ml-pr-${{ github.event.pull_request.number }}
+      # A Volume of its own, so a faulty change cannot write into the production chip cache.
+      NISAR_VOLUME: nisar-hazard-watch-chip-cache-preview
+      NISAR_EARTHDATA_SECRET: nisar-hazard-watch-earthdata
+      NISAR_MAX_ACTIVE_JOBS: "1"
+      NISAR_WORKER_CONTAINERS: "1"
+      NISAR_JOBS_PER_DAY: "20"
+      NISAR_JOBS_PER_IP_DAY: "20"
+      NISAR_WORKER_TIMEOUT_SECONDS: "420"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Check the Modal credentials
+        shell: bash
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            echo "::error title=Modal credentials missing::Add the repository secrets MODAL_TOKEN_ID and MODAL_TOKEN_SECRET."
+            exit 1
+          fi
+      - name: Install the Modal client
+        run: python -m pip install modal==1.6.4
+      - name: Deploy the preview app
+        run: python -m modal deploy --env main modal_app.py
+      - name: Smoke test the preview
+        id: smoke
+        env:
+          EXPECTED_GIT_SHA: ${{ github.sha }}
+          EXPECTED_JOBS_PER_DAY: "20"
+        shell: bash
+        run: |
+          GATEWAY_URL=$(python -c 'import os, modal; print(modal.Function.from_name(os.environ["NISAR_APP_NAME"], "api", environment_name="main").get_web_url())')
+          echo "url=$GATEWAY_URL" >> "$GITHUB_OUTPUT"
+          GATEWAY_URL="$GATEWAY_URL" python scripts/modal_preview_smoke.py
+      - name: Comment on the pull request
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.smoke.outcome }}" = "success" ]; then
+            result="✅ Deployed and smoke-tested at \`${GITHUB_SHA:0:7}\`: health, limits and one real InSAR pair job passed."
+          else
+            result="❌ The preview deploy or its smoke test failed at \`${GITHUB_SHA:0:7}\`; see the run for the log."
+          fi
+          cat > comment.md <<EOF
+          ### 🧪 Modal preview \`$NISAR_APP_NAME\`
+
+          $result
+
+          Gateway: ${{ steps.smoke.outputs.url }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          The app is stopped and its job Dict deleted when this pull request is closed.
+          EOF
+          gh pr comment "$PR_NUMBER" --body-file comment.md --edit-last --create-if-none
+
+  cleanup:
+    if: >-
+      github.event_name == 'pull_request' && github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      NISAR_APP_NAME: nisar-hazard-watch-ml-pr-${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Install the Modal client
+        run: python -m pip install modal==1.6.4
+      - name: Stop the preview app and delete its job Dict
+        shell: bash
+        run: |
+          case "$NISAR_APP_NAME" in
+            nisar-hazard-watch-ml-pr-[0-9]*) ;;
+            *) echo "::error::refusing to touch $NISAR_APP_NAME"; exit 1 ;;
+          esac
+          if modal app list --env main --json | python -c 'import json,sys; sys.exit(0 if any(a.get("description")==sys.argv[1] and "stopped" not in a.get("state","").lower() for a in json.load(sys.stdin)) else 1)' "$NISAR_APP_NAME"; then
+            modal app stop "$NISAR_APP_NAME" --env main --yes
+          else
+            echo "no deployed preview app named $NISAR_APP_NAME"
+          fi
+          modal dict delete "$NISAR_APP_NAME-jobs" --env main --allow-missing --yes
+      - name: Comment on the pull request
+        shell: bash
+        run: gh pr comment "$PR_NUMBER" --body "🧹 Modal preview \`$NISAR_APP_NAME\` stopped and its job Dict deleted." --edit-last --create-if-none
+
+  sweep:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Install the Modal client
+        run: python -m pip install modal==1.6.4
+      - name: Remove the previews whose pull request is closed
+        run: python scripts/modal_preview_sweep.py
