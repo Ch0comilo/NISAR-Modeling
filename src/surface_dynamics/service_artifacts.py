@@ -71,13 +71,14 @@ def render_layer(out, prefix, layer_id, values, x, y, epsg, *, units, cmap, stre
             "range": list(stretch), "legend": legend}
 
 
-def publish_files(output, prefix):
+def publish_files(output, prefix, *, priority=()):
     """Expose only top-level produced files with bounded transfer sizes."""
     allowed = {".tif": "image/tiff", ".png": "image/png", ".gif": "image/gif", ".nc": "application/x-netcdf",
                ".csv": "text/csv", ".geojson": "application/geo+json"}
     assets = []
     total = 0
-    for path in sorted(output.iterdir()):
+    first = {name: index for index, name in enumerate(priority)}
+    for path in sorted(output.iterdir(), key=lambda item: (first.get(item.name, len(first)), item.name)):
         if not path.is_file() or path.is_symlink() or path.suffix not in allowed:
             continue
         size = path.stat().st_size
@@ -89,9 +90,13 @@ def publish_files(output, prefix):
     return assets
 
 
-def published_layers(layers, assets):
+def published_layers(layers, assets, *, require_cog=True):
     urls = {asset["href"] for asset in assets}
-    return [layer for layer in layers if {layer["png_url"], layer["cog_url"]} <= urls]
+    return [
+        {**layer, "cog_url": layer["cog_url"] if layer["cog_url"] in urls else None}
+        for layer in layers
+        if layer["png_url"] in urls and (not require_cog or layer["cog_url"] in urls)
+    ]
 
 
 def data_layers(output, prefix, *, coherence_index=0):

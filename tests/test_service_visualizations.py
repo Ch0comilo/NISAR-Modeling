@@ -9,6 +9,9 @@ from PIL import Image
 import rasterio
 
 from surface_dynamics.engine import write_cog
+from surface_dynamics.analysis import spatial_structure
+from surface_dynamics.render import spatial_spectrum_figure
+from surface_dynamics.service_artifacts import publish_files, published_layers
 from surface_dynamics.service_visualizations import Frame, render_gcov_visualizations
 from surface_dynamics.service_workers import execute_job, run_explore
 
@@ -28,6 +31,32 @@ class VisualizationTests(TestCase):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
+
+    def test_spatial_image_spectrum_uses_posting_and_withholds_a_flat_image(self):
+        x = np.arange(32)
+        image = np.broadcast_to(np.cos(2 * np.pi * x / 8), (16, 32))
+        structure = spatial_structure(image[None, None], 40, 80)
+        row, col = np.unravel_index(structure["spatial_fft_power"].argmax(), image.shape)
+        self.assertAlmostEqual(abs(structure["spatial_fx_cycles_km"][col]), 3.125)
+        self.assertEqual(structure["spatial_fy_cycles_km"][row], 0)
+        self.assertEqual(structure["spatial_fft_supported_cells"], image.size)
+        figure = self.root / "spatial_spectrum.png"
+        self.assertTrue(spatial_spectrum_figure(structure, "HH", figure, "Measured image"))
+        self.assertTrue(figure.is_file())
+        self.assertFalse(spatial_spectrum_figure(
+            spatial_structure(np.zeros((1, 1, 16, 32)), 40), "HH", self.root / "flat.png", "Flat",
+        ))
+
+    def test_live_preview_survives_when_numeric_assets_exhaust_the_bundle(self):
+        for name in ("earliest.tif", "target.png", "target.tif"):
+            (self.root / name).write_bytes(b"0123456789")
+        layer = {"png_url": "/assets/target.png", "cog_url": "/assets/target.tif"}
+        with patch("surface_dynamics.service_artifacts.BUNDLE_LIMIT", 20):
+            assets = publish_files(self.root, "/assets", priority=["target.png"])
+        self.assertEqual([asset["name"] for asset in assets], ["target.png", "earliest.tif"])
+        self.assertEqual(published_layers([layer], assets, require_cog=False),
+                         [{**layer, "cog_url": None}])
+        self.assertEqual(published_layers([layer], assets), [])
 
     def test_false_color_preserves_quantitative_bands_and_joint_support(self):
         target = frame(DATES[2], HH=-14, HV=-22, VV=-11, VH=-20)

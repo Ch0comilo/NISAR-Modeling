@@ -17,7 +17,8 @@ MODEL = "models/global_explorer_v2/masked_temporal_transformer.pt"
 PREVIEWS = {
     "physical.png": ("Observed surface dynamics", "descriptive"),
     "observed_evolution.gif": ("Measured acquisition animation", "descriptive"),
-    "spectral.png": ("Candidate temporal and spatial frequencies", "experimental"),
+    "spectral.png": ("Candidate temporal periods and their mapped distribution", "experimental"),
+    "spatial_spectrum.png": ("Spatial image spectrum", "descriptive"),
     "time_frequency.png": ("Candidate time-frequency structure", "experimental"),
     "stochastic.png": ("Historical Gaussian-process fit", "conditional_model"),
     "learned.png": ("Frozen Transformer representation", "experimental"),
@@ -250,6 +251,8 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
                     units, cmap, stretch = "unitless", "cividis", (0, 1)
                 elif path.stem == "wrapped_phase_rad":
                     units, cmap, stretch = "rad", "twilight", (-3.1415926536, 3.1415926536)
+                elif path.stem == "cross_pol_decline_count" and lens.get("assessment_dates"):
+                    units, cmap, stretch = "observations", "viridis", (0, len(lens["assessment_dates"]))
                 elif "change" in path.stem or "delta" in path.stem:
                     units, cmap, stretch = "dB", "RdBu_r", (-8, 8)
                 elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
@@ -319,7 +322,13 @@ def execute_job(body, job_id, out, cache, revision):
         except UnrepresentableDisplayGrid:
             pass
     visualization_seconds = perf_counter() - render_start
-    assets = publish_files(out, prefix)
+    priority = [
+        *(layer["png_url"].rsplit("/", 1)[-1] for layer in layers),
+        *(view["png_url"].rsplit("/", 1)[-1] for view in visualizations),
+        *PREVIEWS,
+        *(f"{name}.csv" for name in ANALYSIS_TABLES),
+    ]
+    assets = publish_files(out, prefix, priority=priority)
     science_artifacts = {asset["href"]: asset for asset in raw.pop("artifacts", [])}
     previews = []
     for asset in assets:
@@ -333,8 +342,8 @@ def execute_job(body, job_id, out, cache, revision):
         raise RuntimeError("The scientific source could not be read.")
     result = {"operation": body["operation"], "science_status": raw["status"], "revision": revision,
               "point": [body["longitude"], body["latitude"]], "isDemo": False if assets else None,
-              "science": raw, "layers": published_layers(layers, assets), "artifacts": assets,
-              "visualizations": published_layers(visualizations, assets), "previews": previews,
+              "science": raw, "layers": published_layers(layers, assets, require_cog=False), "artifacts": assets,
+              "visualizations": published_layers(visualizations, assets, require_cog=False), "previews": previews,
               "visualization_seconds": round(visualization_seconds, 3),
               "elapsed_seconds": round(perf_counter() - start, 3)}
     write_json(out / "manifest.json", result)

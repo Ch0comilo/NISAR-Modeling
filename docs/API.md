@@ -34,6 +34,10 @@ Prepared GCOV case manifests and completed `explore` job results include `visual
 
 `components` gives band order, label, source polarizations and fixed `display_db` range. RGB COGs carry three unclipped float dB bands for client-side mixing. Scalar COGs carry one unclipped float band. `png_url` and `cog_url` are relative to the API origin. NoData is transparent in PNGs. Live `artifacts` includes content hashes and sizes. Layer responses carry ETags.
 
+Live jobs prioritize display PNGs and chart outputs within the bounded artifact bundle.
+A live layer can have `cog_url: null` when the numeric asset exceeds the publication budget.
+Use the PNG for the view and offer numeric downloads only for published assets.
+
 Unavailable recipes are omitted. A missing target does not borrow a different date. An HH/VH-only observation has no matched co-/cross-pol view. Incompatible native grids withhold cross-date combinations. Original measurements and signed channel differences remain in `layers`. Derived views describe measured L-band inputs and cannot identify a material or validate a hazard.
 
 `analysis` jobs can return `previews` with `href`, `title`, `interpretation` and optional `legend`. Available figures can include the physical dashboard, observed-date GIF, historical GP fit and experimental spectra or learned-model views. GIF playback spacing is cosmetic. Prepared Kumamoto also includes a common phase-support mask and adjacent-pair coherence contrasts. Pair durations may differ. Live GUNW wrapped phase is in radians. LOS displacement remains null.
@@ -109,6 +113,14 @@ For standalone spectral and stochastic results, submit the existing `operation: 
 | Figures, downloads and scientific arrays | `result.previews` lists available figures and animations. `result.artifacts` lists CSV, PNG and georeferenced raster downloads and available NetCDF with coordinates, units and support arrays. |
 
 For standalone charts, read `science.capabilities` to decide which panels to show and `science.observations.polarizations` for channel order. Regional intervals from spatial block resampling and GP conditional bands describe different quantities. Spectral power is dimensionless and represents a fit score. The observation dates and sampling window are part of interpreting each spectrum.
+
+Spectral requests can publish `spatial_spectrum.png` independently of temporal period support.
+This preview shows a 2D FFT of the first measured channel's temporal-median image. Its axes are
+native grid east and north in cycles/km. The worker fills missing cells with the image median,
+removes the mean, applies a Hann taper and excludes DC. The legend reports finite-median support
+and the display shows power relative to the peak, clipped below −45 dB. Flat or unsupported
+images omit the figure. The temporal `spectral.png` and `spectral_series` describe candidate
+periods in days and retain their separate temporal support gates.
 
 ## Frontend mapping
 

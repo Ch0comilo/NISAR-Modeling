@@ -55,6 +55,7 @@ def spatial_structure(db,pixel_m,pixel_m_y=None):
     power[h//2,w//2]=0
     fy=np.fft.fftshift(np.fft.fftfreq(h,d=pixel_m_y/1000));fx=np.fft.fftshift(np.fft.fftfreq(w,d=pixel_m/1000))
     return {'spatial_anisotropy':np.where(support,anisotropy,np.nan),'spatial_orientation_radians':np.where(support,orientation,np.nan),
+            'spatial_fft_supported_cells':int(support.sum()), 'spatial_fft_total_cells':int(support.size),
             'spatial_fft_power':power if support.any() else np.full_like(power,np.nan),
             'spatial_fx_cycles_km':fx,'spatial_fy_cycles_km':fy,'orientation_convention':'gradient axis, modulo pi; radians counterclockwise from east toward north'}
 
