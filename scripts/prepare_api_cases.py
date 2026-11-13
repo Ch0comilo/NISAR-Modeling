@@ -13,7 +13,10 @@ from surface_dynamics.analysis import measured_db
 from surface_dynamics.flood import process_flood
 from surface_dynamics.insar_stack import process_stack
 from surface_dynamics.io import load_cube
-from surface_dynamics.service_artifacts import data_layers, native_grid, publish_files, published_layers, write_json
+from surface_dynamics.network import acquisition_dates
+from surface_dynamics.service_artifacts import (
+    checksum, data_layers, native_grid, publish_files, published_layers, render_layer, write_json,
+)
 from surface_dynamics.service_contracts import Case
 from surface_dynamics.service_visualizations import gcov_dataset_frames, render_gcov_visualizations
 from surface_dynamics.surface_features import from_db
@@ -64,7 +67,7 @@ def series(cube, grid, point, observed, reference_groups, signature):
             "spatial_iqr_semantics": "Interquartile range of measured cells in each fixed-support group."}
 
 
-def build(root, output):
+def build(root, output, *, choco_readiness=None):
     root = root.resolve()
     output.mkdir(parents=True, exist_ok=False)
     cases = []
@@ -123,13 +126,71 @@ def build(root, output):
                          "024_A_018_4000_SH", [pair["reference_date"]],
                          [item["secondary_date"] for item in result["observations"][1:]],
                          result["status"], evidence, coherence_index=1))
+    if choco_readiness is not None:
+        cases.append(prepare_choco(choco_readiness, output))
     write_json(output / "index.json", cases)
     print(json.dumps({"cases": len(cases), "directory": str(output)}))
 
 
-def publish(destination, case_id, title, point, grid, key, before, after, status, evidence, *, coherence_index=0):
+def prepare_choco(source, output):
+    manifest = read(source / "manifest.json")
+    science = manifest["science"]
+    point = manifest["point"]
+    status = manifest["science_status"]
+    if (manifest["operation"] != "insar-readiness" or point != [-76.256, 4.86]
+            or status != "not_displacement_ready" or science["los_displacement_cm"] is not None):
+        raise ValueError("Expected the measured Chocó correction-readiness result.")
+
+    name = "correction_readiness_arrays.nc"
+    source_array = source / name
+    asset = next(asset for asset in manifest["artifacts"] if asset["name"] == name)
+    if source_array.stat().st_size != asset["bytes"] or checksum(source_array) != asset["sha256"]:
+        raise ValueError("Chocó source array does not match the live job manifest.")
+
+    destination = output / "choco"
+    with xr.open_dataset(source_array, engine="h5netcdf") as ds:
+        key = ds.attrs["series_key"]
+        reference_dates = np.datetime_as_string(ds.reference_time.values, unit="D").tolist()
+        secondary_dates = np.datetime_as_string(ds.secondary_time.values, unit="D").tolist()
+        if (key != "148_A_004_2000_SH" or reference_dates != ["2026-07-18", "2026-08-11"]
+                or secondary_dates != ["2026-08-11", "2026-08-23"]):
+            raise ValueError("Expected the declared Chocó series and both measured intervals.")
+        x, y, epsg = ds.x.values, ds.y.values, ds.attrs["epsg_code"]
+        grid = native_grid(x, y, epsg)
+        intervals = []
+        for index, (reference, secondary, quality) in enumerate(
+            zip(reference_dates, secondary_dates, science["pair_quality"], strict=True)
+        ):
+            source_id = quality["source_id"]
+            if tuple(acquisition_dates(source_id)) != (reference, secondary):
+                raise ValueError("Chocó interval dates do not match the source product.")
+            values = ds.coherence.values[index]
+            finite = values[np.isfinite(values)]
+            if not finite.size:
+                raise ValueError("A declared Chocó pair has no measured coherence support.")
+            intervals.append({"reference_date": reference, "secondary_date": secondary,
+                              "interval_days": int(ds.interval_days.values[index]),
+                              "source_id": source_id, "finite_cells": int(finite.size),
+                              "total_cells": int(values.size), "median_coherence": float(np.median(finite))})
+        destination.mkdir()
+        layer = render_layer(destination, "/v2/cases/choco/layers", "coherence", ds.coherence.values[0],
+                             x, y, epsg, units="unitless", cmap="cividis", stretch=(0, 1))
+    copy2(source_array, destination / name)
+    evidence = {"state": status, "pair": intervals[0], "los_displacement_cm": None,
+                "corrections_applied": science["corrections_applied"], "common_support": science["quality"],
+                "source_array_sha256": asset["sha256"], "source_revision": manifest["revision"],
+                "limitations": science["limitations"]}
+    write_json(destination / "series.json", {"api_version": "2.0", "intervals": intervals,
+                                             "observation_noise_db": None, "gp_conditional_latent_band_db": None})
+    return publish(destination, "choco", "Chocó, Colombia", point, grid, key,
+                   reference_dates[:1], secondary_dates, status, evidence, layers=[layer])
+
+
+def publish(destination, case_id, title, point, grid, key, before, after, status, evidence, *,
+            coherence_index=0, layers=None):
     prefix = f"/v2/cases/{case_id}"
-    layers = data_layers(destination, prefix + "/layers", coherence_index=coherence_index)
+    if layers is None:
+        layers = data_layers(destination, prefix + "/layers", coherence_index=coherence_index)
     visualizations = []
     arrays = destination / "characterization_arrays.nc"
     if arrays.is_file():
@@ -150,5 +211,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--choco-readiness", type=Path, help="Verified Chocó readiness job artifact directory.")
     arguments = parser.parse_args()
-    build(arguments.root, arguments.output)
+    build(arguments.root, arguments.output, choco_readiness=arguments.choco_readiness)

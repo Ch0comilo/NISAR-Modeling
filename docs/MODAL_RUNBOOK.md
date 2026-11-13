@@ -6,6 +6,28 @@ Build the prepared case directory with `python scripts/prepare_api_cases.py --ou
 
 Deploy a clean commit and compare `/health` and `/v2/capabilities` to the local Git SHA and normalized build fingerprint. The fingerprint covers shipped Python, schemas, model assets, pinned dependencies and the science explorer HTML. CRLF and LF text normalize to the same hash. Verify prepared PNG/COG assets, a measured job and its cache replay on staging before promotion.
 
+### Rebuild the production bundle with Chocó
+
+Restore the pinned measured fixtures using `scripts/download_examples.py`. Submit
+an `insar-readiness` job with longitude `-76.2558`, latitude `4.8601`, dates
+`2026-07-18` through `2026-08-23`, `product: "GUNW"`, and
+`series_key: "148_A_004_2000_SH"`. The measured request point snaps to
+`[-76.256, 4.86]`. Retrieve `manifest.json` and `correction_readiness_arrays.nc`
+from the job directory in the production Volume. The initial production source
+job was `b2d15c0f87794b758f8becc603fc81f1`. Its source array SHA-256 is
+`35eaa6d1ed7e026a2e811ce71086512f985658ba6974f6f957023f165382457d`.
+
+    python scripts/prepare_api_cases.py --output scratch/cases-v8-20261113 --choco-readiness <job-directory>
+    python -m modal volume put --env main nisar-hazard-watch-chip-cache scratch/cases-v8-20261113 /cases-v8-20261113
+
+The builder checks the source array against the job manifest before reading it.
+The deployment selects this directory using `NISAR_CASES_PATH`. Confirm the
+deployed index, each manifest and series, and sample PNG hashes against the
+corresponding `assets.json`. Run `python scripts/smoke_api.py <deployed-url> --require-choco`
+after deployment to check the published Chocó contract. The existing `/cases` directory remains available
+for rollback. Report figures displayed by the website require separate written
+permission or a figure-specific license from the rights holder.
+
 ## Verify and rotate the Earthdata secret
 
 The worker expects EARTHDATA_TOKEN in a Modal Secret. The gateway uses public catalog reads. The project default points to the existing nisar-explorer-preview secret in main. Use a new Secret name if the old one is shared. Enter the new value in Modal's Secret UI, set NISAR_EARTHDATA_SECRET to that resource name in the deployment shell and redeploy. Run a bounded measured job, check its science_status and revoke the old token after verification. Keep token values out of Git, job JSON, terminal command arguments and logs. The local DPAPI provider is Windows-only.

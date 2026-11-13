@@ -11,7 +11,7 @@ The API serves provisional or beta NISAR L-band observations and descriptive sci
 | GET /v2/openapi.json | Generated OpenAPI with JSON Schema components from the Pydantic models |
 | GET /v2/coverage | Public CMR footprint records grouped by compatible series, with exact acquisition dates and granule titles |
 | GET /v2/cases | Precomputed case index with query points, north-up native CRS, pixel-edge bounds, shape [height,width], and measured dates |
-| GET /v2/cases/{case_id} | Manifest for chokwe, qadirabad, richmond or kumamoto |
+| GET /v2/cases/{case_id} | Manifest for chokwe, qadirabad, richmond, kumamoto or choco when included in the deployed bundle |
 | GET /v2/cases/{case_id}/series | Observation and group trajectories, optional diagnostic-band timeline, or GUNW pair intervals |
 | GET /v2/cases/{case_id}/layers/{name} | Published PNG, native COG, measured arrays or CSV |
 | POST /v2/jobs | Submit a bounded analysis and return its job_id |
@@ -55,6 +55,15 @@ A measured Chókwè example uses the last measured baseline pass and first asses
     GET /frames/114-165/analysis?hazard=flood&before=2026-01-05&after=2026-01-17&contract=2
 
 In this fixture the darkening signature covers 2,880 supported 40 m cells, or 460.8 nominal analysis-cell hectares. The interpretation is optical_open_water_change_with_weak_or_mixed_radar_response. The processing state is partial. The COG's grid is EPSG:32736 with native bounds [496020,7284100,501140,7289220] and shape [128,128]. The display PNG uses its own manifest bounds in EPSG:4326 and transparent nodata. Use the layer bounds on the globe.
+
+Chocó uses the 18 July to 11 August 2026 GUNW coherence interval from ascending
+track 148, frame 004. The bracketing interval has median coherence 0.247162
+over 3,844 finite cells on the 62 × 62, 80 m EPSG:32618 grid. The 11–23 August
+pair contributes to the correction-readiness check and is listed separately in
+the series. The coherence PNG uses cividis on [0,1] with its own display bounds.
+Readiness reports zero common phase-support cells, `not_displacement_ready`,
+and `los_displacement_cm: null`. The case is available through the v2 case
+routes.
 
 ### Coverage and jobs
 

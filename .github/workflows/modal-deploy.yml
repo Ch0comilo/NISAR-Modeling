@@ -32,6 +32,7 @@ jobs:
       NISAR_APP_NAME: nisar-hazard-watch-ml
       NISAR_VOLUME: nisar-hazard-watch-chip-cache
       NISAR_EARTHDATA_SECRET: nisar-hazard-watch-earthdata
+      NISAR_CASES_PATH: cases-v8-20261113
       # The defaults (2 active jobs, 12 new jobs a day, 5 per client IP, one worker container) suit a
       # shared preview. Here the only client is the hazard-watch backend (one IP, which rate-limits
       # its own users and runs at most 5 explorations at once), so the per-IP cap would end the

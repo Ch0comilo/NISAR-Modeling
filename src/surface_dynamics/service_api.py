@@ -271,6 +271,8 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
         if (lon is None) != (lat is None):
             raise Rejected(422, "invalid_request", "Supply both lon and lat, or omit both.")
         for row in results.json(f"{cases_path}/index.json"):
+            if row["id"] not in {"chokwe", "qadirabad", "richmond", "kumamoto"}:
+                continue
             t, _, f, *_ = row["series_key"].split("_")
             if (track, frame) != (int(t), int(f)):
                 continue
