@@ -18,6 +18,7 @@ VOLUME_NAME = os.environ.get("NISAR_VOLUME", "nisar-evidence-v2")
 SECRET_NAME = os.environ.get("NISAR_EARTHDATA_SECRET", "nisar-explorer-preview")
 STATE_NAME = os.environ.get("NISAR_STATE_DICT", f"{APP_NAME}-jobs")
 CASES_PATH = os.environ.get("NISAR_CASES_PATH", "cases")
+CORS_ORIGINS = os.environ.get("NISAR_CORS_ORIGINS", "")
 if not re.fullmatch(r"cases(?:-[a-z0-9-]{1,60})?", CASES_PATH):
     raise ValueError("Use a cases directory name such as cases or cases-2026-11.")
 DEPS = ("fastapi==0.129.0", "pydantic==2.12.5", "requests==2.34.2")
@@ -68,6 +69,7 @@ runtime_config = {
     "NISAR_BUILD_REVISION": REVISION, "NISAR_APP_NAME": APP_NAME, "NISAR_VOLUME": VOLUME_NAME,
     "NISAR_STATE_DICT": STATE_NAME, "NISAR_EARTHDATA_SECRET": SECRET_NAME,
     "NISAR_BUILD_GIT_SHA": GIT_SHA or "", "NISAR_CASES_PATH": CASES_PATH,
+    "NISAR_CORS_ORIGINS": CORS_ORIGINS,
     "NISAR_MAX_ACTIVE_JOBS": str(MAX_ACTIVE_JOBS), "NISAR_JOBS_PER_DAY": str(JOBS_PER_DAY),
     "NISAR_JOBS_PER_IP_DAY": str(JOBS_PER_IP_DAY),
 }
