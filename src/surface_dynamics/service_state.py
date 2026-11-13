@@ -1,5 +1,6 @@
 """Admission and persistent job identity. The ASGI deployment uses one gateway."""
 from datetime import datetime, timezone
+import json
 from threading import RLock
 from time import time
 from uuid import uuid4
@@ -9,6 +10,22 @@ from .service_contracts import Job, canonical_job
 ACTIVE = {"queued", "running"}
 LEASE_SECONDS = 360
 CACHE_SECONDS = 86400
+
+
+def _plain(item):
+    tolist = getattr(item, "tolist", None)
+    if callable(tolist):
+        return tolist()
+    raise TypeError(f"{type(item).__name__} is not JSON serializable")
+
+
+def plain_json(value):
+    """Round-trip a result through JSON so the stored job holds only builtin types.
+
+    The gateway image has no numpy: a Dict value pickled with numpy scalars or arrays cannot be
+    read there, and every poll of that job answers 500. Arrays and scalars arrive as `tolist()`.
+    """
+    return json.loads(json.dumps(value, default=_plain))
 
 
 class Rejected(Exception):
