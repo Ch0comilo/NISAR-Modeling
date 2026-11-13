@@ -322,7 +322,13 @@ def execute_job(body, job_id, out, cache, revision):
         except UnrepresentableDisplayGrid:
             pass
     visualization_seconds = perf_counter() - render_start
-    assets = publish_files(out, prefix)
+    priority = [
+        *(layer["png_url"].rsplit("/", 1)[-1] for layer in layers),
+        *(view["png_url"].rsplit("/", 1)[-1] for view in visualizations),
+        *PREVIEWS,
+        *(f"{name}.csv" for name in ANALYSIS_TABLES),
+    ]
+    assets = publish_files(out, prefix, priority=priority)
     science_artifacts = {asset["href"]: asset for asset in raw.pop("artifacts", [])}
     previews = []
     for asset in assets:
@@ -336,8 +342,8 @@ def execute_job(body, job_id, out, cache, revision):
         raise RuntimeError("The scientific source could not be read.")
     result = {"operation": body["operation"], "science_status": raw["status"], "revision": revision,
               "point": [body["longitude"], body["latitude"]], "isDemo": False if assets else None,
-              "science": raw, "layers": published_layers(layers, assets), "artifacts": assets,
-              "visualizations": published_layers(visualizations, assets), "previews": previews,
+              "science": raw, "layers": published_layers(layers, assets, require_cog=False), "artifacts": assets,
+              "visualizations": published_layers(visualizations, assets, require_cog=False), "previews": previews,
               "visualization_seconds": round(visualization_seconds, 3),
               "elapsed_seconds": round(perf_counter() - start, 3)}
     write_json(out / "manifest.json", result)

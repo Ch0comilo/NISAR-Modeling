@@ -34,6 +34,10 @@ Prepared GCOV case manifests and completed `explore` job results include `visual
 
 `components` gives band order, label, source polarizations and fixed `display_db` range. RGB COGs carry three unclipped float dB bands for client-side mixing. Scalar COGs carry one unclipped float band. `png_url` and `cog_url` are relative to the API origin. NoData is transparent in PNGs. Live `artifacts` includes content hashes and sizes. Layer responses carry ETags.
 
+Live jobs prioritize display PNGs and chart outputs within the bounded artifact bundle.
+A live layer can have `cog_url: null` when the numeric asset exceeds the publication budget.
+Use the PNG for the view and offer numeric downloads only for published assets.
+
 Unavailable recipes are omitted. A missing target does not borrow a different date. An HH/VH-only observation has no matched co-/cross-pol view. Incompatible native grids withhold cross-date combinations. Original measurements and signed channel differences remain in `layers`. Derived views describe measured L-band inputs and cannot identify a material or validate a hazard.
 
 `analysis` jobs can return `previews` with `href`, `title`, `interpretation` and optional `legend`. Available figures can include the physical dashboard, observed-date GIF, historical GP fit and experimental spectra or learned-model views. GIF playback spacing is cosmetic. Prepared Kumamoto also includes a common phase-support mask and adjacent-pair coherence contrasts. Pair durations may differ. Live GUNW wrapped phase is in radians. LOS displacement remains null.
