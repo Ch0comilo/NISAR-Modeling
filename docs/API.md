@@ -118,7 +118,7 @@ In a live `explore` result, select `result.layers[]` by the exact ID
 `display_<YYYY-MM-DD>_<pol>`, for example `display_2026-10-19_HH` or
 `display_2026-10-19_HV`. The date is the measured UTC acquisition date and
 `<pol>` is the uppercase channel (`HH`, `HV`, `VV`, or `VH`) when delivered.
-Match the acquisition against `result.science.observations.dates` and use the
+Match the acquisition against `result.science.observations[].date` and use the
 layer's `png_url`, `bounds`, and `crs` for the overlay. Observed-pass layers
 have `units: "dB"`, `colormap: "gray"`, and `range: [-30, 0]` across dates and
 polarizations. Pixels without valid data are transparent. Use the published
