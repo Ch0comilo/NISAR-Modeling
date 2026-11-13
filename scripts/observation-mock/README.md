@@ -13,7 +13,7 @@ The API admits five new jobs per client IP and 12 across the app each UTC day. C
 Use a computer with Git, Python 3.11 or later, and internet access.
 
 ```sh
-git clone --branch feat/modal-analysis-api https://github.com/Ch0comilo/NISAR-Modeling.git
+git clone --branch feat/modal-analysis-api https://github.com/nisar-hazard-watch/NISAR-Modeling.git
 cd NISAR-Modeling
 python -m pip install requests==2.34.2
 python scripts/observation-mock/mock.py

@@ -104,7 +104,7 @@ Themes supply questions and candidate physical explanations. They do not turn a 
 Python 3.11+; the CPU reference environment uses Python 3.13.5. From a fresh clone on Windows:
 
 ```powershell
-git clone https://github.com/Ch0comilo/NISAR-Modeling.git
+git clone https://github.com/nisar-hazard-watch/NISAR-Modeling.git
 cd NISAR-Modeling
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
