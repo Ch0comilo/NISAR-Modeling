@@ -113,6 +113,7 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number }}
       NISAR_APP_NAME: nisar-hazard-watch-ml-pr-${{ github.event.pull_request.number }}
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/setup-python@v7
         with:
