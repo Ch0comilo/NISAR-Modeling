@@ -11,7 +11,7 @@ The API serves provisional or beta NISAR L-band observations and descriptive sci
 | GET /v2/openapi.json | Generated OpenAPI with JSON Schema components from the Pydantic models |
 | GET /v2/coverage | Public CMR footprint records grouped by compatible series, with exact acquisition dates and granule titles |
 | GET /v2/cases | Precomputed case index with query points, north-up native CRS, pixel-edge bounds, shape [height,width], and measured dates |
-| GET /v2/cases/{case_id} | Manifest for chokwe, qadirabad, richmond, kumamoto or choco when included in the deployed bundle |
+| GET /v2/cases/{case_id} | Manifest for a case listed in the deployed index |
 | GET /v2/cases/{case_id}/series | Observation and group trajectories, optional diagnostic-band timeline, or GUNW pair intervals |
 | GET /v2/cases/{case_id}/layers/{name} | Published PNG, native COG, measured arrays or CSV |
 | POST /v2/jobs | Submit a bounded analysis and return its job_id |
@@ -64,6 +64,18 @@ the series. The coherence PNG uses cividis on [0,1] with its own display bounds.
 Readiness reports zero common phase-support cells, `not_displacement_ready`,
 and `los_displacement_cm: null`. The case is available through the v2 case
 routes.
+
+San Marcos (`san-marcos`) samples a 640 m square in La Mojana, Colombia, at
+`[-75.104, 8.657]`. The flood and wetland lens compares the 15 October 2026
+target with the median of the 28 August, 9 September and 21 September HH/HV
+passes over 4,096 common 10 m cells. The 3 October pass is included in the
+point series as context. OPERA DSWx-HLS compares 24 September and 19 October
+on a separate 40 m grid. It found zero newly open-water cells among 238 jointly
+usable cells out of 256 radar-backed comparison cells. Seventeen usable cells
+were mixed or partial. The IDEAM bulletin of 12 October documents persistent
+regional inundation and supplies context at municipality scale. The case leaves
+inundation beneath vegetation, flood probability and causal attribution unresolved.
+[IDEAM hydrological bulletin 853](https://ideam.gov.co/sites/default/files/prensa/boletines/2026-10-11/853_bch_octubre_12_2026_0000.pdf)
 
 ### Coverage and jobs
 
