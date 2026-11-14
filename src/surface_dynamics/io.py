@@ -118,7 +118,8 @@ def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None,*,cach
             arrays.update(mask=g['mask'][sl],x=x[c0:c0+pixels],y=y[r0:r0+pixels],epsg=epsg)
             if 'numberOfLooks' in g:arrays['numberOfLooks']=g['numberOfLooks'][sl]
             def text_value(ds):
-                value=ds[()];return value.decode() if isinstance(value,bytes) else value.item() if hasattr(value,'item') else value
+                value = np.asarray(ds[()]).item()
+                return value.decode() if isinstance(value, bytes) else value
             ident=h['science/LSAR/identification'];flags={k:text_value(ident[k]) for k in ['productVersion','compositeReleaseId','radarBand','instrumentName','hasInputDataException'] if k in ident}
             params=h['science/LSAR/GCOV/metadata/processingInformation/parameters']
             flags.update({k:text_value(params[k]) for k in ['noiseCorrectionApplied','isFullCovariance'] if k in params})

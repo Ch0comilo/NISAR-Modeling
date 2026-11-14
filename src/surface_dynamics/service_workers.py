@@ -121,6 +121,14 @@ def run_explore(body, out, cache):
                 if experiment:
                     stats["failure"] = exploration._read_error(exc)
                     stats["failure_type"] = type(exc).__name__
+                    if isinstance(exc, (TypeError, IndexError, NotImplementedError)):
+                        from traceback import extract_tb
+
+                        stats["failure_location"] = [
+                            f"{Path(frame.filename).name}:{frame.name}:{frame.lineno}"
+                            for frame in extract_tb(exc.__traceback__)[-5:]
+                        ]
+                        raise RuntimeError("Experimental archive reader failed") from exc
                 raise
             finally:
                 if experiment:
