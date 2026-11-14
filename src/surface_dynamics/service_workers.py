@@ -108,7 +108,7 @@ def run_explore(body, out, cache):
         prefetch_start = perf_counter()
         archive_deadline = monotonic() + 150
         def fetch(entry, path):
-            options = {"deadline": archive_deadline}
+            options = {"deadline": archive_deadline, "cache_only": False}
             stats = {}
             started_read = perf_counter()
             if experiment:
@@ -161,7 +161,8 @@ def run_explore(body, out, cache):
     if followup:
         status, lens, paths = followup
         try:
-            evidence = enrich_lens(query, lens, paths, cache / "optical", out, native_aggregate=aggregate)
+            optical_options = {"native_aggregate": aggregate} if aggregate > 1 else {}
+            evidence = enrich_lens(query, lens, paths, cache / "optical", out, **optical_options)
         except Exception as exc:
             LOG.warning("Optical evidence unavailable (%s)", type(exc).__name__)
             evidence = {"status": "unavailable", "reason": "optical_worker_error"}

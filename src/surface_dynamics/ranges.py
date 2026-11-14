@@ -115,7 +115,12 @@ class RangeReader(io.RawIOBase):
     def _download(self, start, end, timeout, bulk):
         session = self._session(bulk)
         headers = {"Range": f"bytes={start}-{end}", "Accept-Encoding": "identity"}
-        with session.get(self.url, headers=headers, timeout=timeout, stream=True, allow_redirects=False) as response:
+        # Requests strips Authorization on a cross-origin archive redirect.
+        with session.get(self.url, headers=headers, timeout=timeout, stream=True) as response:
+            with self._lock:
+                self.requests += len(response.history)
+                self._stats["http_requests"] = self.requests
+                self._stats["last_http_status"] = response.status_code
             if response.status_code != 206:
                 raise RuntimeError('Archive did not honor bounded byte-range request: '+str(response.status_code))
             content_range=response.headers.get('Content-Range','')
