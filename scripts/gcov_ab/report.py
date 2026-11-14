@@ -15,6 +15,7 @@ def row(path, record):
     timings = science.get("timings", {})
     reads = list(trial.get("reads", {}).values())
     pngs = record.get("pngs", [])
+    job_cache = ((record.get("modalSubmit") or {}).get("modal") or {}).get("cache")
     return {
         "run": path.as_posix(),
         "site": record.get("site"),
@@ -27,7 +28,9 @@ def row(path, record):
         "backend_http": record.get("backendHttp"),
         "modal_status": modal.get("status"),
         "science_status": result.get("science_status"),
-        "job_cache": ((record.get("modalSubmit") or {}).get("modal") or {}).get("cache"),
+        "job_cache": job_cache,
+        "browser_attachment": job_cache == "in_flight" and record.get("firstVisibleSeconds") is not None
+        and record["firstVisibleSeconds"] < result.get("elapsed_seconds", 0),
         "worker_instance": trial.get("worker_instance"),
         "worker_invocation": trial.get("worker_invocation"),
         "region": trial.get("region"),
@@ -42,6 +45,10 @@ def row(path, record):
         "click_to_png_response_s": min((p["seconds"] for p in pngs), default=None),
         "asf_requests": sum(r.get("http_requests", 0) for r in reads) if reads else None,
         "asf_bytes": sum(r.get("asf_bytes", 0) for r in reads) if reads else None,
+        "asf_requests_for_click": 0 if job_cache == "hit" else (
+            sum(r.get("http_requests", 0) for r in reads) if reads else None),
+        "asf_bytes_for_click": 0 if job_cache == "hit" else (
+            sum(r.get("asf_bytes", 0) for r in reads) if reads else None),
         "range_batches": sum(r.get("range_batches", 0) for r in reads) if reads else None,
         "batch_ranges": sum(r.get("batch_ranges", 0) for r in reads) if reads else None,
         "peak_scene_requests": max((r.get("peak_requests", 0) for r in reads), default=None),

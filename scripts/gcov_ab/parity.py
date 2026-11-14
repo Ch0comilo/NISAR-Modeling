@@ -1,5 +1,6 @@
 """Compare archived native chips and independently check the 40 m numeric layers."""
 import argparse
+from hashlib import sha256
 import json
 from pathlib import Path
 from urllib.request import urlopen
@@ -45,6 +46,38 @@ def reference(power, valid):
     return np.where(count == 16, total / 16, np.nan), count
 
 
+def read_published_raster(root, endpoint, result, day, bounds, posting, epsg):
+    asset = next(a for a in result["artifacts"] if a["name"] == day + ".tif")
+    path = root / (asset["href"].split("/")[3] + "-" + asset["name"])
+    if not path.exists():
+        with urlopen(endpoint + asset["href"], timeout=30) as response:
+            path.write_bytes(response.read())
+    content = path.read_bytes()
+    assert sha256(content).hexdigest() == asset["sha256"]
+    with MemoryFile(content) as image, image.open() as raster:
+        assert tuple(raster.bounds) == bounds and raster.res == (posting, posting) and raster.crs.to_epsg() == epsg
+        return raster.read()
+
+
+def verify_native_layers(root, endpoint, runs, chips):
+    checks = {}
+    for path in runs:
+        result = json.loads(path.read_text())["modal"]["result"]
+        available = {asset["name"] for asset in result["artifacts"]}
+        errors = {}
+        for day, (power, valid, x, y, epsg) in sorted(chips.items()):
+            if day + ".tif" not in available:
+                continue
+            db = 10 * np.log10(np.where(valid, power, np.nan).astype("float64"))
+            bounds = (x[0] - 5, y[-1] - 5, x[-1] + 5, y[0] + 5)
+            actual = read_published_raster(root, endpoint, result, day, bounds, 10, epsg)
+            np.testing.assert_array_equal(np.isfinite(actual), np.isfinite(db))
+            np.testing.assert_allclose(actual, db, atol=1e-5, rtol=0)
+            errors[day] = float(np.nanmax(np.abs(actual - db)))
+        checks[path.stem] = errors
+    return checks
+
+
 def channel_block(osm, power, coarse, x, y, epsg):
     tree = ElementTree.parse(osm)
     nodes = {node.get("id"): (float(node.get("lon")), float(node.get("lat"))) for node in tree.iter("node")}
@@ -85,14 +118,7 @@ def verify_posting(root, endpoint, runs, chips, osm=None):
         bounds = (x[0] - 5, y[-1] - 5, x[-1] + 5, y[0] + 5)
         errors = []
         for result in layers:
-            asset = next(a for a in result["artifacts"] if a["name"] == day + ".tif")
-            path = root / (asset["href"].split("/")[3] + "-" + asset["name"])
-            if not path.exists():
-                with urlopen(endpoint + asset["href"], timeout=30) as response:
-                    path.write_bytes(response.read())
-            with MemoryFile(path.read_bytes()) as image, image.open() as raster:
-                assert tuple(raster.bounds) == bounds and raster.res == (40, 40) and raster.crs.to_epsg() == epsg
-                actual = raster.read()
+            actual = read_published_raster(root, endpoint, result, day, bounds, 40, epsg)
             np.testing.assert_array_equal(np.isfinite(actual), np.isfinite(db))
             np.testing.assert_allclose(actual, db, atol=1e-5, rtol=0)
             errors.append(float(np.nanmax(np.abs(actual - db))))
@@ -131,11 +157,15 @@ if __name__ == "__main__":
     parser.add_argument("--h5py", type=Path, required=True)
     parser.add_argument("--pyfive", type=Path, required=True)
     parser.add_argument("--run40", type=Path, nargs="+", required=True)
+    parser.add_argument("--run10", type=Path, nargs="*", default=[])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--osm", type=Path, help="Optional local OpenStreetMap XML for a channel-crossing example.")
     parser.add_argument("--endpoint", default="https://ch0comilo--nisar-hazard-watch-ml-gcov-ab.us-east.modal.run")
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    evidence = verify_posting(args.output.parent, args.endpoint, args.run40, matched_chips(args.h5py, args.pyfive),
-                              osm=args.osm)
+    chips = matched_chips(args.h5py, args.pyfive)
+    evidence = verify_posting(args.output.parent, args.endpoint, args.run40, chips, osm=args.osm)
+    evidence["native_layer_max_abs_db_error_by_date"] = verify_native_layers(
+        args.output.parent, args.endpoint, args.run10, chips
+    )
     args.output.write_text(json.dumps(evidence, indent=2, allow_nan=False) + "\n")

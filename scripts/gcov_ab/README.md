@@ -2,11 +2,29 @@
 
 The Modal preview uses the exploration worker, the existing `/v2/jobs` request and response, and the existing FastAPI and Explorer routes. The local harness pins only Chocó and Qadirabad. It resolves every requested layer through the regular FastAPI adapter and downloads the measured files from the Modal preview. The two JSON inputs record the five exact ASF granule IDs and archive collections. Chocó uses the supplied 384-pixel request and Qadirabad uses the same five dates as the Data Lab control.
 
+## Deploy the isolated Modal preview
+
+Use the Modeling revision `b7b7c00` to reproduce the measured image. Keep the existing Earthdata Secret value in Modal and set only its resource name in the shell.
+
+```powershell
+$env:NISAR_APP_NAME = 'nisar-hazard-watch-ml-gcov-ab'
+$env:NISAR_VOLUME = 'nisar-gcov-ab-20261113'
+$env:NISAR_EARTHDATA_SECRET = 'nisar-hazard-watch-earthdata'
+$env:NISAR_GCOV_EXPERIMENT = '1'
+$env:NISAR_WORKER_REGION = 'us-east'
+$env:NISAR_MAX_ACTIVE_JOBS = '1'
+$env:NISAR_WORKER_CONTAINERS = '1'
+$env:NISAR_JOBS_PER_DAY = '26'
+$env:NISAR_JOBS_PER_IP_DAY = '26'
+$env:NISAR_WORKER_TIMEOUT_SECONDS = '240'
+modal deploy --env main modal_app.py
+```
+
 ## Run locally against the preview
 
 Start the backend project's local PostgreSQL, then run `../modeling-gcov-ab/scripts/gcov_ab/fastapi_preview.py` with the backend Python environment from the backend checkout. The harness creates and migrates its own `nisar_gcov_ab` database. Start the local frontend on `http://localhost:5173` with `VITE_DEV_API_TARGET=http://127.0.0.1:8025`. This origin is already allowed by the Modal API for the globe textures.
 
-Open [Chocó in Explorer](http://localhost:5173/explore?point=-76.68431,5.66861&lens=flood_wetland) and click **More information** after the measurement loads. The harness defaults to the retained Chocó pyfive/10 m job. A cache replay may start a new job after its result expires.
+Open [Chocó in Explorer](http://localhost:5173/explore?point=-76.68431,5.66861&lens=flood_wetland) and click **More information** after the measurement loads. The harness defaults to the retained Chocó pyfive/40 m job over the 10.24 km footprint. A cache replay may start a new job after its result expires.
 
 From this Modeling worktree:
 
@@ -18,7 +36,7 @@ node scripts/gcov_ab/browser.mjs ../gcov-ab-results
 python scripts/gcov_ab/report.py ../gcov-ab-results
 ```
 
-Use a fresh run tag for cold result and chip caches. The second round reverses the first order. `NISAR_MATRIX` accepts a JSON array of `[site, reader, posting_m, native_side, chip_namespace?]` rows. Reuse a previous namespace with a new run tag to measure chip reuse with a fresh result. Use `NISAR_SINGLE` and `NISAR_REPLAY_SELECTOR` together to measure the browser after a complete Modal result cache hit. The recorded worker invocation identifies cold containers. Treat invocation 1 as the first invocation in that container and report queue time separately. The worker has one physical core, 2 GiB, and a 240 s timeout in `us-east`. Its archive stage has a 150 s deadline, five scene tasks, ten process-wide concurrent range requests, four per scene for pyfive and a 128 MiB transfer budget per scene.
+Use a fresh run tag for cold result and chip caches. The second round reverses the first order. `NISAR_MATRIX` accepts a JSON array of `[site, reader, posting_m, native_side, chip_namespace?]` rows. Reuse a previous namespace with a new run tag to measure chip reuse with a fresh result. Use `NISAR_SINGLE` and `NISAR_REPLAY_SELECTOR` together to measure the browser after a complete Modal result cache hit. The recorded worker invocation identifies cold containers. Treat invocation 1 as the first invocation in that container and report queue time separately. The worker has one physical core, 2 GiB, and a 240 s timeout in `us-east`. Its archive stage has a 150 s deadline, five scene tasks, ten process-wide concurrent range requests, four per scene for pyfive and a 128 MiB transfer budget per scene. For the pinned trials, the harness reuses the recorded request settings at both postings, including optical evidence disabled. Planner selection latency is outside this benchmark.
 
 The driver measures from clicking a link that opens the live Explorer. It records the first Cesium frame containing the radar texture, the first decoded visible image in More information, and the PNG dimensions and payload lengths. HTTP response timing is recorded separately. Modal result replays or reattachments are identified in the CSV. The driver sends one experiment at a time.
 
@@ -31,7 +49,7 @@ At 40 m, the worker checks a metric 10 m L-band source grid and averages 4 × 4 
 Download the native chips from the experiment Volume under `/chips/gcov-ab/{reader}/{chip_namespace}` into separate directories. Pass each pair of directories to `parity.py`, with the JSON records for both 40 m runs passed to `--run40`. The script checks EPSG, coordinates, raw masks, and exact raw HH/HV arrays. It then compares the published 40 m COG masks, pixel edges and dB values to an independent linear-power sum of the 16 offsets. It also reports the selected cell and the highest-contrast fully supported block. An optional `--osm` file adds a block crossed by an OpenStreetMap waterway. The Chocó example uses [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) and the geographic bounds `-76.705,5.649,-76.663,5.689`.
 
 ```powershell
-python scripts/gcov_ab/parity.py --h5py <h5py-chips> --pyfive <pyfive-chips> --run40 <h5py-40.json> <pyfive-40.json> --output <parity.json>
+python scripts/gcov_ab/parity.py --h5py <h5py-chips> --pyfive <pyfive-chips> --run40 <h5py-40.json> <pyfive-40.json> --run10 <h5py-10.json> <pyfive-10.json> --output <parity.json>
 ```
 
 Raw rasters and recorded manifests remain outside Git. The public preview has a separate Volume and job Dict. The opt-in selector is ignored by the normal gateway, and GUNW uses the existing reader.

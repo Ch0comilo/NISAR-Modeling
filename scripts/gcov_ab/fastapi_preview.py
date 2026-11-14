@@ -27,8 +27,8 @@ GATEWAY = "https://ch0comilo--nisar-hazard-watch-ml-gcov-ab.us-east.modal.run"
 DB_NAME = "nisar_gcov_ab"
 DATABASE = make_url(DEFAULT_DATABASE_URL).set(database=DB_NAME)
 CASES = {key: json.loads((ROOT / f"{key}.json").read_text()) for key in ("choco", "qadirabad")}
-DEFAULT_SELECTOR = "pyfive:10:ab-choco-pyfive-10-384:ab-choco-pyfive-10-384"
-state = {"selector": DEFAULT_SELECTOR, "window": 384, "first": None, "last": None}
+DEFAULT_SELECTOR = "pyfive:40:extra-choco-pyfive-40-1024:extra-choco-pyfive-40-1024"
+state = {"selector": DEFAULT_SELECTOR, "window": 1024, "first": None, "last": None}
 
 
 def fixed_case(lon, lat):
