@@ -70,10 +70,10 @@ class JobStore:
                 ):
                     return self.view(current, "in_flight" if current["status"] in ACTIVE else "hit")
             daily = f"day:{day}"
-            if self.state.get(daily, 0) >= self.jobs_per_day:
+            if self.jobs_per_day is not None and self.state.get(daily, 0) >= self.jobs_per_day:
                 raise Rejected(429, "daily_budget", "New job capacity is exhausted for this UTC day.")
             ip = f"ip:{day}:{ip_key}"
-            if self.state.get(ip, 0) >= self.jobs_per_ip_day:
+            if self.jobs_per_ip_day is not None and self.state.get(ip, 0) >= self.jobs_per_ip_day:
                 raise Rejected(429, "rate_limited", "This client reached its daily new-job limit.")
             active = self.state.get("active", {})
             active = {job: until for job, until in active.items()

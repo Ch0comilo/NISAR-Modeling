@@ -4,7 +4,7 @@ The Modal preview uses the exploration worker, the existing `/v2/jobs` request a
 
 ## Deploy the isolated Modal preview
 
-Use the Modeling revision `b7b7c00` to reproduce the measured image. Keep the existing Earthdata Secret value in Modal and set only its resource name in the shell.
+Use the benchmark branch for the interactive preview. The measured image at `b7b7c00` used daily limits of 26 jobs globally and per IP. The interactive preview accepts zero for both settings to disable those limits and still tracks usage. Keep the existing Earthdata Secret value in Modal and set only its resource name in the shell.
 
 ```powershell
 $env:NISAR_APP_NAME = 'nisar-hazard-watch-ml-gcov-ab'
@@ -14,8 +14,8 @@ $env:NISAR_GCOV_EXPERIMENT = '1'
 $env:NISAR_WORKER_REGION = 'us-east'
 $env:NISAR_MAX_ACTIVE_JOBS = '1'
 $env:NISAR_WORKER_CONTAINERS = '1'
-$env:NISAR_JOBS_PER_DAY = '26'
-$env:NISAR_JOBS_PER_IP_DAY = '26'
+$env:NISAR_JOBS_PER_DAY = '0'
+$env:NISAR_JOBS_PER_IP_DAY = '0'
 $env:NISAR_WORKER_TIMEOUT_SECONDS = '240'
 modal deploy --env main modal_app.py
 ```

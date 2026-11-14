@@ -1,5 +1,6 @@
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Barrier
@@ -16,6 +17,22 @@ from surface_dynamics.service_state import JobStore, LocalDict
 
 
 class GcovExperimentTests(TestCase):
+    def test_preview_can_disable_daily_quotas_without_removing_worker_admission(self):
+        payload = json.loads((Path(__file__).parents[1] / "scripts/gcov_ab/choco.json").read_text())
+        day = datetime.now(timezone.utc).date().isoformat()
+        state = LocalDict({f"day:{day}": 26})
+        jobs = JobStore(state, lambda *_: None, "test", max_active=1, jobs_per_day=None, jobs_per_ip_day=None)
+        with TemporaryDirectory() as work, TestClient(create_app(Path(work), jobs, gcov_experiment=True)) as client:
+            caps = client.get("/v2/capabilities").json()
+            self.assertIsNone(caps["daily_new_jobs_total"])
+            self.assertIsNone(caps["daily_new_jobs_per_ip"])
+            header = "X-NISAR-GCOV-Experiment"
+            accepted = client.post("/v2/jobs", json=payload, headers={header: "pyfive:40:a:chips"})
+            self.assertEqual(accepted.status_code, 202)
+            self.assertEqual(state[f"day:{day}"], 27)
+            busy = client.post("/v2/jobs", json=payload, headers={header: "pyfive:40:b:chips"})
+            self.assertEqual((busy.status_code, busy.json()["code"]), (503, "queue_full"))
+
     def test_strict_power_aggregation_and_equal_pixel_edges(self):
         with TemporaryDirectory() as work:
             chip = Path(work) / "chip.npz"

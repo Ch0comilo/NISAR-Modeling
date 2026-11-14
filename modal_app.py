@@ -161,7 +161,8 @@ def api():
     from surface_dynamics.service_state import JobStore
 
     jobs = JobStore(state, worker.spawn, REVISION, max_active=MAX_ACTIVE_JOBS,
-                    jobs_per_day=JOBS_PER_DAY, jobs_per_ip_day=JOBS_PER_IP_DAY)
+                    jobs_per_day=None if GCOV_EXPERIMENT and JOBS_PER_DAY == 0 else JOBS_PER_DAY,
+                    jobs_per_ip_day=None if GCOV_EXPERIMENT and JOBS_PER_IP_DAY == 0 else JOBS_PER_IP_DAY)
     return create_app(STORAGE, jobs, reload=volume.reload,
                       observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"),
                       git_sha=GIT_SHA, cases_path=CASES_PATH, gcov_experiment=GCOV_EXPERIMENT)
