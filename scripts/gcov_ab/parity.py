@@ -3,10 +3,13 @@ import argparse
 import json
 from pathlib import Path
 from urllib.request import urlopen
+from xml.etree import ElementTree
 
 import numpy as np
 import rasterio
 from rasterio.io import MemoryFile
+from rasterio.features import rasterize
+from rasterio.transform import from_bounds
 from rasterio.warp import transform
 
 
@@ -42,7 +45,38 @@ def reference(power, valid):
     return np.where(count == 16, total / 16, np.nan), count
 
 
-def verify_posting(root, endpoint, runs, chips):
+def channel_block(osm, power, coarse, x, y, epsg):
+    tree = ElementTree.parse(osm)
+    nodes = {node.get("id"): (float(node.get("lon")), float(node.get("lat"))) for node in tree.iter("node")}
+    shape = coarse.shape[-2:]
+    affine = from_bounds(x[0] - 5, y[-1] - 5, x[-1] + 5, y[0] + 5, shape[1], shape[0])
+    intersections = np.zeros(shape, dtype=bool)
+    names = set()
+    for way in tree.iter("way"):
+        tags = {tag.get("k"): tag.get("v") for tag in way.findall("tag")}
+        if tags.get("waterway") not in {"river", "stream"}:
+            continue
+        coordinates = [nodes[node.get("ref")] for node in way.findall("nd") if node.get("ref") in nodes]
+        if len(coordinates) < 2:
+            continue
+        lon, lat = zip(*coordinates)
+        line = {"type": "LineString", "coordinates": list(zip(*transform("EPSG:4326", f"EPSG:{epsg}", lon, lat)))}
+        crossed = rasterize([line], out_shape=shape, transform=affine, all_touched=True).astype(bool)
+        if crossed.any():
+            intersections |= crossed
+            names.add(tags.get("name") or "unnamed waterway")
+    values = 10 * np.log10(power[0].reshape(len(y) // 4, 4, len(x) // 4, 4))
+    contrasts = np.where(intersections & np.isfinite(coarse[0]),
+                         values.max(axis=(1, 3)) - values.min(axis=(1, 3)), -np.inf)
+    if not np.isfinite(contrasts).any():
+        return None
+    row, col = (int(i) for i in np.unravel_index(np.argmax(contrasts), contrasts.shape))
+    return {"mapped_waterways": sorted(names), "block_row_col": [row, col],
+            "hh_native_min_max_db": [float(values[row, :, col, :].min()), float(values[row, :, col, :].max())],
+            "mean_power_db": (10 * np.log10(coarse[:, row, col])).tolist()}
+
+
+def verify_posting(root, endpoint, runs, chips, osm=None):
     layers = [json.loads(path.read_text())["modal"]["result"] for path in runs]
     summaries = {}
     for day, (power, valid, x, y, epsg) in sorted(chips.items()):
@@ -87,6 +121,8 @@ def verify_posting(root, endpoint, runs, chips):
     a, b = (int(i) for i in np.unravel_index(np.argmax(contrast), count.shape))
     examples["max_hh_contrast_block"] = {"block_row_col": [a, b], "range_db": float(contrast[a, b]),
                                          "mean_power_db": (10 * np.log10(coarse[:, a, b])).tolist()}
+    if osm:
+        examples["mapped_channel_block"] = channel_block(osm, power, coarse, x, y, epsg)
     return {"matched_native_chips": len(chips), "dates": summaries, "examples": examples}
 
 
@@ -96,8 +132,10 @@ if __name__ == "__main__":
     parser.add_argument("--pyfive", type=Path, required=True)
     parser.add_argument("--run40", type=Path, nargs="+", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--osm", type=Path, help="Optional local OpenStreetMap XML for a channel-crossing example.")
     parser.add_argument("--endpoint", default="https://ch0comilo--nisar-hazard-watch-ml-gcov-ab.us-east.modal.run")
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    evidence = verify_posting(args.output.parent, args.endpoint, args.run40, matched_chips(args.h5py, args.pyfive))
+    evidence = verify_posting(args.output.parent, args.endpoint, args.run40, matched_chips(args.h5py, args.pyfive),
+                              osm=args.osm)
     args.output.write_text(json.dumps(evidence, indent=2, allow_nan=False) + "\n")

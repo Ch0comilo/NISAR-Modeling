@@ -7,7 +7,7 @@ import { performance } from "node:perf_hooks";
 const frontend = path.resolve(process.env.NISAR_FRONTEND ?? "../frontend");
 const require = createRequire(path.join(frontend, "package.json"));
 const { chromium } = require("@playwright/test");
-const ui = "http://127.0.0.1:5195";
+const ui = process.env.NISAR_UI_ORIGIN ?? "http://localhost:5173";
 const api = "http://127.0.0.1:8025";
 const gateway = "https://ch0comilo--nisar-hazard-watch-ml-gcov-ab.us-east.modal.run";
 const output = path.resolve(process.argv[2] ?? "../gcov-ab-results");
@@ -19,9 +19,12 @@ const rounds = [
   ["choco", "h5py", 10], ["qadirabad", "pyfive", 10],
 ];
 const tag = process.env.NISAR_RUN_TAG ?? "r1";
-const runs = process.env.NISAR_SINGLE
+const runs = process.env.NISAR_MATRIX
+  ? JSON.parse(process.env.NISAR_MATRIX)
+  : process.env.NISAR_SINGLE
   ? [process.env.NISAR_SINGLE.split(",")]
   : (tag === "r2" ? [...rounds].reverse() : rounds).slice(Number(process.env.NISAR_START ?? 0));
+const replay = process.env.NISAR_REPLAY_SELECTOR;
 const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 await mkdir(output, { recursive: true });
 
@@ -33,7 +36,7 @@ async function fetchJson(url, options) {
 
 async function run(site, reader, posting, window = 384, chips) {
   const id = `${tag}-${site}-${reader}-${posting}-${window}`;
-  const selector = `${reader}:${posting}:${id}:${chips ?? id}`;
+  const selector = replay ?? `${reader}:${posting}:${id}:${chips ?? id}`;
   await fetchJson(api + "/benchmark/variant", {
     method: "POST", headers: { "content-type": "application/json" },
     body: JSON.stringify({ selector, window: Number(window) }),
@@ -87,13 +90,22 @@ async function run(site, reader, posting, window = 384, chips) {
     result.backendHttp = response.status();
     result.backendSubmit = await response.json();
     const variant = await fetchJson(api + "/benchmark/variant");
-    result.modalSubmit = variant.last;
+    result.modalSubmit = variant.first ?? variant.last;
     if (![200, 202].includes(response.status())) throw new Error("FastAPI rejected the exploration");
     const jobPath = "/api/v1/explorations/" + result.backendSubmit.id;
     const modalPath = variant.last.modal.status_url;
     let backend = result.backendSubmit;
     const keep = page.getByTestId("job-keep");
     if (await keep.isVisible()) await keep.click();
+    const panel = (async () => {
+      await page.getByTestId("more-info").click({ timeout: 270_000 });
+      const sheet = page.getByRole("dialog", { name: "More information" });
+      const image = sheet.locator("img").first();
+      await image.waitFor({ state: "visible", timeout: 30_000 });
+      await image.evaluate((node) => node.decode());
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      return (performance.now() - started) / 1000;
+    })().catch(() => null);
     const terminal = new Set(["succeeded", "partial", "failed", "cancelled", "no_coverage", "insufficient_history"]);
     for (let i = 0; !terminal.has(backend.status) && i < 148; i++) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -104,19 +116,12 @@ async function run(site, reader, posting, window = 384, chips) {
     result.modal = await fetchJson(gateway + modalPath);
     if (backend.result?.layers?.length) {
       result.webglUnavailable = await page.getByTestId("no-webgl").isVisible();
-      const stamp = await page.waitForFunction(() => window.__nisarFirstDrape, undefined, { timeout: 12_000 })
-        .then((handle) => handle.jsonValue(), () => null);
+      result.firstPanelVisibleSeconds = await panel;
+    const stamp = await page.waitForFunction(() => window.__nisarFirstDrape, undefined, { timeout: 5000 })
+      .then((handle) => handle.jsonValue(), () => null);
       result.firstVisibleSeconds = stamp ? (stamp - clickEpoch) / 1000 : null;
-      await page.getByTestId("more-info").click({ timeout: 15_000 });
       const sheet = page.getByRole("dialog", { name: "More information" });
-      await sheet.waitFor();
-      const image = sheet.locator("img").first();
-      await image.waitFor({ state: "visible" });
-      await image.evaluate((node) => node.decode());
-      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      result.firstPanelVisibleSeconds = (performance.now() - started) / 1000;
-      result.panelImages = await sheet.locator("img").evaluateAll(async (nodes) => {
-        await Promise.allSettled(nodes.map((node) => node.decode()));
+      result.panelImages = await sheet.locator("img").evaluateAll((nodes) => {
         return nodes.filter((node) => node.naturalWidth).map((node) => ({
           width: node.naturalWidth, height: node.naturalHeight, alt: node.alt,
         }));

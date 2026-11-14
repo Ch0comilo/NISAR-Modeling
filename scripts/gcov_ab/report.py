@@ -10,13 +10,13 @@ def row(path, record):
     result = modal.get("result") or {}
     science = result.get("science", {})
     trial = science.get("experiment", {})
-    radar = (science.get("lens") or {}).get("radar", {})
+    radar = (science.get("lens") or {}).get("radar") or {}
     grid = radar.get("grid") or {}
     timings = science.get("timings", {})
     reads = list(trial.get("reads", {}).values())
     pngs = record.get("pngs", [])
     return {
-        "run": path.stem,
+        "run": path.as_posix(),
         "site": record.get("site"),
         "reader": record.get("reader", trial.get("reader")),
         "requested_posting_m": record.get("posting", trial.get("posting")),
@@ -24,6 +24,7 @@ def row(path, record):
         "revision": result.get("revision"),
         "job": modal.get("job_id"),
         "backend_status": record.get("backendStatus"),
+        "backend_http": record.get("backendHttp"),
         "modal_status": modal.get("status"),
         "science_status": result.get("science_status"),
         "job_cache": ((record.get("modalSubmit") or {}).get("modal") or {}).get("cache"),
@@ -54,7 +55,9 @@ def row(path, record):
         "common_cells": radar.get("common_cells"),
         "browser_png_sizes": sorted({f'{p["width"]}x{p["height"]}' for p in pngs}),
         "browser_png_bytes": [p["bytes"] for p in pngs],
-        "error": record.get("error") or (modal.get("error") or {}).get("code") or science.get("reason"),
+        "backend_error": (record.get("backendError") or {}).get("reasonCode"),
+        "error": (record.get("backendSubmit") or {}).get("reasonCode") or record.get("error")
+        or (modal.get("error") or {}).get("code") or science.get("reason"),
         "read_failures": sorted({r["failure"] for r in reads if "failure" in r}),
     }
 
@@ -64,11 +67,12 @@ if __name__ == "__main__":
     parser.add_argument("directory", type=Path)
     args = parser.parse_args()
     rows = []
-    for path in sorted(args.directory.glob("*.json")):
+    paths = [*args.directory.glob("*.json"), *(args.directory / "retry").glob("*.json")]
+    for path in sorted(paths):
         record = json.loads(path.read_text(encoding="utf-8-sig"))
         if ("selector" in record and "site" in record) or ("job_id" in record and
                 record.get("status") in {"succeeded", "failed"}):
-            rows.append(row(path, record))
+            rows.append(row(path.relative_to(args.directory), record))
     with (args.directory / "runs.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
         writer.writeheader()

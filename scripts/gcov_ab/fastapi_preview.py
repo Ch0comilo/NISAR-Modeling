@@ -27,8 +27,8 @@ GATEWAY = "https://ch0comilo--nisar-hazard-watch-ml-gcov-ab.us-east.modal.run"
 DB_NAME = "nisar_gcov_ab"
 DATABASE = make_url(DEFAULT_DATABASE_URL).set(database=DB_NAME)
 CASES = {key: json.loads((ROOT / f"{key}.json").read_text()) for key in ("choco", "qadirabad")}
-DEFAULT_SELECTOR = "pyfive:40:choco-demo:choco-demo"
-state = {"selector": DEFAULT_SELECTOR, "window": 384, "last": None}
+DEFAULT_SELECTOR = "pyfive:10:ab-choco-pyfive-10-384:ab-choco-pyfive-10-384"
+state = {"selector": DEFAULT_SELECTOR, "window": 384, "first": None, "last": None}
 
 
 def fixed_case(lon, lat):
@@ -77,13 +77,16 @@ class PreviewTransport(httpx.AsyncHTTPTransport):
                 response = await super().handle_async_request(request)
                 await response.aread()
                 state["last"] = {"http_status": response.status_code, "modal": response.json(), "request": body}
+                if state["first"] is None:
+                    state["first"] = state["last"]
                 return response
         return await super().handle_async_request(request)
 
 
 app = create_app(settings=Settings(
     environment="local", database_url=DATABASE.render_as_string(hide_password=False), ml_gateway_url=GATEWAY,
-    rate_limit_per_minute=120, gateway_timeout_seconds=45, exploration_deadline_seconds=300,
+    rate_limit_per_minute=120, max_active_explorations=32,
+    gateway_timeout_seconds=45, exploration_deadline_seconds=300,
     exploration_cache_ttl_seconds=0.001, gcov_max_window_pixels=384, _env_file=None,
 ), gateway_transport=PreviewTransport())
 lifespan = app.router.lifespan_context
@@ -107,7 +110,7 @@ class Variant(BaseModel):
 
 @app.post("/benchmark/variant")
 async def set_variant(variant: Variant):
-    state.update(selector=variant.selector, window=variant.window, last=None)
+    state.update(selector=variant.selector, window=variant.window, first=None, last=None)
     return state
 
 
