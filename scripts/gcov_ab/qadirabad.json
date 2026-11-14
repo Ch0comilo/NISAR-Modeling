@@ -1,0 +1,31 @@
+{
+  "operation": "explore",
+  "longitude": 73.713,
+  "latitude": 32.329,
+  "start_date": "2026-07-14",
+  "end_date": "2026-11-11",
+  "lens": "flood_wetland",
+  "window_pixels": 384,
+  "scenes": [
+    {
+      "granule_id": "NISAR_L2_PR_GCOV_025_084_A_018_4005_DHDH_A_20260714T002204_20260714T002239_P05023_F_F_J_001",
+      "collection": "PROVISIONAL"
+    },
+    {
+      "granule_id": "NISAR_L2_PR_GCOV_028_084_A_018_4005_DHDH_A_20260819T002202_20260819T002237_P05023_N_F_J_001",
+      "collection": "PROVISIONAL"
+    },
+    {
+      "granule_id": "NISAR_L2_PR_GCOV_030_084_A_018_4005_DHDH_A_20260912T002202_20260912T002237_P05023_N_F_J_001",
+      "collection": "PROVISIONAL"
+    },
+    {
+      "granule_id": "NISAR_L2_PR_GCOV_033_084_A_018_4005_DHDH_A_20261018T002202_20261018T002237_P05023_N_F_J_001",
+      "collection": "PROVISIONAL"
+    },
+    {
+      "granule_id": "NISAR_L2_PR_GCOV_035_084_A_018_4005_DHDH_A_20261111T002203_20261111T002238_P05036_N_F_J_001",
+      "collection": "VALIDATED"
+    }
+  ]
+}
