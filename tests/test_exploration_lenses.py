@@ -5,6 +5,7 @@ import numpy as np
 
 from surface_dynamics.exploration_lenses import agriculture_history, evaluate_flood_wetland, evaluate_lens, wildfire_pattern
 from surface_dynamics.explore import parse_request, select
+from surface_dynamics.io import point_location
 from surface_dynamics.optical_water import select_reference
 
 
@@ -33,6 +34,47 @@ class AgricultureLensTests(unittest.TestCase):
         self.assertEqual(history["largest_contrast_steps"][1]["dates"], dates[-2:].tolist())
         self.assertEqual(agriculture_history(cube, report, common, 3.001, 0)["reason"],
                          "neighborhood_outside_grid")
+
+
+class SurroundingComparisonTests(unittest.TestCase):
+    def test_shared_support_and_baseline_matching_for_both_lenses(self):
+        dates = np.array(["2026-07-01", "2026-07-13", "2026-07-25", "2026-08-06", "2026-08-18"])
+        offsets = np.arange(-320, 320, 10)
+        power = np.ones((5, 2, 64, 64), dtype=np.float32)
+        valid = np.ones_like(power, dtype=bool)
+        cube = {"power": power, "valid": valid, "dates": dates, "polarizations": np.array(["VV", "VH"]),
+                "x": 500000 + offsets, "y": offsets[::-1], "epsg": 32631}
+        location = point_location(cube, (3, 0))
+        focal = np.hypot(cube["x"][None, :] - location["x"], cube["y"][:, None] - location["y"]) <= 60
+        power[-2, 1, focal] = .1
+        power[-1, 0] = 10
+        power[-1, 1, focal] = .01
+        valid[-2, 1, location["row"], location["column"]] = False
+
+        for lens, measured_dates, missing_cells in (
+            ("vegetation_disturbance", dates[[0, 1, 2, 4]].tolist(), 0),
+            ("wildfire", dates.tolist(), 1),
+        ):
+            with self.subTest(lens=lens):
+                def compare(point=(3, 0), target=dates[-1]):
+                    report, _ = evaluate_lens(cube, target, lens, baseline_end=dates[2], point=point)
+                    return report["evaluation"]["surrounding_comparison"]
+
+                comparison = compare()
+                self.assertEqual(comparison["status"], "evaluated")
+                self.assertEqual(comparison["matches"]["matched_positive_pixels"], int(focal.sum()) - missing_cells)
+                self.assertEqual([row["date"] for row in comparison["series"]], measured_dates)
+                self.assertAlmostEqual(comparison["channels"]["VV"]["mean_contrast_db"], 0)
+                self.assertAlmostEqual(comparison["channels"]["VH"]["mean_contrast_db"], -20, places=4)
+                self.assertNotIn("differential_darkening", comparison)
+                self.assertEqual(compare(point=(3.001, 0))["reason"], "neighborhood_outside_grid")
+                self.assertEqual(compare(target=dates[2]), {
+                    "status": "insufficient_data", "reason": "fewer_than_three_prior_dates",
+                })
+
+                power[:3, :, focal] = 100
+                self.assertEqual(compare()["reason"], "insufficient_baseline_matches")
+                power[:3, :, focal] = 1
 
 
 class FloodLensTests(unittest.TestCase):

@@ -5,8 +5,9 @@ from hashlib import file_digest
 import numpy as np
 
 from .analysis import measured_db
-from .flood_signatures import POLICY, match_controls, spatial_contrast
+from .flood_signatures import POLICY
 from .io import point_location
+from .surroundings import matched_comparison, surrounding_comparison
 
 
 VERSION = "1.0"
@@ -57,14 +58,6 @@ def signature_masks(delta, support):
     ])
 
 
-def matched_comparison(baseline, delta, focal, surrounding, *, maximum_candidates=16):
-    controls, positives, matches = match_controls(baseline, focal, surrounding, maximum_candidates=maximum_candidates)
-    return {
-        "matches": matches,
-        "channels": [spatial_contrast(channel, positives, controls) for channel in delta],
-    }, positives, controls
-
-
 def differential_darkening(channels):
     limits = [-POLICY["co_pol_change_db"], -POLICY["cross_pol_darkening_db"]]
     intervals = [item.get("spatial_resampling_95_interval_db") for item in channels]
@@ -79,60 +72,6 @@ def differential_darkening(channels):
     if any(interval[0] > limit for interval, limit in zip(intervals, limits)):
         return {**result, "state": "absent_on_sampled_support", "reason": None}
     return {**result, "reason": "contrast_intervals_overlap_signature_bounds"}
-
-
-def surrounding_comparison(cube, features, delta, location):
-    """Choose populations geometrically, then match only on pre-target radar levels."""
-    result = {
-        "status": "insufficient_data", "reason": "point_outside_grid",
-        "definition": "Change in a 60 m focal patch minus change in unique baseline-level matched cells 120–300 m away.",
-        "focal_radius_m": 60, "comparison_annulus_m": [120, 300],
-        "minimum_cells": 5, "minimum_supported_fraction": 0.5, "minimum_matched_fraction": 0.5,
-        "independently_stable_controls": False,
-    }
-    if not location["inside_grid"]:
-        return result
-    x, y = cube["x"], cube["y"]
-    qx, qy = location["x"], location["y"]
-    dx, dy = float(x[1] - x[0]), float(y[0] - y[1])
-    extent = min(qx - x[0] + dx / 2, x[-1] + dx / 2 - qx,
-                 qy - y[-1] + dy / 2, y[0] + dy / 2 - qy)
-    if extent < 300:
-        return {**result, "reason": "neighborhood_outside_grid"}
-    distance = np.hypot(x[None, :] - qx, y[:, None] - qy)
-    focal_grid = distance <= 60
-    ring_grid = (distance >= 120) & (distance <= 300)
-    common = features["maps"]["common_support"]
-    focal, ring = focal_grid & common, ring_grid & common
-    counts = [int(mask.sum()) for mask in (focal, ring)]
-    totals = [int(mask.sum()) for mask in (focal_grid, ring_grid)]
-    result.update(focal_cells=counts[0], surrounding_cells=counts[1],
-                  focal_grid_cells=totals[0], surrounding_grid_cells=totals[1])
-    if min(counts) < 5 or any(count / max(total, 1) < 0.5 for count, total in zip(counts, totals)):
-        return {**result, "reason": "insufficient_common_neighborhood_support"}
-    compared, positives, controls = matched_comparison(
-        features["maps"]["baseline_db"], delta, focal, ring, maximum_candidates=128,
-    )
-    pols = features["polarizations"]
-    result.update(matches=compared["matches"], channels=dict(zip(pols, compared["channels"])),
-                  spatial_block_size_m=[POLICY["spatial_block_pixels"] * dx, POLICY["spatial_block_pixels"] * dy])
-    if compared["matches"]["matched_positive_pixels"] < 5 or compared["matches"]["matched_fraction"] < 0.5:
-        return {**result, "reason": "insufficient_baseline_matches"}
-    indices = [*features["before"], *features["after"]]
-    db = measured_db(cube)[indices][:, [list(cube["polarizations"]).index(pol) for pol in pols]]
-    result["series"] = [
-        {
-            "date": str(cube["dates"][index]),
-            "focal_mean_db": {pol: float(channel[positives].mean()) for pol, channel in zip(pols, values)},
-            "control_mean_db": {pol: float(channel[controls].mean()) for pol, channel in zip(pols, values)},
-        }
-        for index, values in zip(indices, db)
-    ]
-    # The response answers how the two populations differed. Thresholds do not
-    # establish independent quiet conditions in the surrounding population.
-    result.update(status="evaluated", reason=None)
-    result["differential_darkening"] = differential_darkening(compared["channels"])
-    return result
 
 
 def radar_evaluation(cube, features, delta, target_date, baseline_dates, point=None):
@@ -180,7 +119,10 @@ def radar_evaluation(cube, features, delta, target_date, baseline_dates, point=N
                         for index, values in zip(indices, db)],
             )
     evaluation["point"] = point_result
-    evaluation["surrounding_comparison"] = surrounding_comparison(cube, features, delta, location)
+    surroundings = surrounding_comparison(cube, features, delta, location)
+    if surroundings["status"] == "evaluated":
+        surroundings["differential_darkening"] = differential_darkening([surroundings["channels"][pol] for pol in pols])
+    evaluation["surrounding_comparison"] = surroundings
     evaluation["uncertainty"]["spatial_heterogeneity"] = {
         "kind": "cell_distribution", "scope": "common_radar_grid", "units": "dB",
         "cells": int(support.sum()),

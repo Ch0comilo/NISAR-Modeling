@@ -148,6 +148,27 @@ class ContractTests(TestCase):
 
 
 class RunExploreTests(TestCase):
+    def test_scattering_lens_surroundings_are_published_on_native_radar(self):
+        for lens in ("vegetation_disturbance", "wildfire"):
+            with self.subTest(lens=lens), TemporaryDirectory() as temp:
+                out, cache = Path(temp) / "out", Path(temp) / "cache"
+                out.mkdir()
+                cache.mkdir()
+
+                def fetch(entry, longitude, latitude, path, pixels, cache_only):
+                    chip(path, entry["time_start"][:10], size=64)
+                    return {"flags": {}}
+
+                with patch("surface_dynamics.explore.fetch_chip", side_effect=fetch), \
+                     patch("surface_dynamics.explore.enrich_lens", return_value={"status": "unavailable"}):
+                    result = run_explore({**BODY, "lens": lens, "optical_evidence": True}, out, cache)
+
+                self.assertEqual(result["lens"]["evidence"]["status"], "unavailable")
+                surroundings = result["lens"]["evaluation"]["surrounding_comparison"]
+                self.assertEqual(surroundings["status"], "evaluated")
+                self.assertEqual(set(surroundings["channels"]), {"HH", "HV"})
+                self.assertEqual(surroundings["channels"]["HV"]["mean_contrast_db"], 0)
+
     def test_a_plan_runs_without_searching_the_catalog_and_reads_the_planned_window(self):
         calls, lock = [], Lock()
         with TemporaryDirectory() as temp:
