@@ -7,6 +7,7 @@ import re
 from shutil import copy2
 from subprocess import CalledProcessError, check_output
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 import modal
 
@@ -31,6 +32,12 @@ WORKER_CONTAINERS = int(os.environ.get("NISAR_WORKER_CONTAINERS", "1"))
 WORKER_TIMEOUT_SECONDS = int(os.environ.get("NISAR_WORKER_TIMEOUT_SECONDS", "240"))
 JOB_LEASE_SECONDS = int(os.environ.get("NISAR_JOB_LEASE_SECONDS", str(WORKER_TIMEOUT_SECONDS + 120)))
 WORKER_MEMORY_MB = int(os.environ.get("NISAR_WORKER_MEMORY_MB", "2048"))
+GCOV_EXPERIMENT = os.environ.get("NISAR_GCOV_EXPERIMENT") == "1"
+WORKER_REGION = os.environ.get("NISAR_WORKER_REGION")
+if GCOV_EXPERIMENT and APP_NAME != "nisar-hazard-watch-ml-gcov-ab":
+    raise ValueError("The GCOV experiment requires its isolated preview app.")
+WORKER_INSTANCE = uuid4().hex[:12]
+WORKER_INVOCATIONS = 0
 app = modal.App(APP_NAME)
 volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 state = modal.Dict.from_name(STATE_NAME, create_if_missing=True)
@@ -77,6 +84,8 @@ runtime_config = {
     "NISAR_JOBS_PER_IP_DAY": str(JOBS_PER_IP_DAY),
     "NISAR_WORKER_TIMEOUT_SECONDS": str(WORKER_TIMEOUT_SECONDS),
     "NISAR_JOB_LEASE_SECONDS": str(JOB_LEASE_SECONDS),
+    "NISAR_GCOV_EXPERIMENT": "1" if GCOV_EXPERIMENT else "0",
+    "NISAR_WORKER_REGION": WORKER_REGION or "",
 }
 package = ROOT / "src" / "surface_dynamics"
 MOCK_HTML = "/opt/nisar/observation-mock.html"
@@ -96,22 +105,30 @@ worker_image = (
     .add_local_dir(package, "/opt/nisar/surface_dynamics")
     .add_local_dir(ROOT / "models" / "global_explorer_v2", "/opt/nisar/models/global_explorer_v2")
 )
+if GCOV_EXPERIMENT:
+    worker_image = worker_image.uv_pip_install("pyfive==1.3.1", "numcodecs==0.17.1")
 
 
 @app.function(image=worker_image, volumes={str(STORAGE): volume}, cpu=(1.0, 1.0),
               memory=(WORKER_MEMORY_MB, WORKER_MEMORY_MB),
               timeout=WORKER_TIMEOUT_SECONDS, max_containers=WORKER_CONTAINERS,
-              scaledown_window=10, retries=0,
+              scaledown_window=120 if GCOV_EXPERIMENT else 10, retries=0, region=WORKER_REGION or None,
               secrets=[modal.Secret.from_name(SECRET_NAME, required_keys=["EARTHDATA_TOKEN"])])
 def worker(body, job_id):
     from surface_dynamics.service_state import plain_json
     from surface_dynamics.service_workers import execute_job
 
+    global WORKER_INVOCATIONS
+    WORKER_INVOCATIONS += 1
     key = "job:" + job_id
     record = state.get(key)
     if not record:
         return
     from time import time
+    if body.get("gcov_experiment"):
+        body["gcov_experiment"].update(worker_instance=WORKER_INSTANCE, worker_invocation=WORKER_INVOCATIONS,
+                                       region=WORKER_REGION, queue_seconds=round(time() - (
+                                           record["deadline"] - JOB_LEASE_SECONDS), 3))
     if record["deadline"] <= time():
         state.put(key, {**record, "status": "failed", "code": "deadline_exceeded"})
         return
@@ -147,4 +164,4 @@ def api():
                     jobs_per_day=JOBS_PER_DAY, jobs_per_ip_day=JOBS_PER_IP_DAY)
     return create_app(STORAGE, jobs, reload=volume.reload,
                       observation_page=Path(MOCK_HTML).read_text(encoding="utf-8"),
-                      git_sha=GIT_SHA, cases_path=CASES_PATH)
+                      git_sha=GIT_SHA, cases_path=CASES_PATH, gcov_experiment=GCOV_EXPERIMENT)

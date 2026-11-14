@@ -122,7 +122,7 @@ def artifact_response(body, asset, request):
 
 
 def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str | None = None,
-               git_sha: str | None = None, cases_path: str = "cases"):
+               git_sha: str | None = None, cases_path: str = "cases", gcov_experiment=False):
     results = Results(root, reload)
     rate = OrderedDict()
     rate_lock = RLock()
@@ -232,7 +232,16 @@ def create_app(root: Path, jobs, *, reload=lambda: None, observation_page: str |
     @app.post("/v2/jobs", response_model=Job, status_code=202, responses={200: {"model": Job}})
     def submit(body: JobRequest, request: Request, response: Response):
         client = request.client.host if request.client else "unknown"
-        view = jobs.submit(body, sha256(client.encode()).hexdigest()[:24])
+        experiment = None
+        header = request.headers.get("X-NISAR-GCOV-Experiment")
+        if gcov_experiment and header:
+            match = re.fullmatch(r"(h5py|pyfive):(10|40):([a-z0-9-]{1,32}):([a-z0-9-]{1,32})", header)
+            if not match or body.operation != "explore" or not body.scenes or not body.window_pixels:
+                raise Rejected(422, "invalid_experiment", "Use a pinned GCOV exploration and a valid experiment selector.")
+            reader, posting, run, chips = match.groups()
+            experiment = {"reader": reader, "posting": int(posting), "run": run, "chips": chips}
+        ip_key = sha256(client.encode()).hexdigest()[:24]
+        view = jobs.submit(body, ip_key, experiment=experiment) if experiment else jobs.submit(body, ip_key)
         response.headers.update({"Location": view.status_url, "Cache-Control": "no-store", "Retry-After": "3"})
         response.status_code = 200 if view.status == "succeeded" else 202
         return view

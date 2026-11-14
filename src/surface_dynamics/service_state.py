@@ -1,5 +1,6 @@
 """Admission and persistent job identity. The ASGI deployment uses one gateway."""
 from datetime import datetime, timezone
+from hashlib import sha256
 import json
 import os
 from threading import RLock
@@ -52,8 +53,11 @@ class JobStore:
         self.jobs_per_ip_day = jobs_per_ip_day
         self.lock = RLock()
 
-    def submit(self, request, ip_key):
+    def submit(self, request, ip_key, *, experiment=None):
         key, payload = canonical_job(request, self.revision)
+        if experiment:
+            payload.update(longitude=request.longitude, latitude=request.latitude, gcov_experiment=experiment)
+            key = sha256(json.dumps([key, payload], sort_keys=True).encode()).hexdigest()
         cache_key = "cache:" + key
         now = time()
         day = datetime.fromtimestamp(now, timezone.utc).date().isoformat()

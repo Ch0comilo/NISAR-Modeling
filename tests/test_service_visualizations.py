@@ -11,7 +11,7 @@ import rasterio
 from surface_dynamics.engine import write_cog
 from surface_dynamics.analysis import spatial_structure
 from surface_dynamics.render import spatial_spectrum_figure
-from surface_dynamics.service_artifacts import publish_files, published_layers
+from surface_dynamics.service_artifacts import publish_files, published_layers, render_layer
 from surface_dynamics.service_visualizations import Frame, render_gcov_visualizations
 from surface_dynamics.service_workers import execute_job, run_explore
 
@@ -31,6 +31,24 @@ class VisualizationTests(TestCase):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
+
+    def test_display_cap_keeps_native_geotiff_and_bounds(self):
+        x = np.arange(500_000, 505_120, 10)
+        y = np.arange(5_300_000, 5_297_440, -10)
+        values = np.ones((len(y), len(x)), dtype="float32")
+
+        layer = render_layer(self.root, "/layers", "phase", values, x, y, 32614,
+                             units="rad", cmap="twilight", stretch=(-np.pi, np.pi), max_edge=256)
+
+        with Image.open(self.root / "phase.png") as preview:
+            self.assertEqual(preview.size, (256, 128))
+        with rasterio.open(self.root / "phase.tif") as numeric:
+            self.assertEqual((numeric.width, numeric.height), (512, 256))
+            np.testing.assert_array_equal(numeric.read(1), values)
+            from rasterio.warp import transform_bounds
+            self.assertEqual(layer["bounds"], list(transform_bounds(
+                numeric.crs, "EPSG:4326", *numeric.bounds, densify_pts=21,
+            )))
 
     def test_spatial_image_spectrum_uses_posting_and_withholds_a_flat_image(self):
         x = np.arange(32)

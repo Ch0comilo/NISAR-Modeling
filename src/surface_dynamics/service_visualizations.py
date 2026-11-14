@@ -64,11 +64,11 @@ def component(band, label, polarizations, display_db):
                                   display_db=display_db)
 
 
-def render_rgb(output, prefix, layer_id, values, frame, grid, components):
+def render_rgb(output, prefix, layer_id, values, frame, grid, components, *, max_edge=None):
     from PIL import Image
     from .engine import write_cog
 
-    display, bounds = display_grid(values, grid)
+    display, bounds = display_grid(values, grid, max_edge=max_edge)
     valid = np.isfinite(display).all(axis=0)
     rgba = np.zeros((*valid.shape, 4), dtype="uint8")
     for index, channel in enumerate(components):
@@ -82,7 +82,7 @@ def render_rgb(output, prefix, layer_id, values, frame, grid, components):
             "bounds": bounds, "colormap": "rgb"}
 
 
-def render_gcov_visualizations(output, prefix, frames, target_date, comparison_dates=()):
+def render_gcov_visualizations(output, prefix, frames, target_date, comparison_dates=(), *, max_edge=None):
     """Render from aligned arrays only. A missing target never borrows a different date."""
     history = sorted((frame for frame in frames if frame.date <= target_date), key=lambda frame: frame.date)
     if not history or history[-1].date != target_date:
@@ -99,10 +99,10 @@ def render_gcov_visualizations(output, prefix, frames, target_date, comparison_d
         layer_id = f"view_{recipe}_{suffix}"
         values = np.where(valid, values, np.nan)
         if values.ndim == 3:
-            asset = render_rgb(output, prefix, layer_id, values, target, grid, components)
+            asset = render_rgb(output, prefix, layer_id, values, target, grid, components, max_edge=max_edge)
         else:
             layer = render_layer(output, prefix, layer_id, values, target.x, target.y, target.epsg,
-                                 units="dB", cmap=colormap, stretch=components[0].display_db)
+                                 units="dB", cmap=colormap, stretch=components[0].display_db, max_edge=max_edge)
             asset = {key: layer[key] for key in ("bounds", "colormap", "png_url", "cog_url")}
         views.append(Visualization(id=layer_id, recipe=recipe, title=title, dates=dates,
                                    interpretation=RECIPE_DETAILS[recipe], components=components,

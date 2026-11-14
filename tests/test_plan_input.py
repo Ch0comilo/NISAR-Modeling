@@ -155,7 +155,7 @@ class RunExploreTests(TestCase):
                 out.mkdir()
                 cache.mkdir()
 
-                def fetch(entry, longitude, latitude, path, pixels, cache_only):
+                def fetch(entry, longitude, latitude, path, pixels, cache_only, deadline=None):
                     chip(path, entry["time_start"][:10], size=64)
                     return {"flags": {}}
 
@@ -176,7 +176,7 @@ class RunExploreTests(TestCase):
             out.mkdir()
             cache.mkdir()
 
-            def fetch(entry, longitude, latitude, path, pixels, cache_only):
+            def fetch(entry, longitude, latitude, path, pixels, cache_only, deadline=None):
                 with lock:
                     calls.append((entry["title"], pixels))
                 chip(path, entry["time_start"][:10])
@@ -197,14 +197,14 @@ class RunExploreTests(TestCase):
         self.assertEqual({title for title, _ in calls}, {scene["granule_id"] for scene in SCENES})
         self.assertEqual(set(result["timings"]), {"prefetch_s", "measure_s", "total_s"})
 
-    def test_failed_prefetches_are_retried_once_by_the_sequential_reader(self):
+    def test_failed_prefetches_are_reported_without_restarting_archive_reads(self):
         attempts = {}
         with TemporaryDirectory() as temp:
             out, cache = Path(temp) / "out", Path(temp) / "cache"
             out.mkdir()
             cache.mkdir()
 
-            def fetch(entry, longitude, latitude, path, pixels, cache_only):
+            def fetch(entry, longitude, latitude, path, pixels, cache_only, deadline=None):
                 title = entry["title"]
                 attempts[title] = attempts.get(title, 0) + 1
                 if title == SCENES[0]["granule_id"] and attempts[title] == 1:
@@ -214,8 +214,9 @@ class RunExploreTests(TestCase):
 
             with patch("surface_dynamics.explore.fetch_chip", side_effect=fetch):
                 result = run_explore(BODY, out, cache)
-        self.assertEqual(attempts[SCENES[0]["granule_id"]], 2)
-        self.assertEqual(result["status"], "complete")
+        self.assertEqual(attempts[SCENES[0]["granule_id"]], 1)
+        self.assertEqual(result["status"], "partial")
+        self.assertEqual(result["observations"][0]["reason"], "archive_read_failed")
 
 
 class PrefetchTests(TestCase):

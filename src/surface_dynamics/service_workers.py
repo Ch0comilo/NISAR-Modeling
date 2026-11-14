@@ -5,7 +5,7 @@ import logging
 from math import isfinite
 import re
 from pathlib import Path
-from time import perf_counter
+from time import monotonic, perf_counter
 from tempfile import TemporaryDirectory
 
 from .service_artifacts import (UnrepresentableDisplayGrid, data_layers, publish_files, published_layers,
@@ -93,6 +93,12 @@ def run_explore(body, out, cache):
         query = replace(query, chip_pixels=body["window_pixels"])
     started = perf_counter()
     timings, sink = {}, {}
+    experiment = body.get("gcov_experiment")
+    aggregate = 4 if experiment and experiment["posting"] == 40 else 1
+    aggregation_timings = {"aggregate_s": 0.0}
+    reads = {}
+    if experiment:
+        cache = cache / "gcov-ab" / experiment["reader"] / experiment["chips"]
     if body.get("scenes"):
         from .plan_input import entries_from_scenes, prefetch_chips
 
@@ -100,13 +106,32 @@ def run_explore(body, out, cache):
         coverage = planned_coverage(query, key, entries)
         choices = [(key, entries)]
         prefetch_start = perf_counter()
-        prefetch_chips(
-            entries, lambda entry: exploration._chip_path(query, entry, cache),
-            lambda entry, path: exploration.fetch_chip(
-                entry, query.longitude, query.latitude, path, pixels=query.chip_pixels, cache_only=False),
-        )
+        archive_deadline = monotonic() + 150
+        def fetch(entry, path):
+            options = {"deadline": archive_deadline}
+            stats = {}
+            started_read = perf_counter()
+            if experiment:
+                reads[entry["id"]] = stats
+                options.update(backend=experiment["reader"], stats=stats)
+            try:
+                return exploration.fetch_chip(entry, query.longitude, query.latitude, path,
+                                              pixels=query.chip_pixels, **options)
+            except Exception as exc:
+                if experiment:
+                    stats["failure"] = exploration._read_error(exc)
+                    stats["failure_type"] = type(exc).__name__
+                raise
+            finally:
+                if experiment:
+                    stats["seconds"] = round(perf_counter() - started_read, 3)
+
+        failures = prefetch_chips(entries, lambda entry: exploration._chip_path(query, entry, cache), fetch)
         timings["prefetch_s"] = round(perf_counter() - prefetch_start, 3)
+        LOG.info("GCOV prefetch completed: %d planned, %d failed in %.3fs",
+                 len(entries), len(failures), timings["prefetch_s"])
     else:
+        failures = {}
         coverage, groups = discover(query)
         key, entries, reason = select(query, groups)
         if not entries:
@@ -121,16 +146,22 @@ def run_explore(body, out, cache):
         state = {}
         def record(**fields):
             state.update(fields)
-        followup = measure(query, entries, cache, out, record, **({"sink": sink} if body.get("aoi") else {}))
+        options = {"sink": sink} if body.get("aoi") else {}
+        if failures:
+            options["read_failures"] = failures
+        if experiment:
+            options.update(aggregation=aggregate, aggregation_timings=aggregation_timings)
+        followup = measure(query, entries, cache, out, record, **options)
         attempts.append({"series_key": key, "status": state["status"],
                          "usable_window_date_count": state["usable_window_date_count"]})
         if state["status"] != "no_data":
             break
     timings["measure_s"] = round(perf_counter() - measure_start, 3)
+    LOG.info("GCOV measurement completed in %.3fs", timings["measure_s"])
     if followup:
         status, lens, paths = followup
         try:
-            evidence = enrich_lens(query, lens, paths, cache / "optical", out)
+            evidence = enrich_lens(query, lens, paths, cache / "optical", out, native_aggregate=aggregate)
         except Exception as exc:
             LOG.warning("Optical evidence unavailable (%s)", type(exc).__name__)
             evidence = {"status": "unavailable", "reason": "optical_worker_error"}
@@ -142,6 +173,13 @@ def run_explore(body, out, cache):
         state["aoi_summary"] = summarize_aoi(sink["cube"], sink["arrays"], body["aoi"],
                                              sink["report"]["radar"]["polarizations"])
     timings["total_s"] = round(perf_counter() - started, 3)
+    if experiment:
+        timings["aggregate_s"] = round(aggregation_timings["aggregate_s"], 3)
+        timings["analysis_s"] = round(timings["total_s"] - timings["prefetch_s"] - timings["aggregate_s"], 3)
+        state["experiment"] = {**experiment, "native_window_pixels": query.chip_pixels, "reads": reads}
+        if state["status"] == "unavailable":
+            # Preserve measured failure diagnostics in the benchmark result.
+            state.update(status="no_data", reason="all_archive_reads_failed")
     return {**state, "coverage": coverage, "series_key": key, "series_attempts": attempts, "timings": timings}
 
 
@@ -213,6 +251,7 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
     import numpy as np
     import rasterio
     from rasterio.transform import xy
+    from .service_artifacts import LIVE_DISPLAY_EDGE
 
     layers = data_layers(out, prefix)
     if layers:
@@ -266,7 +305,8 @@ def live_layers(out, prefix, operation, lens=None, *, analysis_maps=None):
                     continue
                 try:
                     layer = render_layer(out, prefix, name, values, x, y, source.crs.to_epsg(),
-                                         units=units, cmap=cmap, stretch=stretch, legend=legend)
+                                         units=units, cmap=cmap, stretch=stretch, legend=legend,
+                                         max_edge=LIVE_DISPLAY_EDGE)
                     if legend and path.stem != "optical_groups":
                         layer["colormap"] = "diagnostic_categories"
                     layers.append(layer)
@@ -309,6 +349,7 @@ def execute_job(body, job_id, out, cache, revision):
         layers = []
     visualizations = []
     if body["operation"] == "explore" and raw.get("observations"):
+        from .service_artifacts import LIVE_DISPLAY_EDGE
         from .service_visualizations import gcov_tiff_frames, render_gcov_visualizations
 
         observations = raw["observations"]
@@ -318,7 +359,7 @@ def execute_job(body, job_id, out, cache, revision):
         comparison_dates = pair["dates"] if pair.get("status") == "available" else ()
         try:
             visualizations = render_gcov_visualizations(out, prefix, gcov_tiff_frames(out, observations),
-                                                        target, comparison_dates)
+                                                        target, comparison_dates, max_edge=LIVE_DISPLAY_EDGE)
         except UnrepresentableDisplayGrid:
             pass
     visualization_seconds = perf_counter() - render_start

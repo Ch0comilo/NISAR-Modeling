@@ -1,6 +1,7 @@
 """Validated measured cubes and bounded authenticated HDF5 chip access."""
 from pathlib import Path
 import hashlib,json,os,sys
+from time import perf_counter
 import numpy as np
 import h5py
 from rasterio.warp import transform
@@ -79,17 +80,30 @@ def load_range_reader():
     from .ranges import RangeReader
     return RangeReader
 
-def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None,*,cache_only=False):
+def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None,*,cache_only=False,
+               deadline=None, backend="h5py", stats=None):
     destination=Path(destination);destination.parent.mkdir(parents=True,exist_ok=True)
     sidecar=destination.with_suffix('.json')
     if destination.exists() and sidecar.exists():
         meta=json.loads(sidecar.read_text())
         if hashlib.sha256(destination.read_bytes()).hexdigest()!=meta['sha256']:raise ValueError('Cached chip checksum mismatch')
-        if meta.get('title')==entry['title'] and meta.get('query_point')==[longitude,latitude] and meta.get('requested_pixels')==pixels and meta.get('crop_policy')=='point_centered':return meta
+        if meta.get('title')==entry['title'] and meta.get('query_point')==[longitude,latitude] and meta.get('requested_pixels')==pixels and meta.get('crop_policy')=='point_centered':
+            if stats is not None:
+                stats.update(chip_hit=True, http_requests=0, asf_bytes=0, range_batches=0, batch_ranges=0)
+            return meta
     if cache_only:raise FileNotFoundError('Validated cached chip unavailable')
     reader=load_range_reader();token=token or credential()
-    with reader(science_url(entry),token,budget=128*1024*1024) as remote:
-        with h5py.File(remote,'r') as h:
+    options = {"deadline": deadline} if deadline is not None else {}
+    open_file = h5py.File
+    if backend == "pyfive":
+        from pyfive import File
+        open_file = File
+        options["parallel"] = True
+    if stats is not None:
+        stats["chip_hit"] = False
+        options["stats"] = stats
+    with reader(science_url(entry),token,budget=128*1024*1024,**options) as remote:
+        with open_file(remote,'r') as h:
             g=h['science/LSAR/GCOV/grids/frequencyA']
             epsg=int(g['projection'][()]);x=g['xCoordinates'][:];y=g['yCoordinates'][:]
             pols=[p for p in POLS if p+p in g]
@@ -117,7 +131,7 @@ def fetch_chip(entry,longitude,latitude,destination,pixels=512,token=None,*,cach
     temp.write_text(json.dumps(meta,indent=2));temp.replace(sidecar)
     return meta
 
-def cube_from_chips(paths,aggregate=4):
+def cube_from_chips(paths,aggregate=4, *, require_posting=None, timings=None):
     if aggregate<1:raise ValueError('Invalid aggregation')
     loaded=[];metadata=[]
     for path in paths:
@@ -130,15 +144,24 @@ def cube_from_chips(paths,aggregate=4):
     if not pols:raise ValueError('No common measured polarization')
     first=loaded[0];x0,y0=first['x'],first['y'];epsg=int(first['epsg'])
     if len(x0)%aggregate or len(y0)%aggregate:raise ValueError('Chip dimensions must be divisible by aggregation')
+    if require_posting is not None and not (
+        np.allclose(np.diff(x0), require_posting, rtol=0, atol=1e-6)
+        and np.allclose(np.diff(y0), -require_posting, rtol=0, atol=1e-6)
+        and all(m["flags"].get("radarBand") == "L" for m in metadata)
+    ):
+        raise ValueError("Experimental aggregation requires verified 10 m L-band input.")
     power=[];valid=[]
     for d in loaded:
         if int(d['epsg'])!=epsg or not np.array_equal(d['x'],x0) or not np.array_equal(d['y'],y0):raise ValueError('Incompatible grids; reproject explicitly before combining')
         values=np.stack([d[p+p] for p in pols]);ok=(d['mask']>0)&(d['mask']<255)&np.isfinite(values).all(0)&(values>0).all(0)
         hh,ww=ok.shape;a=aggregate
+        started = perf_counter()
         # Strict block support avoids turning mixed invalid pixels into synthetic returns.
         out_ok=ok.reshape(hh//a,a,ww//a,a).all(axis=(1,3))
         averaged=np.where(ok[None],values,0).reshape(len(pols),hh//a,a,ww//a,a).mean(axis=(2,4))
         power.append(np.where(out_ok[None],averaged,np.nan));valid.append(np.broadcast_to(out_ok,averaged.shape))
+        if timings is not None and a > 1:
+            timings["aggregate_s"] += perf_counter() - started
     result={'power':np.stack(power).astype('float32'),'valid':np.stack(valid),'dates':np.array([m['date'] for m in metadata]),'polarizations':np.array(pols),'x':x0.reshape(-1,aggregate).mean(1),'y':y0.reshape(-1,aggregate).mean(1),'epsg':np.array(epsg),'radar_band':np.array('L'),'source_metadata_json':np.array(json.dumps(metadata))}
     validate_cube(result)
     return result

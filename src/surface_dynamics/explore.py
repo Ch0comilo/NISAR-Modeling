@@ -274,12 +274,16 @@ def _read_error(exc):
     return "archive_read_failed"
 
 
-def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None):
+def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None, read_failures=None,
+            aggregation=1, aggregation_timings=None):
     """Fetch the newest preview first and publish progress after every acquisition."""
     paths, rows = {}, {}
     dates = [_day(entry) for entry in entries]
     pair = query.compare_dates or tuple(dates[-2:])
     comparison = None
+    cube_options = {"aggregate": aggregation}
+    if aggregation != 1:
+        cube_options.update(require_posting=10, timings=aggregation_timings)
     # Read the two comparison dates first, then fill in older history.
     order = sorted(entries, key=lambda entry: (_day(entry) in pair, _day(entry)), reverse=True)
     for entry in order:
@@ -288,14 +292,16 @@ def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None)
                "granule_id": entry.get("id"), "granule_title": entry["title"]}
         path = _chip_path(query, entry, cache)
         try:
+            if read_failures and entry["id"] in read_failures:
+                raise read_failures[entry["id"]]
             metadata = fetch_chip(entry, query.longitude, query.latitude, path,
                                   pixels=query.chip_pixels, cache_only=cache_only)
+            cube = cube_from_chips([path], **cube_options)
         except (OSError, ValueError, KeyError, RuntimeError, requests.RequestException, HTTPError) as exc:
             reason = _read_error(exc)
             row.update(status="outside_grid" if reason == "outside_quantitative_grid" else "unavailable",
                        reason=reason)
         else:
-            cube = cube_from_chips([path], aggregate=1)
             db = measured_db(cube)[0]
             row.update(_window(cube, db, query))
             row["quality"] = metadata["flags"]
@@ -307,7 +313,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None)
                 row.update(status="no_valid_pixels", reason="no_finite_positive_focused_power")
         rows[day] = row
         if comparison is None and len(pair) == 2 and all(day in rows for day in pair):
-            comparison = _compare(query, pair, paths, out)
+            comparison = _compare(query, pair, paths, out, cube_options=cube_options)
         publish(
             observations=[rows[day] for day in dates if day in rows],
             comparison=comparison,
@@ -321,7 +327,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None)
         status = "partial"
     else:
         status = "complete"
-    lens = _radar_lens(query, dates, paths, out, sink) if query.lens else None
+    lens = _radar_lens(query, dates, paths, out, sink, cube_options=cube_options) if query.lens else None
     optical_pending = query.optical_evidence and lens["status"] == "evaluated"
     if optical_pending:
         lens = with_evidence(lens, {"status": "pending"})
@@ -335,7 +341,7 @@ def measure(query, entries, cache, out, publish, *, cache_only=False, sink=None)
     return None
 
 
-def enrich_lens(query, lens, paths, cache, out):
+def enrich_lens(query, lens, paths, cache, out, *, native_aggregate=1):
     """Evaluate optional optical evidence on a coarser grid, keeping native radar intact."""
     spacing = min(lens["radar"]["grid"]["pixel_spacing_m"])
     factor = 1
@@ -343,7 +349,7 @@ def enrich_lens(query, lens, paths, cache, out):
         factor *= 2
     if spacing * factor < 30:
         return {"status": "unavailable", "reason": "optical_grid_unavailable"}
-    cube = cube_from_chips(paths, aggregate=factor)
+    cube = cube_from_chips(paths, aggregate=factor * native_aggregate)
     target = lens["target_date"]
     radar_report, arrays = evaluate_lens(cube, target, query.lens, baseline_end=query.baseline_end_date)
     if not arrays:
@@ -387,7 +393,7 @@ def enrich_lens(query, lens, paths, cache, out):
     return evidence
 
 
-def _radar_lens(query, dates, paths, out, sink=None):
+def _radar_lens(query, dates, paths, out, sink=None, *, cube_options=None):
     target = query.compare_dates[1] if query.compare_dates else dates[-1]
     prior = [day for day in dates if day < target and day <= (query.baseline_end_date or target)]
     before = [day for day in prior if day in paths]
@@ -401,7 +407,8 @@ def _radar_lens(query, dates, paths, out, sink=None):
         report = empty_lens(target, before, "target_unavailable", query.lens)
     else:
         try:
-            cube = cube_from_chips([paths[day] for day in [*before, *assessed] if day in paths], aggregate=1)
+            cube = cube_from_chips([paths[day] for day in [*before, *assessed] if day in paths],
+                                   **(cube_options or {"aggregate": 1}))
         except ValueError as exc:
             if str(exc) not in {
                 "No common measured polarization",
@@ -465,11 +472,11 @@ def _radar_lens(query, dates, paths, out, sink=None):
     return report
 
 
-def _compare(query, pair, paths, out):
+def _compare(query, pair, paths, out, *, cube_options=None):
     if not all(day in paths for day in pair):
         return {"status": "unavailable", "dates": list(pair), "reason": "selected_date_unusable"}
     try:
-        cube = cube_from_chips([paths[day] for day in pair], aggregate=1)
+        cube = cube_from_chips([paths[day] for day in pair], **(cube_options or {"aggregate": 1}))
     except ValueError as exc:
         if str(exc) not in {
             "No common measured polarization",

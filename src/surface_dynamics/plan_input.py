@@ -70,7 +70,7 @@ def prefetch_chips(entries, chip_path, fetch, workers=None):
         for entry, future in futures:
             try:
                 future.result()
-            except Exception as exc:  # the sequential reader retries and reports the real reason
+            except Exception as exc:
                 LOG.warning("prefetch of %s failed (%s)", entry["id"], type(exc).__name__)
                 failures[entry["id"]] = exc
     return failures

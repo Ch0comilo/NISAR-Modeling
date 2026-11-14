@@ -5,6 +5,7 @@ import json
 
 ASSET_LIMIT = 24 * 1024 * 1024
 BUNDLE_LIMIT = 96 * 1024 * 1024
+LIVE_DISPLAY_EDGE = 256
 
 
 class UnrepresentableDisplayGrid(ValueError):
@@ -27,7 +28,7 @@ def native_grid(x, y, epsg):
             "posting_m": [dx, dy]}
 
 
-def display_grid(values, grid):
+def display_grid(values, grid, *, max_edge=None):
     import numpy as np
     from rasterio.transform import from_bounds
     from rasterio.warp import Resampling, reproject, transform_bounds
@@ -38,22 +39,25 @@ def display_grid(values, grid):
     if not -180 <= bounds[0] < bounds[2] <= 180 or bounds[2] - bounds[0] > 180:
         raise UnrepresentableDisplayGrid("A single PNG cannot represent an antimeridian crossing.")
     values = np.asarray(values, dtype="float32")
-    display = np.full_like(values, np.nan)
+    scale = min(1, max_edge / max(width, height)) if max_edge else 1
+    display_width = max(1, round(scale * width))
+    display_height = max(1, round(scale * height))
+    display = np.full((*values.shape[:-2], display_height, display_width), np.nan, dtype="float32")
     reproject(values, display, src_transform=from_bounds(*grid["bounds"], width, height),
               src_crs=crs, src_nodata=np.nan,
-              dst_transform=from_bounds(*bounds, width, height), dst_crs="EPSG:4326",
+              dst_transform=from_bounds(*bounds, display_width, display_height), dst_crs="EPSG:4326",
               dst_nodata=np.nan, resampling=Resampling.nearest)
     return display, list(bounds)
 
 
-def render_layer(out, prefix, layer_id, values, x, y, epsg, *, units, cmap, stretch, legend=None):
+def render_layer(out, prefix, layer_id, values, x, y, epsg, *, units, cmap, stretch, legend=None, max_edge=None):
     import numpy as np
     from matplotlib import colormaps
     from matplotlib.colors import to_rgba
     from PIL import Image
     from .engine import write_cog
 
-    display, bounds = display_grid(values, native_grid(x, y, epsg))
+    display, bounds = display_grid(values, native_grid(x, y, epsg), max_edge=max_edge)
     valid = np.isfinite(display)
     low, high = stretch
     scaled = np.where(valid, np.clip((display - low) / (high - low), 0, 1), 0)
