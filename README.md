@@ -1,229 +1,121 @@
-# NISAR Surface Dynamics
+# NISAR Hazard Watch · Modeling
 
-Explore how Earth's surfaces change through measured radar time series and interferometry. This is the **science and data-processing backend** for an educational exploration project: agriculture, wildfires, floods, landslides, wetlands, earthquakes and more.
+Explore how Earth's surface changes using measured NISAR radar time series and interferometry. This repository supplies the science workers and hosted API for the NISAR Hazard Watch NASA Space Apps project.
 
-**Observed dynamics · worldwide point queries · explicit quality flags · no forecasting**
+**Design goal.** Click anywhere on Earth, choose a question and date window, and get a traceable account of the available observations. Free exploration is the primary experience. Guided cases introduce the same evidence and limitations through precomputed artifacts. Where compatible acquisitions or usable pixels are missing, the result explains the gap.
 
-![Controlled dynamics across thirteen real NISAR regions](docs/images/global_dynamic_atlas_v2.png)
+![Measured examples of radar changes near crop harvests, mapped floods and fires](docs/images/exploration_lens_holdout.webp)
 
-[Team integration guide](TEAM_HANDOFF.md) · [V2 modeling and InSAR results](docs/MODELING_V2.md) · [V2 model card](models/global_explorer_v2/MODEL_CARD.md) · [Download measured examples](https://github.com/Ch0comilo/NISAR-Modeling/releases/tag/v0.5.0)
-
-## Exploration lenses
-
-Pick a point and date window to see what NISAR measured there. Start with the time series and signed dB maps, then apply a lens to ask a more specific question of the same observations. The backend keeps the measured change, its historical baseline and any independent evidence separate so people can investigate their own questions and see where the observations leave room for interpretation.
-
-| Lens | Question you can ask | Measured example |
-| --- | --- | --- |
-| `flood_wetland` | Where did both radar channels darken, and how does that line up with independently observed water? | On two snapshots of the same Crete flood, both channels darkened in 4.7% of mapped inundation cells versus 0.4–0.6% nearby. Most mapped cells went unflagged. |
-| `vegetation_disturbance` | How does radar change where dated optical data show vegetation loss, compared with baseline-matched cells? | At the Timber Fire site, optical data showed loss in 157 of 256 usable cells. The 13 matched pairs left the radar contrast uncertain in both channels. |
-| `wildfire` | Where did the cross-polarized signal stay below its earlier range across multiple observations? | Repeated HV declines at the Bug Fire appeared in 7.3% of cells inside the mapped perimeter and 1.0% nearby. The perimeter gives event context and can enclose unburned areas. |
-| `agriculture` | Did a focal patch change differently from the surrounding landscape? | At the Sköllersta rye trial, the focal-minus-nearby HH contrast rose 1.78 dB between radar dates bracketing the recorded harvest. The trial record supplies a date and point. |
-
-![Measured lens examples showing radar changes around crop harvests and inside mapped flood and fire areas](docs/images/exploration_lens_holdout.webp)
-
-The API publishes partial and insufficient-data outcomes. For an automatically selected radar series with zero usable pixels, it tries at most one compatible alternate. At Weiser Knoll the first series yielded no usable pixels across five dates and the alternate yielded five usable observations. Each result reports its selected series and both attempts when a retry runs.
-
-Run the loopback API with the installed package and local Earthdata access. List the lenses with `GET /v1/lenses` and send a point request to `POST /v1/explore`. Poll the returned `status_url` to get the observations, comparison and GeoTIFF links.
-
-```powershell
-.venv\Scripts\python.exe -m surface_dynamics serve-explore --cache scratch/explore-cache
-```
-
-In another terminal, submit one of the measured examples:
-
-```powershell
-$cases = Get-Content contracts/examples/exploration-lens-requests.json -Raw | ConvertFrom-Json
-$body = $cases.skollersta_agriculture | ConvertTo-Json -Depth 5
-Invoke-RestMethod http://127.0.0.1:8787/v1/explore -Method Post -ContentType application/json -Body $body
-```
-
-[Lens methods and interpretation](docs/EXPLORATION_LENSES.md) · [Point API and response fields](docs/EXPLORE_API.md) · [Geographic holdouts and cell counts](docs/EXPLORATION_HOLDOUT.md)
-
-## Flood evidence in new regions
-
-The [held-out Pursat experiment](docs/FLOOD_SIMILARITY.md) scores resemblance to earlier flood observations and retrieves example radar histories. The score separated new water from stable nonwater in this chip. Existing open water often scored just as highly.
-
-The [fresh flood evaluation](docs/FLOOD_EVIDENCE.md) connects observed HH/HV changes with dated OPERA optical-water transitions. Three sites in Senegal and India met the evaluation gates out of 16 screened. The baseline departure flagged **17.8%** of strict new-water reference cells at Matam and **87.5%** at Barh, where it also flagged **32.6%** of stable open water. Reports include acquisition curves, signed dB layers, optical transitions, agreement maps and spatially resampled contrasts. The [output contract](docs/FLOOD_EVIDENCE.md#teammate-output-contract) describes the artifacts and coverage statuses.
-
-## New exploration: measurable features and departures from baseline
-
-The [surface-feature report](docs/SURFACE_FEATURES.md) compares **3,764 measured histories in 21 scenes** with their own observed baselines. It shows raw/standardized HH and HV change, observed departure counts, polarization balance and local spatial contrast. Independent optical water groups and real measured curves expose both useful differences and overlap. A separate **3,380-history** experiment compares physical, learned and combined cross-region analogs after matching actual acquisition sampling.
-
-The new `fingerprint` worker accepts worldwide catalog point/date requests or measured local cubes and exports checksummed feature maps and point summaries. See its [input/output contract](docs/SURFACE_FEATURES.md#reusable-worldwide-inputoutput-contract). Diagnostic departures are not verified normality or phenomenon classes. **91 offline tests pass.**
-
-## New exploration: 2D maps of the frozen representations
-
-The [UMAP atlas](docs/REPRESENTATION_UMAP.md) projects **3,764 measured HH/HV histories across 21 existing scene windows** into 2D, plus a separate **1,388-history change map**. Clickable standalone plots connect each point to its measured radar history. Original-space density groups, representative examples, physical-descriptor comparisons and declared sensitivity runs show both shared behavior and strong scene/sampling dependence. The encoder is unchanged; groups are exploratory, with no event-class validation. **75 offline tests pass.**
-
-Install `.[exploration]`, restore the existing release fixtures, then run `scripts/explore_representations.py` and `scripts/verify_representation_umap.py`. Complete plots, vectors, histories and provenance are generated under `products/representation_umap`; the [exploration report](docs/REPRESENTATION_UMAP.md) describes their contracts and limits.
-
-## Current release: v0.5.0
-
-The new **shared characterization report** answers what changed, when it was observed, how its trajectory behaved, which independent evidence is usable and which alternative explanations remain. It exports fixed-support trajectories, physical summaries, observed-pattern maps, linked spectra/GP results and explicit evidence states under one teammate contract. Five new measured scenes add **42 GCOV acquisitions**; eight shared reports, four fresh flood-policy comparisons and two new InSAR jobs have **291 independently checked artifacts**.
-
-The new validation finds important limits: cloud/timing gaps prevent new-water recall estimates at the two fresh flood-context sites, and an embedding kNN probe produces severe nonwater false flags in the Australian control. The frozen Transformer is unchanged and is not promoted to phenomenon labeling. The first independent optical vegetation-disturbance adapter and a new Venezuela earthquake-context stack retain explicit attribution/correction gates. **70 offline tests pass.**
-
-[V0.5 scientific results](docs/CHARACTERIZATION_V05.md) · [Shared input/output contract](docs/CHARACTERIZATION_V05_CONTRACTS.md) · [Validation report](docs/CHARACTERIZATION_V05_VALIDATION.md)
-
-## Previous release: v0.4.0
-
-The new **evidence-linked flood characterization** worker describes real radar changes, compares independent optical-water observations, selects controls from baseline radar measurements and returns observed timing, trajectories, radar-signature objects and explanations linked to data artifacts. Three real development scenes use 21 NISAR acquisitions. New-water reference cells in Pakistan show a **-4.93 dB matched mean contrast**, while existing water also triggers the darkening rule; baseline sensitivity is exposed rather than hidden. Mozambique and Indiana remain partial because of cloud, timing and acquisition limits. These are observed signatures and optical-product agreement, not validated flood extent or global classification accuracy.
-
-The new **InSAR correction-readiness audit** finds only **3 common eligible correction-input cells** in the wider Kumamoto window, despite 1,614 common coherent phase cells. It publishes the missing reference/correction gates and keeps LOS displacement null. Version 0.4 adds four schemas, **59 offline tests**, and **33 independently checked new artifacts** across five jobs. The frozen global Transformer remains unchanged.
-
-Start with the [scientific report](docs/FLOOD_CHARACTERIZATION.md), [validation and caveats](docs/FLOOD_VALIDATION.md) and [teammate contract](docs/CHARACTERIZATION_CONTRACTS.md).
-
-## Frozen global representation: v0.3 experiment
-
-The new candidate uses **visible-only normalization and an interpolation-residual Transformer**, trained on nine regions with broader seasonal support. Thirteen regions across six continents provide **128 accepted regional acquisition chips** at a common 160 m posting; Hokkaido and Pantanal are two newly reserved geographic tests. Raw contextual states and a **constant-trajectory control contrast** are separate outputs, so calendar-induced latent evolution is distinguishable from trajectory-related representation changes.
-
-On the new geographic tests, V2 reconstruction RMSE is **0.661 dB in Hokkaido** and **0.561 dB in Pantanal**, improving over V1's 0.785 and 0.588 dB on the same data/support. Interpolation remains slightly better at 0.652 and 0.560 dB; the temporal mean or Matérn GP can also win. The learned views remain experimental. The [full protocol and results](docs/MODELING_V2.md) distinguish these new tests from the older Amazon/Murray development cases.
-
-New **multi-pair InSAR** processing compares three actual Kumamoto intervals, exports coherence contrasts and gates phase comparison on a shared reference. The 5 km window lacks common phase support; a separate 15 km window has 4.57%. Neither establishes stable ground or validated displacement. The release adds ten request/result schemas, point-query quality/probe outcomes, **43 offline tests**, and independent verification of **298 artifacts across 15 new jobs**.
+[Integration handoff](TEAM_HANDOFF.md) · [API contract](docs/API.md) · [Live capabilities](https://ch0comilo--nisar-hazard-watch-ml.us-east.modal.run/v2/capabilities) · [Release fixtures and notes](https://github.com/nisar-hazard-watch/NISAR-Modeling/releases)
 
 ## What you can explore
 
-| Module | Implemented methods | Results for an exploration app |
-|---|---|---|
-| Measured surface change | Gamma0 power, robust dispersion, actual-date slopes and steps, spatial texture, POD | Georeferenced layers, trajectories, transition rates, modes and measured-date animations |
-| Shared characterization **new** | Fixed common populations, observed trajectory patterns, evidence states and linked method outputs | One traceable report of what changed, observed timing, spatial behavior and alternative explanations |
-| Flood characterization **new** | Fixed radar signatures, independent OPERA optical-water evidence, baseline-only matched controls, spatial bootstrap, observed timing | Support-aware comparisons, trajectories, radar-signature GeoJSON objects and evidence-linked explanations |
-| Spectral structure | Actual-time generalized Lomb–Scargle, sampling-window diagnostics, permutation tests, local sinusoidal fits when supported | Candidate-period maps, spectra and time-frequency arrays |
-| Stochastic states | Empirical-Bayes Matérn-3/2 Gaussian processes, Monte Carlo draws, spatial block bootstrap | Historical latent-state distributions and separate spatial-heterogeneity intervals |
-| Shared learned representation | Masked temporal Transformers; 42,292-parameter v2 candidate; training-only projections | Per-date 48-dimensional states, constant-control contrasts, shared colors and dropout sensitivity |
-| InSAR pair | Native wrapped/unwrapped grids, coherence, connected components and ionosphere flags | Phase/coherence maps, threshold sensitivity, supported-component statistics |
-| InSAR intervals | Compatible measured pair stacks, common native pixels, coherent-component/reference gates | Interval coherence contrasts, phase support, shared-pixel radians when available and explicit partial outcomes |
-| InSAR correction readiness **new** | Common component/fill/screen/uncertainty gates and threshold sensitivity | Explicit missing-input checklist and support layers; no correction or displacement claim |
-| InSAR network **new** | Compatible acquisition graphs, connected components, minimum temporal-baseline forest, independent cycle paths | Available pair intervals, event bracketing and catalog-level time-series readiness |
-| Map probe | Pixel or metric-radius extraction from an existing NetCDF | Measured histories, descriptors and contextual learned states for a map selection |
+**Verified** means supported by the linked tests or measured artifacts. **Experimental** means implemented with limited validation or weaker results than reference methods. **Prepared** means available as a local or branch artifact. **Planned** marks a design goal. A verified worker or case does not establish availability for every location.
 
-Themes supply questions and candidate physical explanations. They do not turn a radar change into a confirmed fire, flood or landslide label. Missing data and unsupported model domains have explicit results.
+| Capability | Status and what it tells you |
+| --- | --- |
+| Measured change and characterization | **Verified.** Compare gamma-zero histories, signed dB changes and spatial structure on documented support. Follow the evidence from acquisition to artifact. [Characterization](docs/CHARACTERIZATION_V05.md) |
+| Flood and wetlands | **Verified diagnostic.** Read joint HH/HV darkening and compare with dated optical-water groups when usable. Stable water and other surfaces can also trigger the radar rule. [Flood evidence](docs/FLOOD_EVIDENCE.md) |
+| Vegetation disturbance | **Verified diagnostic.** Compare polarization changes with earlier conditions and baseline-matched surroundings. Dated optical evidence can support a vegetation-loss interpretation. [Lens methods](docs/EXPLORATION_LENSES.md) |
+| Wildfire | **Verified diagnostic.** Examine repeated HV departures and nearby controls. A mapped perimeter supplies event context, including potentially unburned areas. [Holdout results](docs/EXPLORATION_HOLDOUT.md) |
+| Agriculture | **Verified diagnostic.** Compare focal and nearby returns and bracket a possible change using observed dates. A farm record can corroborate timing. [Agriculture lens](docs/AGRICULTURE_LENS_V1.md) |
+| Feature Lab and fingerprints | **Verified local tools.** Inspect physical descriptors, baseline departures, sampled histories and cross-region analogs. Learned analogs remain **experimental**. [Surface features](docs/SURFACE_FEATURES.md) |
+| Temporal and spatial spectra | **Experimental.** Explore candidate periods with actual acquisition times and sampling diagnostics. Image spectra describe spatial structure on supported grids. [API artifact definitions](docs/API.md) · [Visualization tests](tests/test_service_visualizations.py) |
+| Historical Gaussian-process fits | **Experimental.** Estimate historical latent states with conditional bands. Treat observational coverage checks and latent-state bands as distinct results. [Evaluation](docs/MODELING_V2.md) |
+| InSAR pair | **Verified.** Inspect coherence and wrapped phase for a selected compatible GUNW pair. [API example](docs/API.md) |
+| InSAR stack, network and correction readiness | **Verified diagnostics.** Compare interval support, discover acquisition connections and identify gates for a common phase reference and correction inputs. [InSAR results](docs/MODELING_V2.md) · [Readiness contract](docs/CHARACTERIZATION_CONTRACTS.md) |
+| Point and neighborhood probes | **Verified local tools.** Extract histories and descriptors from an existing measured output. [Probe contract](contracts/probe-result.schema.json) · [Example](contracts/examples/hokkaido-v2-probe.json) |
+| Frozen Transformer and UMAP | **Experimental.** Inspect representations and matched historical reconstruction. Simple baselines win on held-out comparisons. UMAP groups are exploratory. [Model card](models/global_explorer_v2/MODEL_CARD.md) · [UMAP report](docs/REPRESENTATION_UMAP.md) |
+| Dynamic mode decomposition (DMD) | **Historical experiment.** Earlier research, outside the live worker contract. [Implementation history](SCIENCE_IMPLEMENTATION.md) |
+| Faster GCOV and broader validation | **Planned for the live default.** Benchmark parallel range reads and coarser analysis grids at fixed footprint. Expand independent geographic and seasonal checks. |
+
+## Read the evidence
+
+An answer begins with **what changed, where and when**. Show the acquisition dates, comparator, channel, units, grid and valid-cell denominator alongside the layer. Explain which physical property could affect that return, what else can explain it and what an independent observation could confirm. A missing or unsupported estimate stays null. Keep partial results and coverage gaps visible. A forecast, automatic event classification, phenomenon probability, causal attribution or validated line-of-sight displacement is outside the current contract. Phase-equivalent centimetres express a phase conversion and require further evidence before being interpreted as movement. [Evidence contracts](docs/CHARACTERIZATION_V05_CONTRACTS.md) · [Interpretation guide](docs/NARRATIVE_FACTS.md)
+
+| Uncertainty | What to show |
+| --- | --- |
+| Observation noise | Explain masks, acquisition compatibility and potential observation effects. Leave noise estimates null when unestimated. |
+| Spatial heterogeneity | Name the retained cell population and the spatial resampling method. State its assumptions and keep its interval tied to that population. |
+| Model uncertainty | Label historical fit bands and their conditioning assumptions. Report observed calibration only for the tested population. |
+
+L-band co-polarized HH responds to surface roughness, geometry and dielectric properties. Cross-polarized HV can be sensitive to structure and depolarizing scattering. A change in their ratio can come from either channel. Rain, moisture, freeze–thaw, wind on water, tillage and differences in incidence or track can move those signals. InSAR coherence measures phase consistency. Wrapped phase is cyclic and also responds to atmosphere, ionosphere and reference effects. [Physical drivers and confounders](docs/NARRATIVE_FACTS.md) · [ASF GCOV guide](https://nisar-docs.asf.alaska.edu/gcov/) · [ASF GUNW guide](https://nisar-docs.asf.alaska.edu/gunw/)
+
+## Architecture and latency
+
+```mermaid
+flowchart LR
+    ASF[ASF catalog and archive] --> Worker[Modal science workers]
+    Reference[Dated independent evidence] --> Worker
+    Worker --> Artifacts[Manifests and scientific artifacts]
+    Artifacts --> API[Modeling API]
+    API --> Backend[Application backend]
+    Backend --> Explorer[Globe and evidence panel]
+```
+
+The application backend submits a point or area exploration and polls the asynchronous Modeling job. Inputs use WGS84 coordinates and explicit dates. Workers publish bounded artifacts with links and hashes. Use each layer's display bounds for the globe and the native grid for numerical interpretation. Prefer immediate feedback as a design goal, use catalog and cache responses for quick interactions, and show progress when archive reads or regional analyses take minutes. Guided cases use a prepared bundle. Job reuse, artifact limits and quota responses bound cost. Service credentials belong in environment secrets or Modal Secrets, outside request bodies and Git. [API contract](docs/API.md) · [Operator runbook](docs/MODAL_RUNBOOK.md)
+
+### Modeling API v2
+
+| Routes | Status and purpose |
+| --- | --- |
+| `GET /health`, `GET /v2/capabilities` | **Verified.** Service health, build revision and current limits. |
+| `GET /v2/coverage` | **Verified.** Discover compatible catalog entries. Pixel support still needs measurement. |
+| `POST /v2/jobs`, `GET /v2/jobs/{job_id}` | **Verified.** Submit and poll a science job. Individual operations retain the scientific status in the capability table. |
+| `GET /v2/jobs/{job_id}/layers/{name}` | **Verified.** Fetch an artifact listed in the job manifest. |
+| `GET /v2/cases`, `GET /v2/cases/{case_id}`, `GET /v2/cases/{case_id}/series`, `GET /v2/cases/{case_id}/layers/{name}` | **Verified.** Browse prepared cases and their published series and layers. |
+
+See the [route implementation](src/surface_dynamics/service_api.py), [API tests](tests/test_service_api.py), [JSON Schemas](contracts/) and [example requests and responses](contracts/examples/). Check transport/job status, science status and evidence status separately. A finished job may contain a partial result or no usable data. Missing support does not imply zero change.
 
 ## Quick start
 
-Python 3.11+; the CPU reference environment uses Python 3.13.5. From a fresh clone on Windows:
+Use an active Python environment on Windows or Linux and run these commands from the repository root. The fixture download needs network access. The subsequent reproduction uses local measured inputs and needs no Earthdata credentials. [Package metadata](pyproject.toml) · [Pinned environment](requirements-lock.txt) · [Fixture manifest](data/example_bundle.json)
 
-```powershell
-git clone https://github.com/nisar-hazard-watch/NISAR-Modeling.git
-cd NISAR-Modeling
-python -m venv .venv
-.venv\Scripts\python.exe -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
-.venv\Scripts\python.exe -m pip install -e .
-.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-On Linux, use `.venv/bin/python` in place of `.venv\Scripts\python.exe`. `requirements-lock.txt` records the exact reference CPU environment; install it after the CPU Torch step to reproduce those versions.
-
-Restore the regional cubes and InSAR pairs from the checksummed release asset, then run an offline job:
-
-```powershell
-.venv\Scripts\python.exe scripts\download_examples.py
-.venv\Scripts\python.exe -m surface_dynamics characterize contracts\examples\wheatbelt-characterization.json --output products\characterization_v05\runs\wheatbelt
-.venv\Scripts\python.exe -m surface_dynamics flood-characterize contracts\examples\qadirabad-flood.json --output products\flood_pilot\runs\qadirabad
-.venv\Scripts\python.exe -m surface_dynamics insar-readiness contracts\examples\kumamoto-readiness.json --output products\insar_readiness\kumamoto_wide
-.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\hokkaido-v2.json --output products\global_v2\runs\hokkaido
-.venv\Scripts\python.exe -m surface_dynamics insar-stack contracts\examples\kumamoto-stack-offline-wide.json --output products\example_insar_stack
-.venv\Scripts\python.exe -m surface_dynamics probe contracts\examples\hokkaido-v2-probe.json --output products\probes\hokkaido-v2.json
-```
-
-No Earthdata credentials are needed for these downloaded fixtures. The release ZIP also contains the source, wheel, model weights, provenance and offline examples. The helper verifies its checksum and restores only measured fixtures. It refuses to overwrite different existing measurements. The Hokkaido probe reads `surface_dynamics.nc` from the analysis output path above. Run the analysis before probing.
-
-For a live worldwide point/date request:
-
-```powershell
-# Supply EARTHDATA_TOKEN through your local environment or secret manager.
-.venv\Scripts\python.exe -m surface_dynamics analyze contracts\examples\global-v2.json --output products\runs\world-v2
-.venv\Scripts\python.exe -m surface_dynamics insar-network contracts\examples\kumamoto-network.json --output products\networks\kumamoto
-```
-
-Public catalog and InSAR-network discovery need no login. Quantitative archive reads require Earthdata authentication. Never put credentials in JSON requests, source files or commits.
-
-## Backend contracts
-
-Use the versioned [JSON Schemas](contracts/) and [request/response examples](contracts/examples/). The [handoff](TEAM_HANDOFF.md) explains shapes, units, coordinate conventions, artifact roles and interpretation limits.
-
-- **Inputs:** WGS84 longitude/latitude with a UTC date window, or measured linear-power cubes with named polarizations, masks and a projected metric grid. InSAR accepts a measured GUNW pair or a point/event-date query.
-- **Outputs:** validated JSON manifests; COG maps; NetCDF scientific arrays; CSV trajectories; NPZ draws/latent states; scientific PNG/GIF previews; network topology and observability diagnostics.
-- **Python entrypoints:** `engine.analyze`, `engine.analyze_insar`, `insar_stack.process_stack`, `network.plan_network`, `probe.probe`, `flood.process_flood`, `insar_readiness.process_readiness`.
-
-The synchronous workers and CLI support batch processing. The [local exploration API](docs/EXPLORE_API.md) adds point coverage, progressive GCOV jobs, measured date-comparison TIFFs and native wrapped-phase and coherence measurements for a selected InSAR pair.
-
-## V1 reference evidence and continuing limits
-
-The v0.2 reference run used **66 measured GCOV chips from seven regions across six continents**, plus a live global-point job and a real Kumamoto earthquake GUNW pair. Its nine original jobs have 152 checked artifacts. CI runs without downloading satellite data. The table below is the earlier V1 experiment on its original posting/support; use the [V2 report](docs/MODELING_V2.md) for the new matched-grid comparison.
-
-Worldwide querying and processing are implemented within chip, resource and measurement limits. Coverage is uneven, and these regional examples do **not** establish globally validated model accuracy.
-
-The expanded frozen-checkpoint benchmark hides **every internal acquisition** in the two held-out regional cubes. All methods use the same scored pixel/channel support and actual observation times:
-
-| Geographic holdout | Acquisitions hidden one at a time | Transformer RMSE | Visible temporal mean | Actual-time interpolation |
-|---|---:|---:|---:|---:|
-| Amazon, Brazil | 6 | 1.600 dB | 1.178 dB | 1.211 dB |
-| Murray Basin, Australia | 14 | 3.637 dB | 3.007 dB | 2.254 dB |
-
-The Transformer currently loses to both simple baselines on both regions. Keep its representations experimental. Temporal windows and sampled pixels are correlated; these are **two independent geographic cases**, not thousands. No tuning or retraining used this expanded holdout result. See the [full benchmark](docs/results/model_benchmark_all_dates.json).
-
-InSAR reports **phase-equivalent centimetres**, with `los_displacement_cm: null`. Atmospheric/ionospheric corrections, a verified stable reference and a validated sign are not established. The actual Kumamoto catalog contains three separate compatible networks with **no redundant closure cycles**; catalog connectivity alone cannot verify unwrapping. The [ASF GUNW guide](https://nisar-docs.asf.alaska.edu/gunw/) documents the supplied phase/correction layers; the [MintPy workflow](https://mintpy.readthedocs.io/en/latest/) provides the reference context for future corrected time-series work.
-
-The network planner also passed [eight live public-catalog point checks](docs/results/global_network_checks.json), returning 27 compatible networks and 211 unique day-pair edges. These checks discover available products; they do not download or validate eight phase stacks.
-
-![Real NISAR phase and coherence; phase-equivalent scale is not validated deformation](docs/images/interferometry.png)
-
-## Keep Git small
-
-Git contains source, contracts, documentation, compact trained weights and selected previews. Raw chips, NetCDF/COG job outputs, caches, virtual environments and ZIP bundles stay outside Git. Download the measured fixtures from [Releases](https://github.com/Ch0comilo/NISAR-Modeling/releases), or regenerate outputs locally.
-
-`python scripts/repository_audit.py` checks the tracked tree for forbidden data paths, oversized files and common credential structures. The total tracked-file budget is 10 MiB. A normal `.gitignore` change does not remove data already present in Git history; see [the data policy](docs/DATA_AND_GIT.md).
-
-## Development
-
-```powershell
-.venv\Scripts\python.exe scripts\benchmark_global_model.py
-.venv\Scripts\python.exe scripts\run_global_examples.py
-.venv\Scripts\python.exe scripts\run_global_v2.py
-.venv\Scripts\python.exe scripts\verify_global_v2.py
-.venv\Scripts\python.exe scripts\run_flood_pilot.py
-.venv\Scripts\python.exe scripts\run_insar_readiness.py
-.venv\Scripts\python.exe scripts\verify_flood_pilot.py
-.venv\Scripts\python.exe scripts\run_characterization_v05.py
-.venv\Scripts\python.exe scripts\evaluate_characterization_v05.py
-.venv\Scripts\python.exe scripts\run_insar_v05.py
-.venv\Scripts\python.exe scripts\verify_characterization_v05.py
-```
-
-`train_global_example.py` retrains the experimental representation; it is separate from the frozen benchmark. The model's five training geographies and two holdouts are documented in its card. Future scientific work should prioritize independent geography/season validation, native NISAR support, coherent common reference support and correction provenance before stronger model or deformation claims.
-
-## Deploy to Modal
-
-Use Python 3.13, the version exercised on Windows and the Modal Debian slim CPU runtime. The Modal worker installs the existing science lock, CPU-only PyTorch and Rasterio's system runtime dependencies, and mounts the frozen v2 checkpoint and projection assets. The gateway image contains only the HTTP dependencies. Read [the API contract](docs/API.md) and [the operator runbook](docs/MODAL_RUNBOOK.md).
-
-From the repository root, with the project Python environment active and Modal authenticated:
-
-```powershell
-python -m pip install -e ".[api]"
-python -m pip install modal
-python -m unittest discover -s tests
+```sh
+python -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements-lock.txt
+python -m pip install -e ".[api,exploration]"
 python scripts/download_examples.py
-python scripts/prepare_api_cases.py --output scratch/api-seed/cases
-python -m modal volume create --env main nisar-evidence-v2
-python -m modal volume put --env main nisar-evidence-v2 scratch/api-seed/cases /
+python -m surface_dynamics characterize contracts/examples/wheatbelt-characterization.json --output products/characterization_v05/runs/wheatbelt
+python -m unittest discover -s tests -v
+python scripts/repository_audit.py
 ```
 
-Use an unused staging directory for each precompute. Publish the new case bundle from verified fixtures. The generated assets live in Modal Volume, outside Git. Review the non-secret resource-name options in .env.example and make sure the configured Modal Secret contains EARTHDATA_TOKEN. On PowerShell, set PYTHONUTF8=1 in the shell if console encoding fails.
+For a live point and date window, supply `EARTHDATA_TOKEN` through the environment and run the [catalog-backed example](contracts/examples/global-v2.json). For the deployed request and polling sequence, see the [API walkthrough](docs/API.md).
 
-```powershell
-python -m modal serve --env main modal_app.py
-python scripts/smoke_api.py <serve-url> --live
-python -m modal deploy --env main modal_app.py
-python scripts/smoke_api.py <deployed-url> --live
+```sh
+python -m surface_dynamics analyze contracts/examples/global-v2.json --output products/runs/world-v2
 ```
 
-Serve opens a temporary Modal URL with reload on code changes. Run the smoke command in a second terminal and stop serve when finished. The deployed URL is printed by deploy. The --live smoke option submits one catalog-only job and verifies deduplication. The frontend must opt into the new contract before setting its base URL.
+## Measured results and limits
 
-### Automatic deployment
+| Experiment | Result and scope |
+| --- | --- |
+| Barh flood evidence | The baseline rule flagged **2,363/2,702** new-water cells, **165/506** stable-open-water cells and **75/1,226** stable-nonwater cells, using dated optical reference groups. [Flood evidence](docs/FLOOD_EVIDENCE.md) |
+| Kumamoto correction readiness | **3 of 1,614** common phase cells met the correction-input checks in the wider sensitivity window. A stable reference and validated displacement were not established. [Evidence ledger](docs/NARRATIVE_FACTS.md) |
+| Hokkaido reconstruction | On the frozen geographic holdout, V2 RMSE was **0.661 dB** against **0.652 dB** for actual-time interpolation. [Matched benchmark](docs/MODELING_V2.md) |
+| GP interval coverage | Nominal **95%** conditional observation intervals covered **93.21%** of Hokkaido targets and **89.39%** of Pantanal targets. These results apply to the scored populations and do not calibrate latent-state bands. [Evaluation](docs/MODELING_V2.md) |
 
-Every push to `main` runs `.github/workflows/modal-deploy.yml`: the science checks, then `modal deploy --env main modal_app.py` under its own names (`NISAR_APP_NAME=nisar-hazard-watch-ml`, Volume `nisar-hazard-watch-chip-cache`, Secret `nisar-hazard-watch-earthdata`), then a `/health` check that the deployed `git_sha` is the pushed commit. The `nisar-evidence-api` app is never touched. Deployments queue instead of overlapping because they share the job-state Dict. It can also be started by hand from the Actions tab (Deploy to Modal, Run workflow).
+Stable cover can trigger radar flags and mapped change can go unflagged. Clouds and date offsets can remove usable optical comparison. Short histories and bounded live date counts limit seasonal interpretation. Atmospheric and ionospheric corrections and stable reference checks remain prerequisites for validated displacement. Live latency varies with archive reads, caching and region. Check the [validation report](docs/CHARACTERIZATION_V05_VALIDATION.md) and the [deployed limits](https://ch0comilo--nisar-hazard-watch-ml.us-east.modal.run/v2/capabilities).
 
-One-time setup by a repository admin: create an API token in the `ch0comilo` Modal workspace (Settings, API Tokens) and save it as the repository secrets `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`. Until then the deploy job stops with a clear error.
+### Guided cases
 
-The Modal science explorer shows original and derived radar views from its API. See the [visualization contract](docs/API.md#radar-visualizations), [frontend handoff](docs/FRONTEND_REQUESTS.md) and [preview guide](scripts/observation-mock/README.md).
+- **Qadirabad · verified measured case.** Compare HH/HV darkening with dated optical-water transitions and baseline-matched controls. [Flood characterization](docs/FLOOD_CHARACTERIZATION.md)
+- **Chókwè · verified measured case.** See how radar and optical evidence can diverge across a wetland or floodplain. [Case API example](docs/API.md)
+- **Richmond · verified measured case.** Use the footprint and optical timing to judge partial flood evidence. [Flood validation](docs/FLOOD_VALIDATION.md)
+- **Kumamoto · verified measured case.** Inspect coherence, wrapped phase and common-reference limits. [InSAR report](docs/MODELING_V2.md)
+- **Chocó · verified measured case.** Compare coherence across observed intervals. Treat correction readiness as an explicit support check. [Case API](docs/API.md)
+- **Venezuela · verified research artifact.** Inspect a measured earthquake-context stack and the limits of phase comparison. [Measured result](docs/results/venezuela_insar_v05.json)
+- **San Marcos · verified measured case.** Compare the radar history with an optical pair that found no newly open-water cells on joint support. The regional bulletin supplies wider context. [Case API](docs/API.md) · [Live case index](https://ch0comilo--nisar-hazard-watch-ml.us-east.modal.run/v2/cases)
+
+## Reproducibility and contributing
+
+Use the [ASF DAAC archive](https://nisar-docs.asf.alaska.edu/access-overview/) for NISAR GCOV and GUNW and [NASA OPERA](https://www.jpl.nasa.gov/go/opera/) for dated optical reference products. Cite the granule IDs, acquisition dates, reference products, model revision and manifest for each result. Credit NASA and ISRO for NISAR, ASF DAAC for archive access, the independent reference providers and the NISAR Hazard Watch team.
+
+Keep raw satellite data, generated outputs and secrets outside Git. The audit enforces a **10 MiB** tracked-tree budget. Use checksummed fixtures for offline reproduction. Preserve negative results and tie new claims to an artifact or test. [Data policy](docs/DATA_AND_GIT.md) · [Repository audit](scripts/repository_audit.py)
+
+To promote experimental capabilities, benchmark GCOV readers and analysis posting on the same acquisitions and footprint, validate evidence across independent geographies and seasons, and verify phase corrections against independent geodetic references. Use the [team handoff](TEAM_HANDOFF.md) to coordinate changes to API fields, provenance and UI copy.
+
+[Earlier README and release notes](https://github.com/nisar-hazard-watch/NISAR-Modeling/blob/8573e1b76d035f877e74ad52e59ade4ba54eda74/README.md) · [Tagged releases](https://github.com/nisar-hazard-watch/NISAR-Modeling/releases)
+
+**License pending.** Repository owners will specify source-code and artifact terms. Cite and follow the terms of each upstream data product.
