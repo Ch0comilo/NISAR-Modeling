@@ -102,11 +102,11 @@ worker_image = (
                     extra_options="--index-strategy unsafe-best-match")
     .uv_pip_install(*DEPS)
     .env(runtime_config)
-    .add_local_dir(package, "/opt/nisar/surface_dynamics")
-    .add_local_dir(ROOT / "models" / "global_explorer_v2", "/opt/nisar/models/global_explorer_v2")
 )
 if GCOV_EXPERIMENT:
     worker_image = worker_image.uv_pip_install("pyfive==1.3.1", "numcodecs==0.17.1")
+worker_image = (worker_image.add_local_dir(package, "/opt/nisar/surface_dynamics")
+                .add_local_dir(ROOT / "models" / "global_explorer_v2", "/opt/nisar/models/global_explorer_v2"))
 
 
 @app.function(image=worker_image, volumes={str(STORAGE): volume}, cpu=(1.0, 1.0),
